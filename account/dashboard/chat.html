@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat Admin - Malik Store</title>
+<style>
+@font-face{font-family:Malik;src:url("../../assets/font/font.ttf")}
+*{box-sizing:border-box}
+body{margin:0;height:100dvh;display:flex;flex-direction:column;background:#050a14;color:#fff;font-family:Malik,Arial,sans-serif}
+.h{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid #1c2a44;background:#0a1324}
+.h a{color:#00d9ff;text-decoration:none;font-size:22px}.h b{display:block}.h small{color:#8b9ab4}
+#msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.m{max-width:80%;padding:10px 14px;border-radius:14px;line-height:1.45;word-break:break-word;white-space:pre-wrap}
+.m small{display:block;margin-top:4px;font-size:10px;opacity:.65;text-align:right}
+.m.user{align-self:flex-end;background:linear-gradient(90deg,#00ff66,#00d9ff);color:#031008}
+.m.admin{align-self:flex-start;background:#111c32;border:1px solid #1c2a44}
+.e{margin:auto;color:#8b9ab4;text-align:center}
+.s{display:flex;gap:10px;padding:12px;border-top:1px solid #1c2a44;background:#0a1324}
+.s input{flex:1;min-width:0;padding:13px;border-radius:12px;border:1px solid #1c2a44;background:#050a14;color:#fff;font:inherit;outline:none}
+.s input:focus{border-color:#00ff66}
+.s button{padding:0 20px;border:0;border-radius:12px;font-weight:bold;cursor:pointer;background:linear-gradient(90deg,#00ff66,#00d9ff);color:#000}
+</style>
+</head>
+<body>
+<div class="h"><a href="index.html">&larr;</a><div><b>Chat Admin</b><small id="who"></small></div></div>
+<div id="msgs"></div>
+<div class="s"><input id="mi" maxlength="500" placeholder="Tulis pesan..." autocomplete="off"><button id="sb">KIRIM</button></div>
+<script src="../../js/auth.js?v=5"></script>
+<script src="../../js/notify.js?v=1" defer></script>
+<script>
+// Chat private per user: tersimpan di malik_chats[email] (sementara localStorage, belum realtime).
+if(!MalikAuth.isLoggedIn()) location.replace(MalikAuth.pages.account);
+const KEY = "malik_chats", me = (MalikAuth.currentUser() || {}).email || "";
+const $ = id => document.getElementById(id);
+$("who").textContent = me;
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } };
+let last = "";
+function draw(force){
+  const t = load()[me], msgs = (t && t.msgs) || [];
+  const html = msgs.length ? msgs.map(m => '<div class="m ' + (m.from === "admin" ? "admin" : "user") + '">' + esc(m.text) +
+    '<small>' + new Date(m.at).toLocaleTimeString("id-ID", {hour: "2-digit", minute: "2-digit"}) + '</small></div>').join("")
+    : '<div class="e">Belum ada pesan.<br>Tulis pesan pertama ke admin.</div>';
+  if(html === last && !force) return;
+  last = html; $("msgs").innerHTML = html; $("msgs").scrollTop = $("msgs").scrollHeight;
+}
+function send(){
+  const text = $("mi").value.trim().slice(0, 500);
+  if(!text || !me) return;
+  const all = load(), t = all[me] || { msgs: [], adminSeen: 0 };
+  t.msgs = t.msgs.concat([{ from: "user", text: text, at: Date.now() }]).slice(-300);
+  all[me] = t;
+  try { localStorage.setItem(KEY, JSON.stringify(all)); } catch (e) {}
+  $("mi").value = ""; draw(true);
+}
+$("sb").onclick = send;
+$("mi").addEventListener("keydown", e => { if(e.key === "Enter") send(); });
+draw(true); setInterval(draw, 2500);
+window.addEventListener("storage", () => draw());
+</script>
+</body>
+</html>

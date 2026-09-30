@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="id">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Malik Bot Rental - Open Panel Legal &amp; Sewa Bot Premium</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&amp;family=Space+Grotesk:wght@500;700;900&amp;family=JetBrains+Mono:wght@400;600;800&amp;display=swap" rel="stylesheet"/>
+<!-- CSS statis (tidak bergantung CDN Tailwind, jadi tampilan konsisten di semua browser) -->
+
+<!-- Font Awesome Icons -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+
+
+
+<!-- MALIKBOT SEO PACK -->
+<meta content="Malik Bot Rental menyediakan layanan open panel Pterodactyl dan sewa bot untuk kebutuhan automation." name="description"/>
+<meta content="open panel, pterodactyl, sewa bot, whatsapp bot, malik bot" name="keywords"/>
+<meta content="Malik Bot Rental" name="author"/>
+<link href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;text y='.9em' font-size='90'&gt;⚡&lt;/text&gt;&lt;/svg&gt;" rel="icon"/>
+
+<link href="css/style.css?v=4" rel="stylesheet"/></head>
+<body class="min-h-screen flex flex-col selection:bg-neo-lime selection:text-black">
+<div id="malik-loader">
+    <div class="loader-video-box">
+        <video id="loader-video" playsinline preload="auto">
+            <source src="assets/video/loading.mp4" type="video/mp4">
+        </video>
+        <div class="loader-overlay">
+            <div class="loader-title">⚡ MALIKBOT</div>
+            <div class="loader-text">MEMUAT WEBSITE...</div>
+            <div class="loader-percent">0%</div>
+            <div class="loader-bar">
+                <span id="loader-progress"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ANNOUNCEMENT BANNER -->
+<div class="bg-neo-yellow text-black font-extrabold text-xs md:text-sm py-2 px-4 border-b-4 border-black text-center tracking-wide flex items-center justify-center gap-2">
+<span class="bg-black text-white px-2 py-0.5 text-xs font-mono">OFFICIAL</span>
+<span>⚡ Server Open Panel Pterodactyl Legal Dedicated RAM Ready! Diskon Auto Provisioning Hari Ini.</span>
+</div>
+<!-- MAIN NAVBAR -->
+<nav class="sticky top-0 z-40 bg-neo-dark/95 backdrop-blur border-b-4 border-black px-4 lg:px-8 py-3.5">
+<div class="max-w-7xl mx-auto flex items-center justify-between">
+<!-- BRAND LOGO -->
+<a class="flex items-center gap-2 md:gap-3 group min-w-0" href="#" onclick="switchView('landing')">
+<div class="profile-header-wrap">
+<img class="profile-header" src="assets/image/profile.jpg" alt="Malik Bot Profile">
+</div>
+<div>
+<span class="font-heading font-black text-xl md:text-2xl text-white tracking-wider block leading-none">MALIK<span class="text-neo-lime">BOT</span></span>
+<span class="text-[9px] md:text-[10px] font-mono text-gray-400 font-bold tracking-wider md:tracking-widest uppercase block whitespace-nowrap">RENTAL &amp; OPEN PANEL</span>
+</div>
+</a>
+<!-- NAV LINKS (DESKTOP) -->
+<div class="hidden lg:flex items-center gap-6 font-bold text-sm">
+<button class="nav-link-premium hover:text-neo-lime transition-colors py-1" onclick="switchView('landing'); scrollToSection('categories')">Layanan Utama</button>
+<a class="btn-neo bg-[#25D366] text-black border-3 border-black px-4 py-2 font-black text-xs shadow-brutal flex items-center gap-2" href="https://whatsapp.com/channel/0029Vb8xDuZDeON4wmxV6O1P" target="_blank">
+<i class="fa-brands fa-whatsapp"></i> Channel
+</a>
+<button class="nav-link-premium hover:text-neo-lime transition-colors py-1" onclick="switchView('landing'); scrollToSection('open-panel')">Open Panel Legal</button>
+<button class="nav-link-premium hover:text-neo-lime transition-colors py-1" onclick="switchView('landing'); scrollToSection('reseller-admin')">Reseller &amp; Admin</button>
+<button class="nav-link-premium hover:text-neo-lime transition-colors py-1" onclick="switchView('landing'); scrollToSection('sewa-bot')">Sewa Bot</button>
+</div>
+<!-- VIEW SWITCHERS & CTA -->
+<div class="flex items-center gap-3">
+<div class="hidden sm:flex items-center gap-2 bg-black/80 border-2 border-gray-800 px-3 py-1.5 text-xs font-mono">
+<span class="w-2.5 h-2.5 rounded-full bg-neo-lime pulse-status"></span>
+<span class="text-gray-300">Node Status: <strong class="text-neo-lime">ONLINE (99.9%)</strong></span>
+</div>
+<button class="btn-neo bg-neo-lime text-black border-3 border-black px-3 md:px-4 py-2 font-black text-xs md:text-sm shadow-brutal flex items-center gap-2 whitespace-nowrap shrink-0" onclick="startOrder()">
+<i class="fa-solid fa-bolt"></i> Mulai Order
+                </button>
+<div class="hidden xl:flex items-center gap-3">
+<a class="btn-neo bg-[#25D366] text-black border-3 border-black px-4 py-2 font-black text-xs shadow-brutal flex items-center gap-2" href="https://wa.me/6285782100757" target="_blank">
+<i class="fa-brands fa-whatsapp"></i> Chat Owner Malik Bot
+</a>
+<a class="btn-neo bg-white text-black border-3 border-black px-4 py-2 font-black text-xs shadow-brutal flex items-center gap-2" href="https://whatsapp.com/channel/0029Vb8xDuZDeON4wmxV6O1P" target="_blank">
+<i class="fa-brands fa-whatsapp"></i> Join Channel
+</a>
+</div>
+<!-- MOBILE MENU TOGGLE -->
+<button class="lg:hidden shrink-0 bg-neo-card border-2 border-black px-3 py-2 text-white" onclick="toggleMobileNav()">
+<svg aria-hidden="true" fill="none" height="22" stroke="currentColor" stroke-linecap="square" stroke-width="3" viewbox="0 0 24 24" width="22"><path d="M3 6h18M3 12h18M3 18h18"></path></svg>
+</button>
+</div>
+</div>
+<!-- MOBILE NAV DROPDOWN -->
+<div class="hidden lg:hidden border-t-2 border-black mt-3 pt-3 flex-col gap-2 font-bold text-sm" id="mobile-nav">
+<button class="text-left py-2 px-3 bg-black/40 border border-gray-800 rounded" onclick="switchView('landing'); scrollToSection('open-panel'); toggleMobileNav()">Open Panel Legal</button>
+<button class="text-left py-2 px-3 bg-black/40 border border-gray-800 rounded" onclick="switchView('landing'); scrollToSection('reseller-admin'); toggleMobileNav()">Reseller &amp; Admin</button>
+<button class="text-left py-2 px-3 bg-black/40 border border-gray-800 rounded" onclick="switchView('landing'); scrollToSection('sewa-bot'); toggleMobileNav()">Sewa Bot Permanen</button>
+<div class="flex gap-2 pt-2">
+<a class="w-1/2 text-center bg-[#25D366] text-black font-extrabold py-2 border-2 border-black text-xs" href="https://wa.me/6285782100757" target="_blank"><i class="fa-brands fa-whatsapp"></i> Chat Owner</a>
+<a class="w-1/2 text-center bg-white text-black font-extrabold py-2 border-2 border-black text-xs" href="https://whatsapp.com/channel/0029Vb8xDuZDeON4wmxV6O1P" target="_blank"><i class="fa-brands fa-whatsapp"></i> Join Channel</a>
+</div>
+</div>
+</nav>
+<!-- MAIN VIEW CONTAINER -->
+<main class="flex-grow">
+<!-- ================================================================= -->
+<!-- VIEW 1: LANDING PAGE -->
+<!-- ================================================================= -->
+<div class="view-content" id="view-landing">
+<!-- HERO SECTION -->
+<section class="hero-section relative pt-12 pb-20 px-4 lg:px-8 border-b-4 border-black bg-[radial-gradient(#1f2937_1px,transparent_1px)] [background-size:24px_24px]">
+<div class="hero-glow g1"></div><div class="hero-glow g2"></div>
+<div class="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 items-center">
+<!-- LEFT COLUMN -->
+<div class="lg:col-span-12 max-w-4xl space-y-6">
+<!-- EYEBROW -->
+<div class="hero-eyebrow">
+<span class="hero-dot"></span>
+<span>Open Panel &amp; Sewa Bot Resmi</span>
+</div>
+<!-- FEATURE CHIPS -->
+<div class="hero-chips">
+<span class="hero-chip c-lime">
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"></path><path d="M8.5 12l2.5 2.5 4.5-5"></path></svg>
+                                Pterodactyl Legal
+                            </span>
+<span class="hero-chip c-blue">
+<svg aria-hidden="true" viewbox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+                                Server 24/7
+                            </span>
+<span class="hero-chip c-yellow">
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"></path></svg>
+                                Auto Setup
+                            </span>
+<span class="hero-chip c-purple">
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M4 13v-1a8 8 0 0116 0v1"></path><path d="M4 13h3v5H4zM17 13h3v5h-3z"></path><path d="M20 18v1a3 3 0 01-3 3h-3"></path></svg>
+                                Fast Support
+                            </span>
+</div>
+<!-- HEADLINE -->
+<h1 class="hero-title font-heading font-black text-white">
+<span class="hero-title-top">Open Panel Legal &amp;</span>
+<span class="hero-title-mark">Sewa Bot Premium</span>
+</h1>
+<!-- SUBTITLE -->
+<p class="hero-sub">
+                            Server cepat, stabil, dan aman untuk kebutuhan bot WhatsApp, Discord, Telegram, dan automation bisnis Anda dengan <strong>panel Pterodactyl legal 100%</strong>.
+                        </p>
+<!-- CTA BUTTONS -->
+<div class="hero-cta">
+<button class="hero-btn hero-btn-primary" onclick="startOrder()">
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M12 3a9 9 0 00-7.8 13.5L3 21l4.6-1.2A9 9 0 1012 3z"></path></svg>
+                                Mulai Order Sekarang
+                                <svg aria-hidden="true" class="arrow" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</button>
+<div class="hero-cta-row">
+<button class="hero-btn hero-btn-ghost" onclick="scrollToSection('harga-panel')">
+                                    Harga Panel
+                                    <svg aria-hidden="true" class="arrow" viewbox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"></path></svg>
+</button>
+<button class="hero-btn hero-btn-ghost" onclick="scrollToSection('sewa-bot')">
+                                    Harga Bot
+                                    <svg aria-hidden="true" class="arrow" viewbox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"></path></svg>
+</button>
+</div>
+</div>
+<!-- MICRO TRUST -->
+<ul class="hero-trust">
+<li>Auto setup</li>
+<li>Support cepat</li>
+<li>Pembayaran QRIS</li>
+</ul>
+<!-- LIVE METRICS BANNER -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-8 border-t-4 border-black">
+<div class="bg-black/80 border-3 border-black p-3.5 shadow-brutal">
+<div class="font-heading font-black text-2xl text-neo-lime">99.9%</div>
+<div class="text-xs font-bold text-gray-400 uppercase">Uptime Server</div>
+</div>
+<div class="bg-black/80 border-3 border-black p-3.5 shadow-brutal">
+<div class="font-heading font-black text-2xl text-neo-blue">24/7/365</div>
+<div class="text-xs font-bold text-gray-400 uppercase">Online Nonstop</div>
+</div>
+<div class="bg-black/80 border-3 border-black p-3.5 shadow-brutal">
+<div class="font-heading font-black text-2xl text-neo-yellow">&lt; 15s</div>
+<div class="text-xs font-bold text-gray-400 uppercase">Auto Provision</div>
+</div>
+<div class="bg-black/80 border-3 border-black p-3.5 shadow-brutal">
+<div class="font-heading font-black text-2xl text-neo-purple">Legal</div>
+<div class="text-xs font-bold text-gray-400 uppercase">License Official</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- DUAL CATEGORY OVERVIEW -->
+<section class="py-16 px-4 lg:px-8 border-b-4 border-black bg-neo-dark" id="categories">
+<div class="max-w-7xl mx-auto">
+<div class="text-center max-w-3xl mx-auto mb-12 space-y-3">
+<span class="bg-neo-yellow text-black font-extrabold text-xs uppercase px-3 py-1 border-2 border-black shadow-brutal-sm inline-block">Kategori Utama</span>
+<h2 class="font-heading font-black text-3xl md:text-5xl text-white">Layanan Hosting &amp; Bot Pilihan</h2>
+<p class="text-gray-400 text-base">Pilih kategori infrastruktur yang Anda butuhkan dengan garansi performa penuh.</p>
+</div>
+<div class="grid md:grid-cols-2 gap-8">
+<!-- CATEGORY 1: OPEN PANEL LEGAL -->
+<div class="bg-neo-card border-4 border-black p-8 shadow-brutal flex flex-col justify-between hover:border-neo-lime transition-all">
+<div>
+<div class="w-16 h-16 bg-neo-lime border-3 border-black flex items-center justify-center text-black text-3xl font-black mb-6 shadow-brutal-sm">
+<i class="fa-solid fa-box-open"></i>
+</div>
+<span class="bg-neo-lime/20 text-neo-lime border border-neo-lime font-mono text-xs font-bold px-2.5 py-1 uppercase tracking-wider">KATEGORI 01</span>
+<h3 class="font-heading font-black text-3xl text-white mt-2 mb-3">OPEN PANEL LEGAL</h3>
+<p class="text-gray-300 text-base leading-relaxed mb-6">
+                                    Dapatkan akses panel Pterodactyl legal dengan resource dedicated sesuai kebutuhan RAM Anda. Sangat cocok untuk meng-host berbagai skrip bot WhatsApp, Discord, Telegram, atau API automation.
+                                </p>
+<ul class="space-y-2.5 text-sm font-semibold text-gray-300 mb-8">
+<li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-neo-lime"></i> Pilihan RAM dari 1GB hingga UNLIMITED</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-neo-lime"></i> Legal Pterodactyl Panel Full License</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-neo-lime"></i> Realtime Console &amp; File Manager Access</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-neo-lime"></i> Harga mulai dari Rp1.000 / bulan</li>
+</ul>
+</div>
+<button class="btn-neo bg-neo-lime text-black border-3 border-black font-black py-3.5 text-base shadow-brutal text-center uppercase tracking-wider" onclick="scrollToSection('open-panel')">
+                                Lihat Paket Open Panel <i class="fa-solid fa-arrow-right ml-1"></i>
+</button>
+</div>
+<!-- CATEGORY 2: SEWA BOT -->
+<div class="bg-neo-card border-4 border-black p-8 shadow-brutal flex flex-col justify-between hover:border-neo-blue transition-all">
+<div>
+<div class="w-16 h-16 bg-neo-blue border-3 border-black flex items-center justify-center text-black text-3xl font-black mb-6 shadow-brutal-sm">
+<i class="fa-solid fa-robot"></i>
+</div>
+<span class="bg-neo-blue/20 text-neo-blue border border-neo-blue font-mono text-xs font-bold px-2.5 py-1 uppercase tracking-wider">KATEGORI 02</span>
+<h3 class="font-heading font-black text-3xl text-white mt-2 mb-3">SEWA BOT PREMIUN</h3>
+<p class="text-gray-300 text-base leading-relaxed mb-6">
+                                    Sewa bot siap digunakan untuk komunitas, bisnis, dan automation tanpa perlu pusing ngoding atau maintenance server. Cukup sekali bayar untuk aktif permanen di grup Anda.
+                                </p>
+<ul class="space-y-2.5 text-sm font-semibold text-gray-300 mb-8">
+<li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-neo-blue"></i> Paket 1, 2, hingga 3 Group Permanen</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-neo-blue"></i> Fitur Auto Reply, Downloader &amp; Moderasi</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-neo-blue"></i> Gratis Update Fitur Berkelanjutan</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-neo-blue"></i> Tersedia Akses Reseller Bot khusus</li>
+</ul>
+</div>
+<button class="btn-neo bg-neo-blue text-black border-3 border-black font-black py-3.5 text-base shadow-brutal text-center uppercase tracking-wider" onclick="scrollToSection('sewa-bot')">
+                                Lihat Paket Sewa Bot <i class="fa-solid fa-arrow-right ml-1"></i>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- DAFTAR HARGA PANEL LEGAL -->
+<section class="py-16 px-4 lg:px-8 border-b-4 border-black bg-neo-dark" id="harga-panel">
+<div class="max-w-4xl mx-auto">
+<div class="text-center mb-10 space-y-3">
+<span class="bg-neo-lime text-black font-extrabold text-xs uppercase px-3 py-1 border-2 border-black shadow-brutal-sm inline-block">Daftar Harga</span>
+<h2 class="font-heading font-black text-3xl md:text-5xl text-white">PANEL LEGAL 100%</h2>
+<p class="text-gray-400 text-base">Semua paket memakai panel Pterodactyl legal. Pilih paket lalu order melalui akun Malik Store.</p>
+</div>
+<div class="price-list">
+<div class="price-row">
+<div class="price-info">
+<div class="price-name">RAM 1GB</div>
+<div class="price-sub">1GB Dedicated RAM</div>
+</div>
+<div class="price-amount">Rp1.000<span>/bulan</span></div>
+<button class="price-order" onclick="startOrder('OPEN PANEL RAM 1GB', 1000)" type="button">Order</button>
+</div>
+<div class="price-row">
+<div class="price-info">
+<div class="price-name">RAM 2GB</div>
+<div class="price-sub">2GB Dedicated RAM</div>
+</div>
+<div class="price-amount">Rp2.000<span>/bulan</span></div>
+<button class="price-order" onclick="startOrder('OPEN PANEL RAM 2GB', 2000)" type="button">Order</button>
+</div>
+<div class="price-row">
+<div class="price-info">
+<div class="price-name">RAM 3GB</div>
+<div class="price-sub">3GB Dedicated RAM</div>
+</div>
+<div class="price-amount">Rp3.000<span>/bulan</span></div>
+<button class="price-order" onclick="startOrder('OPEN PANEL RAM 3GB', 3000)" type="button">Order</button>
+</div>
+<div class="price-row">
+<div class="price-info">
+<div class="price-name">RAM 4GB</div>
+<div class="price-sub">4GB Dedicated RAM</div>
+</div>
+<div class="price-amount">Rp4.000<span>/bulan</span></div>
+<button class="price-order" onclick="startOrder('OPEN PANEL RAM 4GB', 4000)" type="button">Order</button>
+</div>
+<div class="price-row">
+<div class="price-info">
+<div class="price-name">RAM 5GB</div>
+<div class="price-sub">5GB Dedicated RAM</div>
+</div>
+<div class="price-amount">Rp5.000<span>/bulan</span></div>
+<button class="price-order" onclick="startOrder('OPEN PANEL RAM 5GB', 5000)" type="button">Order</button>
+</div>
+<div class="price-row">
+<div class="price-info">
+<div class="price-name">RAM 6GB</div>
+<div class="price-sub">6GB Dedicated RAM</div>
+</div>
+<div class="price-amount">Rp6.000<span>/bulan</span></div>
+<button class="price-order" onclick="startOrder('OPEN PANEL RAM 6GB', 6000)" type="button">Order</button>
+</div>
+<div class="price-row">
+<div class="price-info">
+<div class="price-name">RAM 7GB</div>
+<div class="price-sub">7GB Dedicated RAM</div>
+</div>
+<div class="price-amount">Rp7.000<span>/bulan</span></div>
+<button class="price-order" onclick="startOrder('OPEN PANEL RAM 7GB', 7000)" type="button">Order</button>
+</div>
+<div class="price-row">
+<div class="price-info">
+<div class="price-name">RAM 8GB</div>
+<div class="price-sub">8GB Dedicated RAM</div>
+</div>
+<div class="price-amount">Rp8.000<span>/bulan</span></div>
+<button class="price-order" onclick="startOrder('OPEN PANEL RAM 8GB', 8000)" type="button">Order</button>
+</div>
+<div class="price-row">
+<div class="price-info">
+<div class="price-name">RAM 9GB</div>
+<div class="price-sub">9GB Dedicated RAM</div>
+</div>
+<div class="price-amount">Rp9.000<span>/bulan</span></div>
+<button class="price-order" onclick="startOrder('OPEN PANEL RAM 9GB', 9000)" type="button">Order</button>
+</div>
+<div class="price-row">
+<div class="price-info">
+<div class="price-name">RAM 10GB</div>
+<div class="price-sub">10GB Dedicated RAM</div>
+</div>
+<div class="price-amount">Rp10.000<span>/bulan</span></div>
+<button class="price-order" onclick="startOrder('OPEN PANEL RAM 10GB', 10000)" type="button">Order</button>
+</div>
+<div class="price-row is-special">
+<div class="price-info">
+<div class="price-name">RAM UNLIMITED</div>
+<div class="price-sub">Unlimited RAM</div>
+</div>
+<div class="price-amount">Rp12.000<span>/bulan</span></div>
+<button class="price-order" onclick="startOrder('OPEN PANEL RAM UNLIMITED', 12000)" type="button">Order</button>
+</div>
+<div class="price-row is-special">
+<div class="price-info">
+<div class="price-name">RESELLER PANEL</div>
+<div class="price-sub">Level reseller</div>
+</div>
+<div class="price-amount">Rp15.000<span>/bulan</span></div>
+<button class="price-order" onclick="startOrder('RESELLER PANEL PTERODACTYL', 15000)" type="button">Order</button>
+</div>
+<div class="price-row is-special">
+<div class="price-info">
+<div class="price-name">ADMIN PANEL</div>
+<div class="price-sub">Level admin</div>
+</div>
+<div class="price-amount">Rp20.000<span>/bulan</span></div>
+<button class="price-order" onclick="startOrder('ADMIN PANEL PTERODACTYL', 20000)" type="button">Order</button>
+</div>
+</div>
+<div class="text-center mt-8">
+<button class="price-detail-btn" onclick="scrollToSection('open-panel')" type="button">Lihat detail spesifikasi paket ↓</button>
+</div>
+</div>
+</section>
+<!-- OPEN PANEL LEGAL PRICING GRID (11 PACKAGES) -->
+<section class="py-20 px-4 lg:px-8 border-b-4 border-black bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:20px_20px]" id="open-panel">
+<div class="max-w-7xl mx-auto">
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+<div>
+<span class="bg-neo-lime text-black font-extrabold text-xs uppercase px-3 py-1 border-2 border-black shadow-brutal-sm inline-block mb-2">Resource Dedicated</span>
+<h2 class="font-heading font-black text-3xl md:text-5xl text-white">OPEN PANEL LEGAL</h2>
+<p class="text-gray-400 text-base mt-1">Pilih spesifikasi RAM sesuai skala bot Anda. Nikmati akses panel Pterodactyl instan.</p>
+</div>
+<!-- FILTER INPUT FOR RAM -->
+<div class="flex items-center gap-2">
+<label class="text-xs font-mono font-bold text-gray-400 uppercase">Cari RAM:</label>
+<input class="bg-black border-2 border-gray-800 px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-neo-lime w-48" id="ram-filter" onkeyup="filterRamPackages()" placeholder="Contoh: 4GB, Unlimited..." type="text"/>
+</div>
+</div>
+<!-- 11 PRICING CARDS CONTAINER -->
+<div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="ram-grid-container">
+<!-- CARD 1: 1GB -->
+<div class="ram-card bg-neo-card border-4 border-black p-6 shadow-brutal hover-lift fade-up flex flex-col justify-between hover:border-neo-lime transition-all" data-ram="1gb 1 gb">
+<div>
+<div class="flex items-center justify-between mb-3">
+<span class="font-mono font-extrabold text-xs bg-black text-neo-lime px-2 py-1 border border-gray-800">STARTER</span>
+<span class="text-xs text-gray-400 font-mono">Pterodactyl ID</span>
+</div>
+<h3 class="font-heading font-black text-2xl text-white">RAM 1GB</h3>
+<div class="font-heading font-black text-3xl text-neo-lime my-3">
+                                    Rp1.000 <span class="text-xs text-gray-400 font-normal">/bulan</span>
+</div>
+<ul class="space-y-2 text-xs text-gray-300 font-semibold mb-6">
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> 1GB Dedicated RAM</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> CPU Core Shared 50%</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> Panel Pterodactyl Full Access</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> Server Active 24 Jam</li>
+</ul>
+</div>
+<button class="w-full btn-neo bg-neo-lime text-black font-extrabold border-3 border-black py-2.5 shadow-brutal text-center uppercase tracking-wider text-xs" onclick="startOrder('OPEN PANEL RAM 1GB', 1000)">
+                                Order Sekarang
+                            </button>
+</div>
+<!-- CARD 2: 2GB -->
+<div class="ram-card bg-neo-card border-4 border-black p-6 shadow-brutal hover-lift fade-up flex flex-col justify-between hover:border-neo-lime transition-all" data-ram="2gb 2 gb">
+<div>
+<div class="flex items-center justify-between mb-3">
+<span class="font-mono font-extrabold text-xs bg-black text-neo-lime px-2 py-1 border border-gray-800">STANDARD</span>
+<span class="text-xs text-gray-400 font-mono">Pterodactyl ID</span>
+</div>
+<h3 class="font-heading font-black text-2xl text-white">RAM 2GB</h3>
+<div class="font-heading font-black text-3xl text-neo-lime my-3">
+                                    Rp2.000 <span class="text-xs text-gray-400 font-normal">/bulan</span>
+</div>
+<ul class="space-y-2 text-xs text-gray-300 font-semibold mb-6">
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> 2GB Dedicated RAM</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> CPU Core Shared 100%</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> Realtime Console &amp; File Manager</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> Support Node.js / Python</li>
+</ul>
+</div>
+<button class="w-full btn-neo bg-neo-lime text-black font-extrabold border-3 border-black py-2.5 shadow-brutal text-center uppercase tracking-wider text-xs" onclick="startOrder('OPEN PANEL RAM 2GB', 2000)">
+                                Order Sekarang
+                            </button>
+</div>
+<!-- CARD 3: 3GB -->
+<div class="ram-card bg-neo-card border-4 border-black p-6 shadow-brutal hover-lift fade-up flex flex-col justify-between hover:border-neo-lime transition-all" data-ram="3gb 3 gb">
+<div>
+<div class="flex items-center justify-between mb-3">
+<span class="font-mono font-extrabold text-xs bg-black text-neo-lime px-2 py-1 border border-gray-800">MEDIUM</span>
+<span class="text-xs text-gray-400 font-mono">Pterodactyl ID</span>
+</div>
+<h3 class="font-heading font-black text-2xl text-white">RAM 3GB</h3>
+<div class="font-heading font-black text-3xl text-neo-lime my-3">
+                                    Rp3.000 <span class="text-xs text-gray-400 font-normal">/bulan</span>
+</div>
+<ul class="space-y-2 text-xs text-gray-300 font-semibold mb-6">
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> 3GB Dedicated RAM</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> High Performance Node</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> Full Panel Management</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> Auto Backup Harian</li>
+</ul>
+</div>
+<button class="w-full btn-neo bg-neo-lime text-black font-extrabold border-3 border-black py-2.5 shadow-brutal text-center uppercase tracking-wider text-xs" onclick="startOrder('OPEN PANEL RAM 3GB', 3000)">
+                                Order Sekarang
+                            </button>
+</div>
+<!-- CARD 4: 4GB -->
+<div class="ram-card bg-neo-card border-4 border-black p-6 shadow-brutal hover-lift fade-up flex flex-col justify-between hover:border-neo-lime transition-all" data-ram="4gb 4 gb">
+<div>
+<div class="flex items-center justify-between mb-3">
+<span class="font-mono font-extrabold text-xs bg-black text-neo-lime px-2 py-1 border border-gray-800">PRO</span>
+<span class="text-xs text-gray-400 font-mono">Pterodactyl ID</span>
+</div>
+<h3 class="font-heading font-black text-2xl text-white">RAM 4GB</h3>
+<div class="font-heading font-black text-3xl text-neo-lime my-3">
+                                    Rp4.000 <span class="text-xs text-gray-400 font-normal">/bulan</span>
+</div>
+<ul class="space-y-2 text-xs text-gray-300 font-semibold mb-6">
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> 4GB Dedicated RAM</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> Multi Bot Instance Support</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> Unlimited Bandwidth</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> Priority Support</li>
+</ul>
+</div>
+<button class="w-full btn-neo bg-neo-lime text-black font-extrabold border-3 border-black py-2.5 shadow-brutal text-center uppercase tracking-wider text-xs" onclick="startOrder('OPEN PANEL RAM 4GB', 4000)">
+                                Order Sekarang
+                            </button>
+</div>
+<!-- CARD 5: 5GB -->
+<div class="ram-card bg-neo-card border-4 border-black p-6 shadow-brutal hover-lift fade-up flex flex-col justify-between hover:border-neo-lime transition-all" data-ram="5gb 5 gb">
+<div>
+<div class="flex items-center justify-between mb-3">
+<span class="font-mono font-extrabold text-xs bg-black text-neo-lime px-2 py-1 border border-gray-800">ADVANCED</span>
+<span class="text-xs text-gray-400 font-mono">Pterodactyl ID</span>
+</div>
+<h3 class="font-heading font-black text-2xl text-white">RAM 5GB</h3>
+<div class="font-heading font-black text-3xl text-neo-lime my-3">
+                                    Rp5.000 <span class="text-xs text-gray-400 font-normal">/bulan</span>
+</div>
+<ul class="space-y-2 text-xs text-gray-300 font-semibold mb-6">
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> 5GB Dedicated RAM</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> Dedicated CPU Priority</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> Fast SFTP File Access</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> Uptime SLA 99.9%</li>
+</ul>
+</div>
+<button class="w-full btn-neo bg-neo-lime text-black font-extrabold border-3 border-black py-2.5 shadow-brutal text-center uppercase tracking-wider text-xs" onclick="startOrder('OPEN PANEL RAM 5GB', 5000)">
+                                Order Sekarang
+                            </button>
+</div>
+<!-- CARD 6: 6GB -->
+<div class="ram-card bg-neo-card border-4 border-black p-6 shadow-brutal hover-lift fade-up flex flex-col justify-between hover:border-neo-lime transition-all" data-ram="6gb 6 gb">
+<div>
+<div class="flex items-center justify-between mb-3">
+<span class="font-mono font-extrabold text-xs bg-black text-neo-lime px-2 py-1 border border-gray-800">BUSINESS</span>
+<span class="text-xs text-gray-400 font-mono">Pterodactyl ID</span>
+</div>
+<h3 class="font-heading font-black text-2xl text-white">RAM 6GB</h3>
+<div class="font-heading font-black text-3xl text-neo-lime my-3">
+                                    Rp6.000 <span class="text-xs text-gray-400 font-normal">/bulan</span>
+</div>
+<ul class="space-y-2 text-xs text-gray-300 font-semibold mb-6">
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> 6GB Dedicated RAM</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> Heavy Traffic Ready</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> Full Legal Panel Features</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> Free Setup Consultation</li>
+</ul>
+</div>
+<button class="w-full btn-neo bg-neo-lime text-black font-extrabold border-3 border-black py-2.5 shadow-brutal text-center uppercase tracking-wider text-xs" onclick="startOrder('OPEN PANEL RAM 6GB', 6000)">
+                                Order Sekarang
+                            </button>
+</div>
+<!-- CARD 7: 7GB -->
+<div class="ram-card bg-neo-card border-4 border-black p-6 shadow-brutal hover-lift fade-up flex flex-col justify-between hover:border-neo-lime transition-all" data-ram="7gb 7 gb">
+<div>
+<div class="flex items-center justify-between mb-3">
+<span class="font-mono font-extrabold text-xs bg-black text-neo-lime px-2 py-1 border border-gray-800">ULTRA</span>
+<span class="text-xs text-gray-400 font-mono">Pterodactyl ID</span>
+</div>
+<h3 class="font-heading font-black text-2xl text-white">RAM 7GB</h3>
+<div class="font-heading font-black text-3xl text-neo-lime my-3">
+                                    Rp7.000 <span class="text-xs text-gray-400 font-normal">/bulan</span>
+</div>
+<ul class="space-y-2 text-xs text-gray-300 font-semibold mb-6">
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> 7GB Dedicated RAM</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> Multi-core CPU Access</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> High Disk Storage Space</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> Fast WhatsApp Gateway</li>
+</ul>
+</div>
+<button class="w-full btn-neo bg-neo-lime text-black font-extrabold border-3 border-black py-2.5 shadow-brutal text-center uppercase tracking-wider text-xs" onclick="startOrder('OPEN PANEL RAM 7GB', 7000)">
+                                Order Sekarang
+                            </button>
+</div>
+<!-- CARD 8: 8GB -->
+<div class="ram-card bg-neo-card border-4 border-black p-6 shadow-brutal hover-lift fade-up flex flex-col justify-between hover:border-neo-lime transition-all" data-ram="8gb 8 gb">
+<div>
+<div class="flex items-center justify-between mb-3">
+<span class="font-mono font-extrabold text-xs bg-black text-neo-lime px-2 py-1 border border-gray-800">ENTERPRISE</span>
+<span class="text-xs text-gray-400 font-mono">Pterodactyl ID</span>
+</div>
+<h3 class="font-heading font-black text-2xl text-white">RAM 8GB</h3>
+<div class="font-heading font-black text-3xl text-neo-lime my-3">
+                                    Rp8.000 <span class="text-xs text-gray-400 font-normal">/bulan</span>
+</div>
+<ul class="space-y-2 text-xs text-gray-300 font-semibold mb-6">
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> 8GB Dedicated RAM</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> High Speed NVMe Storage</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> Priority VIP Routing</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> 24/7 Dedicated Manager</li>
+</ul>
+</div>
+<button class="w-full btn-neo bg-neo-lime text-black font-extrabold border-3 border-black py-2.5 shadow-brutal text-center uppercase tracking-wider text-xs" onclick="startOrder('OPEN PANEL RAM 8GB', 8000)">
+                                Order Sekarang
+                            </button>
+</div>
+<!-- CARD 9: 9GB -->
+<div class="ram-card bg-neo-card border-4 border-black p-6 shadow-brutal hover-lift fade-up flex flex-col justify-between hover:border-neo-lime transition-all" data-ram="9gb 9 gb">
+<div>
+<div class="flex items-center justify-between mb-3">
+<span class="font-mono font-extrabold text-xs bg-black text-neo-lime px-2 py-1 border border-gray-800">EXTREME</span>
+<span class="text-xs text-gray-400 font-mono">Pterodactyl ID</span>
+</div>
+<h3 class="font-heading font-black text-2xl text-white">RAM 9GB</h3>
+<div class="font-heading font-black text-3xl text-neo-lime my-3">
+                                    Rp9.000 <span class="text-xs text-gray-400 font-normal">/bulan</span>
+</div>
+<ul class="space-y-2 text-xs text-gray-300 font-semibold mb-6">
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> 9GB Dedicated RAM</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> Max Processing Speed</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> Full Control Environment</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> Instant Ticket Support</li>
+</ul>
+</div>
+<button class="w-full btn-neo bg-neo-lime text-black font-extrabold border-3 border-black py-2.5 shadow-brutal text-center uppercase tracking-wider text-xs" onclick="startOrder('OPEN PANEL RAM 9GB', 9000)">
+                                Order Sekarang
+                            </button>
+</div>
+<!-- CARD 10: 10GB -->
+<div class="ram-card bg-neo-card border-4 border-black p-6 shadow-brutal hover-lift fade-up flex flex-col justify-between hover:border-neo-lime transition-all" data-ram="10gb 10 gb">
+<div>
+<div class="flex items-center justify-between mb-3">
+<span class="font-mono font-extrabold text-xs bg-black text-neo-lime px-2 py-1 border border-gray-800">MONSTER</span>
+<span class="text-xs text-gray-400 font-mono">Pterodactyl ID</span>
+</div>
+<h3 class="font-heading font-black text-2xl text-white">RAM 10GB</h3>
+<div class="font-heading font-black text-3xl text-neo-lime my-3">
+                                    Rp10.000 <span class="text-xs text-gray-400 font-normal">/bulan</span>
+</div>
+<ul class="space-y-2 text-xs text-gray-300 font-semibold mb-6">
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> 10GB Dedicated RAM</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> Dedicated Node Isolation</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> Extreme Low Latency</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-lime"></i> Full Pterodactyl Legal API</li>
+</ul>
+</div>
+<button class="w-full btn-neo bg-neo-lime text-black font-extrabold border-3 border-black py-2.5 shadow-brutal text-center uppercase tracking-wider text-xs" onclick="startOrder('OPEN PANEL RAM 10GB', 10000)">
+                                Order Sekarang
+                            </button>
+</div>
+<!-- CARD 11: RAM UNLIMITED (HIGHLIGHTED) -->
+<div class="ram-card bg-neo-card border-4 border-neo-lime p-6 shadow-brutal-lime flex flex-col justify-between relative sm:col-span-2 lg:col-span-1" data-ram="unlimited ram unlimited">
+<div class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-neo-lime text-black font-extrabold text-[10px] px-3 py-0.5 border border-black uppercase tracking-wider">
+                                🔥 PALING DICARI
+                            </div>
+<div>
+<div class="flex items-center justify-between mb-3 mt-1">
+<span class="font-mono font-extrabold text-xs bg-neo-lime text-black px-2 py-0.5 border border-black">MAX POWER</span>
+<span class="text-xs text-neo-lime font-mono">Pterodactyl Legal</span>
+</div>
+<h3 class="font-heading font-black text-2xl text-white">RAM UNLIMITED</h3>
+<div class="font-heading font-black text-3xl text-neo-lime my-3">
+                                    Rp12.000 <span class="text-xs text-gray-400 font-normal">/bulan</span>
+</div>
+<ul class="space-y-2 text-xs text-gray-200 font-semibold mb-6">
+<li class="flex items-center gap-2"><i class="fa-solid fa-bolt text-neo-lime"></i> <strong>UNLIMITED</strong> RAM Resource</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-bolt text-neo-lime"></i> Unlimited Bot Automation Slots</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-bolt text-neo-lime"></i> Max Priority Server Hardware</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-bolt text-neo-lime"></i> VIP Priority CS Response</li>
+</ul>
+</div>
+<button class="w-full btn-neo bg-neo-lime text-black font-black border-3 border-black py-3 shadow-brutal text-center uppercase tracking-wider text-xs" onclick="startOrder('OPEN PANEL RAM UNLIMITED', 12000)">
+                                Order Sekarang
+                            </button>
+</div>
+</div>
+</div>
+</section>
+<!-- RESELLER DAN ADMIN PANEL SECTION -->
+<section class="py-20 px-4 lg:px-8 border-b-4 border-black bg-neo-dark" id="reseller-admin">
+<div class="max-w-7xl mx-auto">
+<div class="text-center max-w-3xl mx-auto mb-16 space-y-3">
+<span class="bg-neo-purple text-white font-extrabold text-xs uppercase px-3 py-1 border-2 border-black shadow-brutal-sm inline-block">Peluang Bisnis Hosting</span>
+<h2 class="font-heading font-black text-3xl md:text-5xl text-white">RESELLER &amp; ADMIN PANEL</h2>
+<p class="text-gray-400 text-base">Mulai bisnis server hosting bot Anda sendiri dengan akses manajemen tingkat tinggi.</p>
+</div>
+<div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+<!-- RESELLER PANEL -->
+<div class="bg-neo-card border-4 border-black p-8 shadow-brutal flex flex-col justify-between hover:border-neo-yellow transition-all">
+<div>
+<div class="flex items-center justify-between mb-4">
+<span class="bg-neo-yellow text-black font-black text-xs px-3 py-1 border-2 border-black shadow-brutal-sm uppercase">RESELLER LEVEL</span>
+<i class="fa-solid fa-users-gear text-neo-yellow text-3xl"></i>
+</div>
+<h3 class="font-heading font-black text-3xl text-white mb-2">RESELLER PANEL</h3>
+<div class="font-heading font-black text-4xl text-neo-yellow mb-6">
+                                    Rp15.000 <span class="text-xs text-gray-400 font-normal">/bulan</span>
+</div>
+<div class="h-1 bg-black mb-6"></div>
+<ul class="space-y-3 text-sm text-gray-200 font-semibold mb-8">
+<li class="flex items-center gap-3"><i class="fa-solid fa-check text-neo-yellow text-base"></i> Bisa membuat &amp; mengelola panel user</li>
+<li class="flex items-center gap-3"><i class="fa-solid fa-check text-neo-yellow text-base"></i> Sangat cocok untuk dijual kembali (Re-sell)</li>
+<li class="flex items-center gap-3"><i class="fa-solid fa-check text-neo-yellow text-base"></i> Management server &amp; allocation resource</li>
+<li class="flex items-center gap-3"><i class="fa-solid fa-check text-neo-yellow text-base"></i> Support bantuan teknis dari Malik Bot</li>
+</ul>
+</div>
+<button class="w-full btn-neo bg-neo-yellow text-black font-black border-3 border-black py-3.5 shadow-brutal text-center uppercase tracking-wider text-sm" onclick="startOrder('RESELLER PANEL PTERODACTYL', 15000)">
+                                Order Reseller Panel
+                            </button>
+</div>
+<!-- ADMIN PANEL -->
+<div class="bg-neo-card border-4 border-black p-8 shadow-brutal flex flex-col justify-between hover:border-neo-purple transition-all">
+<div>
+<div class="flex items-center justify-between mb-4">
+<span class="bg-neo-purple text-white font-black text-xs px-3 py-1 border-2 border-black shadow-brutal-sm uppercase">ROOT ADMIN LEVEL</span>
+<i class="fa-solid fa-user-shield text-neo-purple text-3xl"></i>
+</div>
+<h3 class="font-heading font-black text-3xl text-white mb-2">ADMIN PANEL</h3>
+<div class="font-heading font-black text-4xl text-neo-purple mb-6">
+                                    Rp20.000 <span class="text-xs text-gray-400 font-normal">/bulan</span>
+</div>
+<div class="h-1 bg-black mb-6"></div>
+<ul class="space-y-3 text-sm text-gray-200 font-semibold mb-8">
+<li class="flex items-center gap-3"><i class="fa-solid fa-check text-neo-purple text-base"></i> Full akses admin panel Pterodactyl</li>
+<li class="flex items-center gap-3"><i class="fa-solid fa-check text-neo-purple text-base"></i> Manage seluruh user &amp; reseller secara bebas</li>
+<li class="flex items-center gap-3"><i class="fa-solid fa-check text-neo-purple text-base"></i> Manage server instance, node &amp; cluster</li>
+<li class="flex items-center gap-3"><i class="fa-solid fa-check text-neo-purple text-base"></i> Full control panel &amp; API integration key</li>
+</ul>
+</div>
+<button class="w-full btn-neo bg-neo-purple text-white font-black border-3 border-black py-3.5 shadow-brutal text-center uppercase tracking-wider text-sm" onclick="startOrder('ADMIN PANEL PTERODACTYL', 20000)">
+                                Order Admin Panel
+                            </button>
+</div>
+</div>
+</div>
+</section>
+<!-- SEWA BOT SECTION (PERMANEN PACKAGES) -->
+<section class="py-20 px-4 lg:px-8 border-b-4 border-black bg-[radial-gradient(#1f2937_1px,transparent_1px)] [background-size:24px_24px]" id="sewa-bot">
+<div class="max-w-7xl mx-auto">
+<div class="text-center max-w-3xl mx-auto mb-16 space-y-3">
+<span class="bg-neo-blue text-black font-extrabold text-xs uppercase px-3 py-1 border-2 border-black shadow-brutal-sm inline-block">Tanpa Sewa Bulanan</span>
+<h2 class="font-heading font-black text-3xl md:text-5xl text-white">SEWA BOT PERMANEN</h2>
+<p class="text-gray-400 text-base">Satu kali bayar untuk pemakaian bot aktif permanen di grup WhatsApp Anda tanpa biaya tersembunyi.</p>
+</div>
+<div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- 1 GROUP PERMANEN -->
+<div class="bg-neo-card border-4 border-black p-6 shadow-brutal hover-lift fade-up flex flex-col justify-between hover:border-neo-blue transition-all">
+<div>
+<div class="w-12 h-12 bg-neo-blue border-3 border-black flex items-center justify-center text-black font-black text-xl mb-4 shadow-brutal-sm">
+                                    1
+                                </div>
+<h3 class="font-heading font-black text-xl text-white mb-1">1 GROUP PERMANEN</h3>
+<div class="font-heading font-black text-2xl text-neo-blue mb-4">
+                                    Rp15.000 <span class="text-xs text-gray-400 font-normal">/sekali bayar</span>
+</div>
+<div class="h-1 bg-black mb-4"></div>
+<ul class="space-y-2.5 text-xs text-gray-300 font-semibold mb-6">
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-blue"></i> Bot aktif permanen</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-blue"></i> Berlaku untuk 1 Group</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-blue"></i> Support update fitur</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-blue"></i> Anti-delay response</li>
+</ul>
+</div>
+<button class="w-full btn-neo bg-neo-blue text-black font-extrabold border-3 border-black py-2.5 shadow-brutal text-center uppercase tracking-wider text-xs" onclick="startOrder('SEWA BOT - 1 GROUP PERMANEN', 15000)">
+                                Order Bot 1 Group
+                            </button>
+</div>
+<!-- 2 GROUP PERMANEN -->
+<div class="bg-neo-card border-4 border-black p-6 shadow-brutal hover-lift fade-up flex flex-col justify-between hover:border-neo-blue transition-all">
+<div>
+<div class="w-12 h-12 bg-neo-blue border-3 border-black flex items-center justify-center text-black font-black text-xl mb-4 shadow-brutal-sm">
+                                    2
+                                </div>
+<h3 class="font-heading font-black text-xl text-white mb-1">2 GROUP PERMANEN</h3>
+<div class="font-heading font-black text-2xl text-neo-blue mb-4">
+                                    Rp20.000 <span class="text-xs text-gray-400 font-normal">/sekali bayar</span>
+</div>
+<div class="h-1 bg-black mb-4"></div>
+<ul class="space-y-2.5 text-xs text-gray-300 font-semibold mb-6">
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-blue"></i> Bot aktif permanen</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-blue"></i> Berlaku untuk 2 Group</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-blue"></i> Support update fitur</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-blue"></i> Fitur Downloader &amp; AI</li>
+</ul>
+</div>
+<button class="w-full btn-neo bg-neo-blue text-black font-extrabold border-3 border-black py-2.5 shadow-brutal text-center uppercase tracking-wider text-xs" onclick="startOrder('SEWA BOT - 2 GROUP PERMANEN', 20000)">
+                                Order Bot 2 Group
+                            </button>
+</div>
+<!-- 3 GROUP PERMANEN -->
+<div class="bg-neo-card border-4 border-black p-6 shadow-brutal hover-lift fade-up flex flex-col justify-between hover:border-neo-blue transition-all">
+<div>
+<div class="w-12 h-12 bg-neo-blue border-3 border-black flex items-center justify-center text-black font-black text-xl mb-4 shadow-brutal-sm">
+                                    3
+                                </div>
+<h3 class="font-heading font-black text-xl text-white mb-1">3 GROUP PERMANEN</h3>
+<div class="font-heading font-black text-2xl text-neo-blue mb-4">
+                                    Rp25.000 <span class="text-xs text-gray-400 font-normal">/sekali bayar</span>
+</div>
+<div class="h-1 bg-black mb-4"></div>
+<ul class="space-y-2.5 text-xs text-gray-300 font-semibold mb-6">
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-blue"></i> Bot aktif permanen</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-blue"></i> Berlaku untuk 3 Group</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-blue"></i> Support update fitur</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-blue"></i> Prioritas server speed</li>
+</ul>
+</div>
+<button class="w-full btn-neo bg-neo-blue text-black font-extrabold border-3 border-black py-2.5 shadow-brutal text-center uppercase tracking-wider text-xs" onclick="startOrder('SEWA BOT - 3 GROUP PERMANEN', 25000)">
+                                Order Bot 3 Group
+                            </button>
+</div>
+<!-- RESELLER BOT -->
+<div class="bg-neo-card border-4 border-neo-pink p-6 shadow-brutal flex flex-col justify-between hover:border-white transition-all">
+<div>
+<div class="w-12 h-12 bg-neo-pink text-black border-3 border-black flex items-center justify-center font-black text-xl mb-4 shadow-brutal-sm">
+<i class="fa-solid fa-shop"></i>
+</div>
+<h3 class="font-heading font-black text-xl text-white mb-1">RESELLER BOT</h3>
+<div class="font-heading font-black text-2xl text-neo-pink mb-4">
+                                    Rp30.000 <span class="text-xs text-gray-400 font-normal">/akses</span>
+</div>
+<div class="h-1 bg-black mb-4"></div>
+<ul class="space-y-2.5 text-xs text-gray-300 font-semibold mb-6">
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-pink"></i> Bisa menjual kembali sewa bot</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-pink"></i> Mendapat akses reseller resmi</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-pink"></i> Support pendaftaran group</li>
+<li class="flex items-center gap-2"><i class="fa-solid fa-check text-neo-pink"></i> Margin keuntungan 100%</li>
+</ul>
+</div>
+<button class="w-full btn-neo bg-neo-pink text-black font-extrabold border-3 border-black py-2.5 shadow-brutal text-center uppercase tracking-wider text-xs" onclick="startOrder('RESELLER BOT PERMANEN', 30000)">
+                                Order Reseller Bot
+                            </button>
+</div>
+</div>
+</div>
+</section>
+<!-- FOOTER -->
+<footer class="bg-black border-t-4 border-black text-gray-400 py-12 px-4 lg:px-8">
+<div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-8">
+<div class="space-y-3">
+<div class="flex items-center gap-2">
+<div class="bg-neo-lime text-black p-1.5 border-2 border-black font-black text-sm">
+<i class="fa-solid fa-server"></i>
+</div>
+<span class="font-heading font-black text-xl text-white">MALIK<span class="text-neo-lime">BOT</span></span>
+</div>
+<p class="text-xs text-gray-400 leading-relaxed">
+                    Malik Bot Rental - Layanan Open Panel Pterodactyl Legal &amp; Sewa Bot Premium. Ditenagai oleh server dedicated Pterodactyl legal 100%.
+                </p>
+</div>
+<div>
+<h4 class="font-heading font-black text-white text-sm uppercase mb-3 text-neo-lime">Layanan Hosting</h4>
+<ul class="space-y-2 text-xs font-semibold">
+<li><a class="hover:text-white" href="#open-panel" onclick="scrollToSection('open-panel')">Open Panel RAM 1GB - 10GB</a></li>
+<li><a class="hover:text-white" href="#open-panel" onclick="scrollToSection('open-panel')">Open Panel RAM UNLIMITED</a></li>
+<li><a class="hover:text-white" href="#reseller-admin" onclick="scrollToSection('reseller-admin')">Reseller Panel Pterodactyl</a></li>
+<li><a class="hover:text-white" href="#reseller-admin" onclick="scrollToSection('reseller-admin')">Admin Panel Pterodactyl</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-heading font-black text-white text-sm uppercase mb-3 text-neo-blue">Sewa Bot</h4>
+<ul class="space-y-2 text-xs font-semibold">
+<li><a class="hover:text-white" href="#sewa-bot" onclick="scrollToSection('sewa-bot')">Bot 1 Group Permanen</a></li>
+<li><a class="hover:text-white" href="#sewa-bot" onclick="scrollToSection('sewa-bot')">Bot 2 Group Permanen</a></li>
+<li><a class="hover:text-white" href="#sewa-bot" onclick="scrollToSection('sewa-bot')">Bot 3 Group Permanen</a></li>
+<li><a class="hover:text-white" href="#sewa-bot" onclick="scrollToSection('sewa-bot')">Reseller Bot Access</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-heading font-black text-white text-sm uppercase mb-3 text-neo-yellow">Legal &amp; Support</h4>
+<ul class="space-y-2 text-xs font-semibold">
+<li><a class="hover:text-white" href="#" onclick="showToast('Syarat &amp; Ketentuan Malik Bot')">Terms of Service</a></li>
+<li><a class="hover:text-white" href="#" onclick="showToast('Kebijakan Privasi Data')">Privacy Policy</a></li>
+<li><a class="hover:text-white" href="#" onclick="showToast('Panel &amp; Server Information')">Pterodactyl Panel Information</a></li>
+<li><a class="text-neo-lime hover:underline" href="https://wa.me/6281234567890" target="_blank">WhatsApp Fast Support 24/7</a></li>
+</ul>
+</div>
+</div>
+<div class="max-w-7xl mx-auto border-t border-gray-900 mt-8 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs font-mono">
+<p>© 2026 Malik Bot Rental. All Rights Reserved.</p>
+<p class="text-gray-500 mt-2 sm:mt-0">Neo-Brutalist SaaS Platform • Open Panel Legal Pterodactyl</p>
+</div>
+<section class="py-16 px-4 lg:px-8 bg-black border-b-4 border-black">
+<div class="max-w-4xl mx-auto bg-neo-card border-4 border-black p-8 shadow-brutal-lg">
+<span class="bg-neo-lime text-black px-3 py-1 text-xs font-black border-2 border-black">
+ORDER CEPAT WHATSAPP
+</span>
+<h2 class="font-heading font-black text-3xl text-white mt-4">
+Butuh Bantuan Pilih Paket?
+</h2>
+<p class="text-gray-400 mt-2 mb-6">
+Konsultasikan kebutuhan panel atau bot sebelum melakukan order.
+</p>
+<a class="inline-flex items-center gap-2 bg-[#25D366] text-black border-4 border-black px-6 py-3 font-black shadow-brutal" href="https://wa.me/6285782100757?text=Halo%20Malik%20Bot,%20saya%20ingin%20konsultasi%20paket" target="_blank">
+<i class="fa-brands fa-whatsapp"></i>
+Chat Konsultasi
+</a>
+</div>
+</section>
+</footer>
+<!-- APPLICATION JAVASCRIPT STATE MANAGEMENT -->
+
+<!-- MALIKBOT V11 POLISH -->
+
+<a class="malik-float-wa" href="account/index.html" onclick="return startOrder()">
+<i class="fa-solid fa-bag-shopping"></i> ORDER<span class="wa-long"> SEKARANG</span>
+</a>
+
+<!-- MALIKBOT V12 ORDER SYSTEM -->
+
+<div class="hidden">
+<a href="https://whatsapp.com/channel/0029Vb8xDuZDeON4wmxV6O1P">
+WhatsApp Channel Malik Bot
+</a>
+</div>
+<!-- MALIK V13 PROFESSIONAL ORDER (v17: auto buka WhatsApp, andal di HP) -->
+
+<!-- MALIK V14 PROFESSIONAL POLISH -->
+
+
+<!-- MALIK V15 PREMIUM LANDING -->
+
+<!-- MALIK V16 FINAL TRUST SECTION -->
+
+<section class="py-10 px-4 lg:px-8">
+<div class="max-w-7xl mx-auto grid md:grid-cols-3 gap-5">
+<div class="malik-trust-box">
+<div class="malik-trust-icon mb-3">
+<i class="fa-solid fa-bolt"></i>
+</div>
+<h3 class="font-black text-white">Aktivasi Cepat</h3>
+<p class="text-gray-400 text-sm">Proses order mudah dan bantuan aktivasi melalui WhatsApp.</p>
+</div>
+<div class="malik-trust-box">
+<div class="malik-trust-icon mb-3">
+<i class="fa-solid fa-server"></i>
+</div>
+<h3 class="font-black text-white">Server Stabil</h3>
+<p class="text-gray-400 text-sm">Resource server disiapkan untuk kebutuhan bot dan automation.</p>
+</div>
+<div class="malik-trust-box">
+<div class="malik-trust-icon mb-3">
+<i class="fa-solid fa-headset"></i>
+</div>
+<h3 class="font-black text-white">Support Customer</h3>
+<p class="text-gray-400 text-sm">Bantuan tersedia untuk membantu kebutuhan layanan Anda.</p>
+</div>
+</div>
+</section>
+<!-- MALIKBOT V21: MUSIK LATAR & UKURAN TAMPILAN HP -->
+
+
+
+<!-- MALIKBOT V22: HERO ATAS -->
+
+<!-- MALIKBOT V23: DAFTAR HARGA PANEL -->
+
+<!-- MALIKBOT V24: TOMBOL ORDER JADI LINK WHATSAPP ASLI -->
+
+
+</div></main><script src="js/auth.js?v=5"></script>
+<script src="js/notify.js?v=1" defer></script>
+<script src="js/script.js?v=5"></script>
+
+
+
+
+
+
+<script>
+(function () {
+    var loader = document.getElementById("malik-loader");
+    var video = document.getElementById("loader-video");
+    var bar = document.getElementById("loader-progress");
+    var percent = document.querySelector(".loader-percent");
+    var label = document.querySelector(".loader-text");
+
+    if (!loader || !video) return;
+
+    var finished = false;
+
+    /** @param {number} value */
+    function setProgress(value) {
+        value = Math.max(shown, Math.max(0, Math.min(100, value)));
+        shown = value;
+        if (bar) bar.style.width = value + "%";
+        if (percent) percent.textContent = Math.floor(value) + "%";
+    }
+
+    // ---- ANTI LONCAT: usap/geser layar tidak boleh mempercepat video ----
+    var lastTime = 0;
+    var shown = 0;
+
+    function guardedTime() {
+        var t = video.currentTime;
+        // hanya terima kemajuan normal (< 1 detik per update); lompatan besar diabaikan
+        if (t >= lastTime && t - lastTime < 1.0) lastTime = t;
+        return lastTime;
+    }
+
+    video.addEventListener("seeking", function () {
+        if (!finished && Math.abs(video.currentTime - lastTime) > 1.0) {
+            video.currentTime = lastTime;   // batalkan lompatan (mis. swipe-to-seek bawaan browser)
+        }
+    });
+
+    // blokir gestur usap/geser di atas loading screen supaya tidak diterjemahkan browser
+    ["touchmove", "wheel"].forEach(function (ev) {
+        loader.addEventListener(ev, function (e) { e.preventDefault(); }, { passive: false });
+    });
+
+    function update() {
+        if (!finished && video.duration) {
+            setProgress((guardedTime() / video.duration) * 100);
+        }
+        if (!finished) requestAnimationFrame(update);
+    }
+
+    function finish() {
+        if (finished) return;
+        finished = true;
+        setProgress(100);
+        if (label) label.textContent = "SELESAI!";
+
+        setTimeout(function () {
+            loader.classList.add("hide-loader");
+            document.documentElement.classList.remove("loader-active");
+            document.dispatchEvent(new Event("loader:done"));
+
+            setTimeout(function () {
+                loader.remove();
+            }, 700);
+        }, 300);
+    }
+
+    video.addEventListener("timeupdate", function () {
+        if (!finished && video.duration) {
+            setProgress((guardedTime() / video.duration) * 100);
+        }
+    });
+
+    video.addEventListener("ended", finish);
+    video.addEventListener("error", finish);
+    // error pada <source> tidak muncul di <video>, jadi tangkap juga di sini
+    var src = video.querySelector("source");
+    if (src) src.addEventListener("error", finish);
+
+    // FAILSAFE: apa pun yang terjadi, loader hilang maksimal 15 detik
+    setTimeout(finish, 15000);
+
+    // ---- SUARA OTOMATIS SAAT LAYAR DISENTUH / DIUSAP / DIGESER ----
+    var soundOn = false;
+    var EVENTS = ["pointerdown", "pointerup", "pointermove", "touchstart", "touchmove",
+                  "touchend", "click", "wheel", "scroll", "keydown", "mousemove"];
+
+    function stopListening() {
+        EVENTS.forEach(function (ev) {
+            window.removeEventListener(ev, tryUnmute, true);
+        });
+    }
+
+    // putar bisu supaya loading TIDAK PERNAH berhenti
+    function keepPlayingMuted() {
+        video.muted = true;
+        var p = video.play();
+        if (p && p.catch) p.catch(function () {});
+    }
+
+    function tryUnmute() {
+        if (soundOn || finished) return;
+        video.muted = false;
+        video.volume = 1;
+        var p = video.play();
+        if (p && p.catch) {
+            p.catch(function () {
+                // browser belum menganggap ini interaksi valid -> balik bisu, coba lagi di gesture berikutnya
+                keepPlayingMuted();
+            });
+        }
+        setTimeout(function () {
+            if (!video.muted && !video.paused) {
+                soundOn = true;      // berhasil, suara nyala
+                stopListening();
+            } else if (!finished) {
+                keepPlayingMuted();  // gagal, lanjut bisu
+            }
+        }, 350);
+    }
+
+    // kalau browser mem-pause video gara-gara unmute, langsung lanjutkan
+    video.addEventListener("pause", function () {
+        if (!finished && !video.ended) keepPlayingMuted();
+    });
+
+    // penjaga: kalau video mandek, paksa jalan lagi
+    setInterval(function () {
+        if (!finished && video.paused && !video.ended) keepPlayingMuted();
+    }, 1500);
+
+    // 1) coba langsung dengan suara
+    video.muted = false;
+    video.play().then(function () {
+        soundOn = true;
+    }).catch(function () {
+        // 2) diblokir -> putar bisu, aktifkan suara saat user menyentuh/mengusap/menggeser
+        keepPlayingMuted();
+        EVENTS.forEach(function (ev) {
+            window.addEventListener(ev, tryUnmute, { capture: true, passive: true });
+        });
+    });
+
+    update();
+})();
+</script>
+
+
+<!-- POPUP IKLAN (muncul setelah loading selesai) -->
+<div id="ad-popup" class="ad-popup" role="dialog" aria-modal="true" aria-label="Iklan Malik Store" hidden>
+    <div class="ad-popup-box">
+        <button type="button" class="ad-popup-close" id="ad-popup-close" aria-label="Tutup iklan">&times;</button>
+        <img src="assets/image/popup.jpg?v=4" alt="Welcome to Malik Store - Pterodactyl Hosting, Premium Bot Rental, Reseller Program" width="1024" height="572">
+        <!-- area silang di gambar juga bisa diklik -->
+        <button type="button" class="ad-popup-hit" id="ad-popup-hit" aria-label="Tutup iklan"></button>
+    </div>
+</div>
+<script>
+(function () {
+    var popup = document.getElementById("ad-popup");
+    if (!popup) return;
+
+    function open() {
+        popup.hidden = false;
+        requestAnimationFrame(function () { popup.classList.add("show"); });
+        document.documentElement.classList.add("popup-open");
+    }
+    function close() {
+        popup.classList.remove("show");
+        document.documentElement.classList.remove("popup-open");
+        setTimeout(function () { popup.hidden = true; }, 300);
+    }
+
+    document.getElementById("ad-popup-close").addEventListener("click", close);
+    document.getElementById("ad-popup-hit").addEventListener("click", close);
+    popup.addEventListener("click", function (e) { if (e.target === popup) close(); }); // klik area gelap
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !popup.hidden) close(); });
+
+    // tampil setelah loading screen selesai
+    var opened = false;
+    function openOnce() {
+        if (opened) return;
+        opened = true;
+        setTimeout(open, 500);
+    }
+
+    if (!document.getElementById("malik-loader")) {
+        openOnce();
+    } else {
+        document.addEventListener("loader:done", openOnce, { once: true });
+        // cadangan: cek berkala sampai loader benar-benar hilang (maks 60 detik)
+        var tries = 0;
+        var timer = setInterval(function () {
+            var l = document.getElementById("malik-loader");
+            tries++;
+            if (!l || l.classList.contains("hide-loader") || tries > 200) {
+                clearInterval(timer);
+                openOnce();
+            }
+        }, 300);
+    }
+})();
+</script>
+
+<!-- LOGIN REQUIRED MODAL -->
+<div id="login-required-modal" class="login-modal">
+  <div class="login-modal-box">
+    <div class="login-modal-icon">⚡</div>
+    <h3>MALIK BOT ACCOUNT</h3>
+    <p>Silahkan login terlebih dahulu untuk melakukan order dan menyimpan riwayat pesanan.</p>
+    <div class="login-modal-actions">
+      <a href="account/index.html" class="login-go">LOGIN</a>
+      <button onclick="closeLoginModal()">Nanti</button>
+    </div>
+  </div>
+</div>
+
+<style>
+.login-modal{
+ display:none;
+ position:fixed;
+ inset:0;
+ background:rgba(0,0,0,.75);
+ backdrop-filter:blur(8px);
+ z-index:99999;
+ align-items:center;
+ justify-content:center;
+ padding:20px;
+}
+.login-modal.show{display:flex}
+.login-modal-box{
+ width:100%;
+ max-width:360px;
+ background:#0b0b0b;
+ color:white;
+ border:3px solid #00ff66;
+ padding:28px;
+ text-align:center;
+ box-shadow:8px 8px 0 #000;
+}
+.login-modal-icon{font-size:38px}
+.login-modal-box h3{margin:12px 0;color:#00ff66}
+.login-modal-box p{color:#bbb;line-height:1.5}
+.login-modal-actions{
+ display:flex;
+ gap:12px;
+ margin-top:22px;
+}
+.login-go,.login-modal-actions button{
+ flex:1;
+ padding:12px;
+ border:2px solid #000;
+ font-weight:800;
+ cursor:pointer;
+ text-decoration:none;
+}
+.login-go{
+ background:#00ff66;
+ color:#000;
+}
+.login-modal-actions button{
+ background:#222;
+ color:white;
+}
+</style>
+
+</body>
+</html>

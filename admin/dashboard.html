@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>Dashboard - Malik Admin</title>
+<link rel="stylesheet" href="assets/admin.css">
+<script src="js/notify.js?v=1" data-role="admin" defer></script>
+</head>
+<body>
+<script src="js/admin.js"></script>
+<script>
+Admin.mount("dashboard", "Dashboard", function (v) {
+  var A = Admin, e = A.esc;
+  var dyn = document.createElement("div"); dyn.style.display = "grid"; dyn.style.gap = "18px";
+  var nc = document.createElement("div"); nc.className = "card";
+  v.appendChild(dyn); v.appendChild(nc);
+  function N() { return window.Notify; }
+  function permLabel() {
+    var p = N() ? N().permission() : "unsupported";
+    return { granted: "Aktif", denied: "Diblokir di browser", "default": "Belum diizinkan", unsupported: "Tidak didukung browser ini" }[p];
+  }
+  nc.innerHTML = "<h3>Notifikasi</h3>" +
+    "<div class='bar'><span>Notifikasi browser: <b id='np'></b></span><div class='chips'>" +
+    "<button class='btn sm' id='nen'>Aktifkan</button><button class='btn ghost sm' id='nt1'>Tes notif.mp3</button><button class='btn ghost sm' id='nt2'>Tes chet.mp3</button></div></div>" +
+    "<p class='hint'>Admin mendapat notifikasi saat ada user baru, order baru, dan pesan masuk (suara chat untuk pesan). Buka halaman admin dulu, baru lakukan tes dari sisi user.</p>" +
+    "<h3 style='margin-top:18px'>Kirim Pengumuman ke Semua User</h3>" +
+    "<div style='display:grid;gap:10px'><input id='at' maxlength='80' placeholder='Judul pengumuman'><input id='ab' maxlength='300' placeholder='Isi pengumuman'>" +
+    "<button class='btn' id='asend'>Kirim Pengumuman</button><span class='hint' id='am'></span></div>" +
+    "<h3 style='margin-top:18px'>Riwayat Notifikasi Admin</h3><div class='list' id='nlog'></div>";
+  function drawNotif() {
+    nc.querySelector("#np").textContent = permLabel();
+    var lg = N() ? N().log(6) : [];
+    A.setHTML(nc.querySelector("#nlog"), lg.length ? lg.map(function (x) {
+      return "<div class='li'><span class='av'>" + (x.type === "chat" ? "C" : "N") + "</span><span class='tx'><b>" + e(x.title) + "</b><small>" + e(String(x.body).replace(/\n+/g, " ")) + "</small></span><small class='mut'>" + A.ago(x.at) + "</small></div>";
+    }).join("") : "<div class='empty'>Belum ada notifikasi.</div>");
+  }
+  nc.addEventListener("click", function (ev) {
+    var id = ev.target.closest("button") && ev.target.closest("button").id;
+    if (!N()) return;
+    if (id === "nen") N().ask().then(drawNotif);
+    if (id === "nt1") N().test("general");
+    if (id === "nt2") N().test("chat");
+    if (id === "asend") {
+      var ok = N().announce(nc.querySelector("#at").value, nc.querySelector("#ab").value);
+      nc.querySelector("#am").textContent = ok ? "Terkirim. User yang sedang membuka website akan menerima notifikasi." : "Judul dan isi wajib diisi.";
+      if (ok) { nc.querySelector("#at").value = ""; nc.querySelector("#ab").value = ""; }
+    }
+  });
+  function draw() {
+    var s = A.stats(), o = A.orders().slice(0, 5), t = A.threads().slice(0, 5);
+    var rows = o.length ? o.map(function (x) {
+      return "<tr><td>" + e(x.id) + "</td><td>" + e(x.username) + "</td><td>" + e(x.product) + " <span class='mut'>x" + x.qty + "</span></td><td>" + A.rp(x.price) + "</td><td>" + A.pill(x.status) + "</td></tr>";
+    }).join("") : "<tr><td colspan='5' class='empty'>Belum ada order.</td></tr>";
+    var chats = t.length ? t.map(function (c) {
+      return "<a class='li' href='chat.html?u=" + encodeURIComponent(c.email) + "'><span class='av " + (c.online ? "on" : "") + "'>" + e(c.email[0]) + "</span>" +
+        "<span class='tx'><b>" + e(c.email) + "</b><small>" + e(c.last ? c.last.text : "") + "</small></span>" +
+        (c.unread ? "<span class='bdg'>" + c.unread + "</span>" : "<small class='mut'>" + (c.last ? A.ago(c.last.at) : "") + "</small>") + "</a>";
+    }).join("") : "<div class='empty'>Belum ada chat.</div>";
+    A.setHTML(dyn,
+      "<div class='stats'>" +
+      "<div class='stat'><span class='ic'>" + A.icon("users") + "</span><div><small>Total User</small><b>" + s.users + "</b></div></div>" +
+      "<div class='stat'><span class='ic'>" + A.icon("bag") + "</span><div><small>Total Order</small><b>" + s.orders + "</b></div></div>" +
+      "<div class='stat'><span class='ic'>" + A.icon("cash") + "</span><div><small>Total Pendapatan</small><b>" + A.rp(s.revenue) + "</b></div></div>" +
+      "<div class='stat'><span class='ic'>" + A.icon("pulse") + "</span><div><small>User Online</small><b>" + s.online + "</b></div></div></div>" +
+      "<div class='bar'><span class='hint'>Pendapatan = order berstatus Selesai. Mode data: " + (A.demoOn() ? "Demo + data asli" : "Data asli saja") + ".</span>" +
+      "<button class='btn ghost sm' data-demo>" + (A.demoOn() ? "Matikan data demo" : "Nyalakan data demo") + "</button></div>" +
+      "<div class='cols'><div class='card'><h3>Order Terbaru</h3><div class='tw'><table><thead><tr><th>ID</th><th>User</th><th>Produk</th><th>Harga</th><th>Status</th></tr></thead><tbody>" + rows + "</tbody></table></div></div>" +
+      "<div class='card'><h3>Chat Terbaru</h3><div class='list'>" + chats + "</div></div></div>");
+  }
+  v.addEventListener("click", function (ev) {
+    if (ev.target.closest("[data-demo]")) { A.setDemo(!A.demoOn()); draw(); }
+  });
+  draw(); drawNotif(); A.onTick(function () { draw(); drawNotif(); });
+});
+</script>
+</body>
+</html>

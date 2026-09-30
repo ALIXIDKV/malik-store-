@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout - Malik Store</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+margin:0;
+min-height:100vh;
+font-family:Arial,sans-serif;
+color:#fff;
+background:
+linear-gradient(rgba(4,10,25,.82),rgba(4,10,25,.95)),
+url("../../assets/image/login-bg.jpg");
+background-size:cover;
+background-position:center;
+padding:20px;
+}
+
+.checkout{
+max-width:430px;
+margin:auto;
+padding:24px;
+background:rgba(15,20,35,.8);
+border:1px solid rgba(0,255,170,.3);
+border-radius:25px;
+backdrop-filter:blur(15px);
+}
+
+.header{
+text-align:center;
+margin-bottom:25px;
+}
+
+.header h1{
+margin:0;
+font-size:32px;
+}
+
+.header span{
+color:#00ff66;
+}
+
+.header p{
+color:#aaa;
+}
+
+.product{
+background:#111827;
+padding:20px;
+border-radius:18px;
+border:1px solid #263244;
+}
+
+.tag{
+color:#9ca3af;
+font-size:13px;
+}
+
+.product h2{
+margin:10px 0;
+}
+
+.price{
+font-size:26px;
+color:#00ff66;
+font-weight:bold;
+}
+
+.features{
+display:flex;
+gap:8px;
+flex-wrap:wrap;
+margin-top:15px;
+}
+
+.features div{
+background:#172033;
+padding:8px 12px;
+border-radius:20px;
+font-size:12px;
+}
+
+.box{
+margin-top:18px;
+background:#111827;
+padding:18px;
+border-radius:18px;
+}
+
+input, textarea{
+width:100%;
+padding:14px;
+margin-top:10px;
+background:#0b1220;
+border:1px solid #334155;
+border-radius:12px;
+color:white;
+}
+
+.limit{
+display:flex;
+align-items:center;
+justify-content:space-between;
+margin-top:12px;
+}
+
+.limit button{
+width:45px;
+height:40px;
+border:0;
+border-radius:10px;
+background:#00ff66;
+}
+
+.summary div{
+display:flex;
+justify-content:space-between;
+margin:10px 0;
+}
+
+.total{
+color:#00ff66;
+font-size:22px;
+font-weight:bold;
+}
+
+.action{
+width:100%;
+padding:16px;
+margin-top:20px;
+border:0;
+border-radius:15px;
+font-weight:bold;
+background:linear-gradient(90deg,#00ff66,#00d9ff);
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="checkout">
+
+<div class="header">
+<h1>MALIK<span>STORE</span></h1>
+<p>Checkout Pesanan</p>
+</div>
+
+<div class="product">
+<div class="tag">Produk Dipilih</div>
+<h2>Open Panel RAM 1GB</h2>
+<div class="price">Rp1.000 / bulan</div>
+
+<div class="features">
+<div>⚡ Auto Setup</div>
+<div>🛡 Legal Panel</div>
+<div>🚀 Server 24/7</div>
+</div>
+</div>
+
+<div class="box">
+<h3>Detail Pesanan</h3>
+
+<label>Nama Panel</label>
+<input placeholder="contoh: Malik Server">
+
+<label>Catatan</label>
+<textarea placeholder="Catatan tambahan"></textarea>
+
+<div class="limit">
+<span>Jumlah Limit</span>
+<div>
+<button>-</button>
+<b style="margin:0 15px">1</b>
+<button>+</button>
+</div>
+</div>
+
+</div>
+
+<div class="box summary">
+<h3>Ringkasan</h3>
+
+<div>
+<span>Produk</span>
+<span>Panel 1GB</span>
+</div>
+
+<div>
+<span>Setup</span>
+<span>Gratis</span>
+</div>
+
+<div class="total">
+<span>Total</span>
+<span>Rp1.000</span>
+</div>
+
+</div>
+
+<button class="action">
+⚡ BUAT PESANAN
+</button>
+
+</div>
+
+</body>
+</html>

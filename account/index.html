@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Malik Store Account</title>
+
+<style>
+@font-face{
+    font-family:Malik;
+    src:url("../assets/font/font.ttf");
+}
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    min-height:100vh;
+    background:
+    linear-gradient(rgba(3,8,20,.78),rgba(3,8,20,.92)),
+    url("../assets/image/login-bg.jpg");
+    background-size:cover;
+    background-position:center;
+    color:white;
+    font-family:Malik,Arial,sans-serif;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+
+.auth-box{
+    width:100%;
+    max-width:390px;
+    padding:35px 28px;
+    border-radius:22px;
+    background:rgba(255,255,255,.08);
+    backdrop-filter:blur(15px);
+    border:1px solid rgba(0,255,255,.35);
+    box-shadow:0 0 40px rgba(0,200,255,.25);
+}
+
+.brand{
+    text-align:center;
+}
+
+.brand h1{
+    margin:0;
+    font-size:34px;
+    letter-spacing:2px;
+}
+
+.brand span{
+    color:#00ff66;
+}
+
+.brand p{
+    color:#b8c1d1;
+    letter-spacing:3px;
+    font-size:13px;
+}
+
+.page-title{
+    text-align:center;
+    margin:35px 0 20px;
+}
+
+.field{
+    margin-bottom:18px;
+}
+
+.field label{
+    display:block;
+    margin-bottom:8px;
+    color:#d8d8d8;
+}
+
+input{
+    width:100%;
+    padding:15px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,.25);
+    background:rgba(0,0,0,.35);
+    color:white;
+    outline:none;
+}
+
+input:focus{
+    border-color:#00ff66;
+}
+
+button{
+    width:100%;
+    padding:15px;
+    margin-top:10px;
+    border:0;
+    border-radius:12px;
+    background:linear-gradient(90deg,#00ff66,#00d9ff);
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.link{
+    text-align:center;
+    margin-top:22px;
+    color:#ddd;
+}
+
+a{
+    color:#00ff66;
+}
+
+.hide{
+    display:none;
+}
+
+.msg{
+    min-height:18px;
+    margin:0;
+    color:#ff6b6b;
+    font-size:13px;
+    text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<div class="auth-box">
+
+<div class="brand">
+<h1>MALIK<span>STORE</span></h1>
+<p>DIGITAL SERVICE HUB</p>
+</div>
+
+
+<div id="login">
+<h2 class="page-title">Masuk Akun</h2>
+
+<div class="field">
+<label>Email</label>
+<input id="login-email" type="email" placeholder="email@gmail.com" autocomplete="email">
+</div>
+
+<div class="field">
+<label>Password</label>
+<input id="login-pass" type="password" placeholder="Password" autocomplete="current-password">
+</div>
+
+<p id="auth-msg" class="msg" role="alert"></p>
+<button onclick="doLogin()">LOGIN</button>
+
+<div class="link">
+Belum punya akun?
+<a onclick="registerPage()">Daftar</a>
+</div>
+</div>
+
+
+<div id="register" class="hide">
+<h2 class="page-title">Buat Akun</h2>
+
+<div class="field">
+<label>Email</label>
+<input id="reg-email" type="email" placeholder="email@gmail.com" autocomplete="email">
+</div>
+
+<div class="field">
+<label>Password</label>
+<input id="reg-pass" type="password" placeholder="Password (min. 6 karakter)" autocomplete="new-password">
+</div>
+
+<button onclick="doRegister()">DAFTAR</button>
+
+<div class="link">
+Sudah punya akun?
+<a onclick="loginPage()">Login</a>
+</div>
+</div>
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/auth.js"></script>
+<script>
+const login=document.getElementById("login");
+const register=document.getElementById("register");
+const verify=document.getElementById("verify");
+
+function loginPage(){
+login.classList.remove("hide");
+register.classList.add("hide");
+verify.classList.add("hide");
+}
+
+function registerPage(){
+login.classList.add("hide");
+register.classList.remove("hide");
+verify.classList.add("hide");
+}
+
+function verifyPage(){
+register.classList.add("hide");
+verify.classList.remove("hide");
+}
+
+const $ = (id) => document.getElementById(id);
+const say = (t) => { $("auth-msg").textContent = t || ""; };
+
+// Setelah login: lanjut ke order (paket yang tadi dipilih dibawa serta), atau ke beranda.
+function afterLogin(){
+  const pending = MalikAuth.takePending();
+  location.href = pending ? MalikAuth.orderUrl(pending) : "dashboard/index.html";
+}
+
+async function doLogin(){
+  const r = await MalikAuth.login($("login-email").value, $("login-pass").value);
+  r.ok ? afterLogin() : say(r.message);
+}
+
+let pendingReg = null;
+function doRegister(){
+  const email = $("reg-email").value.trim(), pass = $("reg-pass").value;
+  if(!/^\S+@\S+\.\S+$/.test(email)) return alert("Email tidak valid.");
+  if(pass.length < 6) return alert("Password minimal 6 karakter.");
+  pendingReg = { email, pass };
+  verifyPage();
+}
+
+// TODO(backend): kirim & cek OTP ke server. Sementara hanya cek format 6 digit.
+async function doVerify(){
+  if(!/^\d{6}$/.test($("otp").value.trim())) return alert("Masukkan 6 digit kode OTP.");
+  const r = await MalikAuth.register(pendingReg.email, pendingReg.pass);
+  if(!r.ok){ alert(r.message); loginPage(); return; }
+  await MalikAuth.login(pendingReg.email, pendingReg.pass);
+  afterLogin();
+}
+
+// Sudah login? langsung lanjut.
+if(MalikAuth.isLoggedIn()) afterLogin();
+</script>
+
+</body>
+</html>

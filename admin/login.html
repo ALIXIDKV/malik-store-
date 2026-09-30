@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>Login Admin - Malik Store</title>
+<link rel="stylesheet" href="assets/admin.css">
+</head>
+<body class="login-body">
+<div class="lbox">
+  <div class="brand">MALIK<span>STORE</span><small>ADMIN PANEL</small></div>
+  <h2>MASUK ADMIN</h2>
+  <div class="fld"><label for="id">Username atau Email</label><input id="id" type="text" autocomplete="username" placeholder="Username / email" style="width:100%"></div>
+  <div class="fld"><label for="pw">Password</label><input id="pw" type="password" autocomplete="current-password" placeholder="Password" style="width:100%"></div>
+  <p class="err" id="err" role="alert"></p>
+  <button class="btn" id="go" type="button">LOGIN</button>
+</div>
+<script src="js/admin.js"></script>
+<script>
+if (Admin.isLoggedIn()) location.replace("dashboard.html");
+var $ = function (i) { return document.getElementById(i); };
+async function go() {
+  $("go").disabled = true; $("err").textContent = "";
+  var r = await Admin.login($("id").value, $("pw").value);
+  if (r.ok) { location.replace("dashboard.html"); return; }
+  $("err").textContent = r.message; $("go").disabled = false;
+}
+$("go").onclick = go;
+["id", "pw"].forEach(function (i) { $(i).addEventListener("keydown", function (e) { if (e.key === "Enter") go(); }); });
+</script>
+</body>
+</html>

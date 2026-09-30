@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order - Malik Store</title>
+<style>
+@font-face{font-family:Malik;src:url("../assets/font/font.ttf")}
+:root{--g:#00ff66;--c:#00d9ff;--bg:#050a14;--card:#0d1627;--line:#1f2d45;--mut:#9aa7bd}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;min-height:100vh;color:#fff;font-family:Malik,Arial,sans-serif;padding-bottom:110px;
+background:linear-gradient(rgba(3,8,20,.82),rgba(3,8,20,.96)),url("../assets/image/login-bg.jpg") center/cover fixed}
+.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(5,10,20,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.logo{font-size:18px;font-weight:bold;letter-spacing:2px;text-decoration:none;color:#fff}.logo span{color:var(--g)}
+.usr{font-size:11px;color:var(--mut);max-width:48%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wrap{max-width:520px;margin:0 auto;padding:16px}
+.crumb{font-size:12px;color:var(--mut);margin:2px 0 12px}.crumb a{color:var(--c);text-decoration:none}
+.hero{position:relative;height:190px;border-radius:20px;overflow:hidden;border:1px solid rgba(0,255,200,.3);
+background:radial-gradient(circle at 25% 20%,rgba(0,255,102,.35),transparent 55%),radial-gradient(circle at 80% 80%,rgba(0,217,255,.35),transparent 55%),#08111f;
+display:flex;align-items:center;justify-content:center;box-shadow:0 0 34px rgba(0,217,255,.18)}
+.hero:before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:26px 26px}
+.chip{position:relative;text-align:center}
+.chip .ram{font-size:54px;font-weight:bold;line-height:1;background:linear-gradient(90deg,var(--g),var(--c));-webkit-background-clip:text;background-clip:text;color:transparent}
+.chip small{display:block;margin-top:8px;letter-spacing:3px;color:#cfe;font-size:11px}
+.badge{position:absolute;top:12px;left:12px;background:var(--g);color:#000;font-size:11px;font-weight:bold;padding:5px 10px;border-radius:20px;z-index:1}
+h2{margin:18px 0 4px;font-size:24px;line-height:1.2}
+.price{font-size:26px;color:var(--g);font-weight:bold}.price small{font-size:13px;color:var(--mut);font-weight:normal}
+.meta{margin:12px 0;font-size:13px;color:var(--mut)}.meta b{color:#fff}.meta i{font-style:normal;color:var(--c)}
+.card{background:rgba(13,22,39,.92);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:14px}
+.card h3{margin:0 0 12px;font-size:14px;letter-spacing:1px;color:var(--c);text-transform:uppercase}
+.feat{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.feat li{display:flex;gap:10px;align-items:center;font-size:14px}
+.feat li:before{content:"✓";flex:none;width:22px;height:22px;border-radius:50%;background:rgba(0,255,102,.15);border:1px solid var(--g);color:var(--g);font-size:12px;display:flex;align-items:center;justify-content:center}
+.qty{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.qty label{font-size:14px}.qty small{display:block;color:var(--mut);font-size:11px;margin-top:2px}
+.step{display:flex;align-items:center;gap:6px}
+.step button{width:42px;height:42px;border:1px solid var(--line);border-radius:10px;background:#16233a;color:#fff;font-size:20px;cursor:pointer}
+.step button:active{background:var(--g);color:#000}
+.step input{width:56px;height:42px;text-align:center;border-radius:10px;border:1px solid var(--line);background:#0a1424;color:#fff;font:inherit;font-size:16px}
+.sum{display:grid;gap:10px;font-size:14px}.sum div{display:flex;justify-content:space-between;gap:12px}.sum span:first-child{color:var(--mut)}
+.sum .tot{border-top:1px dashed var(--line);padding-top:12px;font-size:16px}.sum .tot span:last-child{color:var(--g);font-size:22px;font-weight:bold}
+textarea{width:100%;padding:13px;border-radius:12px;border:1px solid var(--line);background:#0a1424;color:#fff;font:inherit;font-size:14px;resize:vertical;outline:none}
+textarea:focus{border-color:var(--g)}
+.tabs{display:flex;gap:18px;border-bottom:1px solid var(--line);margin-top:18px}
+.tabs span{padding:10px 0;font-size:14px;color:var(--mut)}.tabs span.on{color:#fff;border-bottom:2px solid var(--g)}
+.empty{font-size:13px;color:var(--mut);padding:14px 0}
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:6;background:rgba(5,10,20,.96);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px))}
+.bar div{max-width:520px;margin:0 auto;display:flex;align-items:center;gap:14px}
+.bar .t{flex:none;font-size:11px;color:var(--mut)}.bar .t b{display:block;font-size:18px;color:var(--g)}
+.go{flex:1;padding:15px;border:0;border-radius:12px;font:inherit;font-weight:bold;font-size:14px;cursor:pointer;background:linear-gradient(90deg,var(--g),var(--c));color:#000;box-shadow:0 0 20px rgba(0,255,150,.35)}
+.link,.out{display:block;width:100%;padding:14px;margin-top:10px;border:0;border-radius:12px;text-align:center;text-decoration:none;font:inherit;font-weight:bold;font-size:14px;cursor:pointer;background:rgba(255,255,255,.1);color:#fff}
+.ok{display:none;text-align:center;padding:30px 20px}.ok .tick{width:70px;height:70px;margin:0 auto 14px;border-radius:50%;background:rgba(0,255,102,.15);border:2px solid var(--g);color:var(--g);font-size:34px;display:flex;align-items:center;justify-content:center}
+.ok b{color:var(--g)}
+.empty-state{display:none;text-align:center;padding:50px 20px}
+</style>
+</head>
+<body>
+<div class="top"><a class="logo" href="../index.html">MALIK<span>STORE</span></a><span class="usr" id="user"></span></div>
+
+<div class="wrap">
+  <div id="shop">
+    <div class="crumb"><a href="../index.html">Beranda</a> / <a href="../index.html#harga-panel">Produk</a> / <span id="crumb"></span></div>
+
+    <div class="hero"><span class="badge">LEGAL PANEL</span>
+      <div class="chip"><div class="ram" id="ram">—</div><small>PTERODACTYL PANEL</small></div>
+    </div>
+
+    <h2 id="pname">-</h2>
+    <div class="price"><span id="pprice"></span> <small>/ bulan</small></div>
+    <div class="meta">Kategori: <i id="pcat">Panel</i> &nbsp;•&nbsp; Stok: <b>Tersedia</b></div>
+
+    <div class="card"><h3>Detail Produk</h3>
+      <ul class="feat"><li>Auto Setup</li><li>Server 24/7</li><li>Support</li><li>Legal Panel</li></ul>
+    </div>
+
+    <div class="card"><h3>Jumlah Pembelian</h3>
+      <div class="qty">
+        <div><label for="qty">Jumlah Limit</label><small>Maksimal 99</small></div>
+        <div class="step"><button type="button" id="minus" aria-label="Kurangi">−</button><input id="qty" type="number" inputmode="numeric" min="1" max="99" value="1"><button type="button" id="plus" aria-label="Tambah">+</button></div>
+      </div>
+    </div>
+
+    <div class="card"><h3>Ringkasan</h3>
+      <div class="sum">
+        <div><span>Produk</span><span id="s-name"></span></div>
+        <div><span>Harga satuan</span><span id="s-unit"></span></div>
+        <div><span>Beli</span><span id="s-qty"></span></div>
+        <div><span>Setup</span><span>Gratis</span></div>
+        <div class="tot"><span>Total</span><span id="s-total"></span></div>
+      </div>
+    </div>
+
+    <div class="card"><h3>Catatan</h3><textarea id="note" rows="2" placeholder="Catatan (opsional)"></textarea></div>
+
+    <div class="tabs"><span class="on">Detail</span><span>Ulasan (0)</span></div>
+    <div class="empty">Belum ada ulasan untuk produk ini.</div>
+
+    <a class="link" href="../index.html#harga-panel">Pilih paket lain</a>
+    <button class="out" onclick="MalikAuth.logout();location.href=MalikAuth.pages.account">Keluar</button>
+  </div>
+
+  <div class="empty-state" id="none">
+    <p>Belum ada paket dipilih.</p>
+    <a class="link" href="../index.html#harga-panel">Lihat daftar paket</a>
+  </div>
+
+  <div class="card ok" id="done">
+    <div class="tick">✓</div>
+    <p>Order tercatat 🎉<br>ID: <b id="oid"></b></p>
+    <p style="color:var(--mut);font-size:13px" id="osum"></p>
+    <a class="link" href="../index.html">Kembali ke beranda</a>
+  </div>
+</div>
+
+<div class="bar" id="bar"><div>
+  <span class="t">Total<b id="b-total"></b></span>
+  <button class="go" id="confirm" type="button" onclick="confirmOrder()">KONFIRMASI ORDER</button>
+</div></div>
+
+<script src="../js/auth.js?v=5"></script>
+<script src="../js/notify.js?v=1" defer></script>
+<script>
+// Halaman ini hanya untuk user yang sudah login.
+if(!MalikAuth.isLoggedIn()) location.replace(MalikAuth.pages.account);
+
+const params = new URLSearchParams(location.search);
+const order = { product: (params.get("product") || "").slice(0, 80), price: Number(params.get("price")) || 0 };
+const $ = id => document.getElementById(id);
+const rp = n => "Rp" + n.toLocaleString("id-ID");
+let qty = 1;
+
+$("user").textContent = (MalikAuth.currentUser() || {}).email || "";
+
+if(!order.product || !order.price){
+  $("shop").style.display = "none"; $("bar").style.display = "none"; $("none").style.display = "block";
+}else{
+  const name = order.product;
+  const m = name.match(/RAM\s+(\S+)/i);
+  $("pname").textContent = name;
+  $("crumb").textContent = name;
+  $("pprice").textContent = rp(order.price);
+  $("ram").textContent = m ? m[1].toUpperCase() : (/RESELLER/i.test(name) ? "RESELLER" : /ADMIN/i.test(name) ? "ADMIN" : "PANEL");
+  $("pcat").textContent = /RESELLER|ADMIN/i.test(name) ? "Reseller & Admin" : "Open Panel";
+  $("s-name").textContent = name;
+  $("s-unit").textContent = rp(order.price);
+  render();
+}
+
+function render(){
+  $("qty").value = qty;
+  $("s-qty").textContent = qty + " Limit";
+  const total = order.price * qty;
+  $("s-total").textContent = rp(total);
+  $("b-total").textContent = rp(total);
+}
+function setQty(v){ v = parseInt(v, 10); qty = Math.min(99, Math.max(1, isNaN(v) ? 1 : v)); render(); }
+$("minus").onclick = () => setQty(qty - 1);
+$("plus").onclick = () => setQty(qty + 1);
+$("qty").onchange = e => setQty(e.target.value);
+
+// TODO(backend): kirim order ke server / payment gateway. Sementara disimpan di browser.
+function confirmOrder(){
+  const total = order.price * qty;
+  const saved = MalikAuth.saveOrder({
+    product: order.product + " x" + qty,
+    price: total,
+    note: $("note").value.trim()
+  });
+  $("oid").textContent = saved.id;
+  try { window.Notify && Notify.check(); } catch (e) {}   // notifikasi "Order Berhasil"
+  $("osum").textContent = order.product + " • " + qty + " Limit • " + rp(total);
+  $("shop").style.display = "none"; $("bar").style.display = "none"; $("done").style.display = "block";
+  window.scrollTo(0, 0);
+}
+</script>
+</body>
+</html>

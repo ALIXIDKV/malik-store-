@@ -1,0 +1,9 @@
+{
+  "name": "malik-store",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "echo \"Static HTML project - use Vercel preview\"",
+    "build": "echo \"No build required\""
+  }
+}

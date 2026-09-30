@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>Orders - Malik Admin</title>
+<link rel="stylesheet" href="assets/admin.css">
+<script src="js/notify.js?v=1" data-role="admin" defer></script>
+</head>
+<body>
+<script src="js/admin.js"></script>
+<script>
+Admin.mount("orders", "Orders", function (v) {
+  var A = Admin, e = A.esc, f = "Semua", q = "";
+  v.innerHTML = "<div class='bar'><div class='chips' id='chips'></div><input class='s' id='q' type='search' placeholder='Cari ID / user / produk...'></div><div id='tw'></div>";
+  var tw = v.querySelector("#tw"), chips = v.querySelector("#chips");
+  function draw() {
+    var all = A.orders();
+    A.setHTML(chips, ["Semua"].concat(A.STATUSES).map(function (s) {
+      var n = s === "Semua" ? all.length : all.filter(function (o) { return o.status === s; }).length;
+      return "<button class='chip " + (f === s ? "on" : "") + "' data-f='" + s + "'>" + s + " (" + n + ")</button>";
+    }).join(""));
+    var list = all.filter(function (o) {
+      return (f === "Semua" || o.status === f) && (o.id + " " + o.username + " " + o.email + " " + o.product).toLowerCase().indexOf(q) > -1;
+    });
+    var rows = list.map(function (o) {
+      return "<tr><td><b>" + e(o.id) + "</b>" + (o.demo ? "<span class='demo'>DEMO</span>" : "") + "</td><td>" + e(o.username) + "</td>" +
+        "<td>" + e(o.product) + " <span class='mut'>x" + o.qty + "</span>" + (o.note ? "<br><small class='mut'>" + e(o.note) + "</small>" : "") + "</td>" +
+        "<td class='g'><b>" + A.rp(o.price) + "</b></td>" +
+        "<td><select class='st' data-id='" + e(o.id) + "'>" + A.STATUSES.map(function (s) { return "<option" + (s === o.status ? " selected" : "") + ">" + s + "</option>"; }).join("") + "</select></td>" +
+        "<td class='mut'>" + A.fmt(o.createdAt) + "</td></tr>";
+    }).join("") || "<tr><td colspan='6' class='empty'>Tidak ada order.</td></tr>";
+    A.setHTML(tw, "<div class='tw'><table><thead><tr><th>ID Order</th><th>Username</th><th>Produk</th><th>Harga</th><th>Status</th><th>Waktu</th></tr></thead><tbody>" + rows + "</tbody></table></div>");
+  }
+  v.querySelector("#q").addEventListener("input", function (ev) { q = ev.target.value.trim().toLowerCase(); draw(); });
+  v.addEventListener("click", function (ev) { var b = ev.target.closest("[data-f]"); if (b) { f = b.getAttribute("data-f"); draw(); } });
+  tw.addEventListener("change", function (ev) {
+    var s = ev.target.closest("select[data-id]"); if (!s) return;
+    A.setStatus(s.getAttribute("data-id"), s.value); tw.__h = null; draw();
+  });
+  draw(); A.onTick(draw);
+});
+</script>
+</body>
+</html>
