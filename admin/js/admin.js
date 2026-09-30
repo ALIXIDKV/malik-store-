@@ -66,7 +66,10 @@
   async function login(email, pw) {
     if (!sb()) return { ok: false, message: "Koneksi database belum siap." };
     var r = await sb().auth.signInWithPassword({ email: String(email || "").trim().toLowerCase(), password: String(pw || "") });
-    if (r.error) return { ok: false, message: /invalid login/i.test(r.error.message) ? "Email atau password salah." : r.error.message };
+    if (r.error) {
+      console.error("[Malik][admin login] Supabase error:", { name: r.error.name, status: r.error.status, code: r.error.code, message: r.error.message });
+      return { ok: false, message: (r.error.code === "invalid_credentials" || /invalid login/i.test(r.error.message)) ? "Email atau password salah." : r.error.message };
+    }
     if (!(await adminSession())) { await sb().auth.signOut(); return { ok: false, message: "Akun ini bukan admin." }; }
     return { ok: true };
   }

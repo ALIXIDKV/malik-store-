@@ -150,6 +150,7 @@ a{
 </div>
 
 <p id="auth-msg" class="msg" role="alert"></p>
+<pre id="auth-debug" class="hide" style="white-space:pre-wrap;word-break:break-all;font-size:11px;color:#9fe;background:rgba(0,0,0,.45);padding:10px;border-radius:10px;margin:8px 0 0"></pre>
 <button onclick="doLogin()">LOGIN</button>
 
 <div class="link">
@@ -184,8 +185,8 @@ Sudah punya akun?
 
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../js/supabase.js?v=6"></script>
-<script src="../js/auth.js?v=6"></script>
+<script src="../js/supabase.js?v=7"></script>
+<script src="../js/auth.js?v=7"></script>
 <script>
 const login=document.getElementById("login");
 const register=document.getElementById("register");
@@ -202,6 +203,8 @@ register.classList.remove("hide");
 
 const $ = (id) => document.getElementById(id);
 const say = (t) => { $("auth-msg").textContent = t || ""; };
+// Mode debug: buka halaman ini dengan ?debug=1 untuk melihat error Supabase asli + diagnosa koneksi.
+const dbg = (o) => { if(!MalikAuth.debug) return; const el = $("auth-debug"); el.classList.remove("hide"); el.textContent = typeof o === "string" ? o : JSON.stringify(o, null, 2); };
 let busy = false;
 
 // Setelah login: lanjut ke order (paket yang tadi dipilih dibawa serta), atau ke dashboard.
@@ -214,7 +217,9 @@ async function doLogin(){
   if(busy) return; busy = true; say("");
   const r = await MalikAuth.login($("login-email").value, $("login-pass").value);
   busy = false;
-  r.ok ? afterLogin() : say(r.message);
+  if(r.ok){ afterLogin(); return; }
+  say(r.message);
+  if(MalikAuth.debug) dbg({ supabaseError: r.raw, diagnosa: await MalikAuth.diagnose() });
 }
 
 // Register: Supabase Auth -> profil dibuat otomatis di tabel profiles (trigger database).
@@ -226,7 +231,7 @@ async function doRegister(){
   busy = true;
   const r = await MalikAuth.register(email, pass);
   busy = false;
-  if(!r.ok){ alert(r.message); return; }
+  if(!r.ok){ alert(r.message); if(MalikAuth.debug) dbg({ supabaseError: r.raw }); return; }
   if(r.needsConfirm){
     alert("Pendaftaran berhasil. Cek email kamu untuk konfirmasi, lalu login.");
     $("login-email").value = email; loginPage(); return;
@@ -236,6 +241,7 @@ async function doRegister(){
 
 // Sudah login? langsung lanjut.
 MalikAuth.isLoggedIn().then(function(ok){ if(ok) afterLogin(); });
+if(MalikAuth.debug) MalikAuth.diagnose().then(dbg);
 </script>
 
 </body>

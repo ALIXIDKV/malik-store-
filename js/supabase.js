@@ -15,6 +15,8 @@
   "use strict";
   var SUPABASE_URL = "https://cykthicacntgjhptbfzu.supabase.co";
   var SUPABASE_KEY = "sb_publishable_XOfLKCrIEpTssI-le_Zk3Q_Jxv2F7PZ";
+  // Dipakai js/auth.js untuk diagnosa (?debug=1). Keduanya publik, aman di frontend.
+  g.MALIK_SB_CONFIG = { url: SUPABASE_URL, key: SUPABASE_KEY };
 
   // Bersihkan sisa data sistem lama (tahap localStorage): akun, order, chat, hash password.
   try {
