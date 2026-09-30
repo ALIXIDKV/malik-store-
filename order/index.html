@@ -96,7 +96,7 @@ textarea:focus{border-color:var(--g)}
     <div class="empty">Belum ada ulasan untuk produk ini.</div>
 
     <a class="link" href="../index.html#harga-panel">Pilih paket lain</a>
-    <button class="out" onclick="MalikAuth.logout();location.href=MalikAuth.pages.account">Keluar</button>
+    <button class="out" onclick="MalikAuth.logout().then(function(){location.href=MalikAuth.pages.account})">Keluar</button>
   </div>
 
   <div class="empty-state" id="none">
@@ -117,11 +117,12 @@ textarea:focus{border-color:var(--g)}
   <button class="go" id="confirm" type="button" onclick="confirmOrder()">KONFIRMASI ORDER</button>
 </div></div>
 
-<script src="../js/auth.js?v=5"></script>
-<script src="../js/notify.js?v=1" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js?v=6"></script>
+<script src="../js/auth.js?v=6"></script>
+<script src="../js/notify.js?v=2" defer></script>
 <script>
-// Halaman ini hanya untuk user yang sudah login.
-if(!MalikAuth.isLoggedIn()) location.replace(MalikAuth.pages.account);
+// Halaman ini hanya untuk user yang sudah login (sesi Supabase).
 
 const params = new URLSearchParams(location.search);
 const order = { product: (params.get("product") || "").slice(0, 80), price: Number(params.get("price")) || 0 };
@@ -129,7 +130,7 @@ const $ = id => document.getElementById(id);
 const rp = n => "Rp" + n.toLocaleString("id-ID");
 let qty = 1;
 
-$("user").textContent = (MalikAuth.currentUser() || {}).email || "";
+MalikAuth.requireLogin().then(u => { if(u) $("user").textContent = u.email || ""; });
 
 if(!order.product || !order.price){
   $("shop").style.display = "none"; $("bar").style.display = "none"; $("none").style.display = "block";
@@ -158,17 +159,19 @@ $("minus").onclick = () => setQty(qty - 1);
 $("plus").onclick = () => setQty(qty + 1);
 $("qty").onchange = e => setQty(e.target.value);
 
-// TODO(backend): kirim order ke server / payment gateway. Sementara disimpan di browser.
-function confirmOrder(){
+// Order disimpan ke tabel orders (Supabase). Harga final divalidasi database.
+let sending = false;
+async function confirmOrder(){
+  if(sending) return; sending = true;
+  const btn = $("confirm"); btn.disabled = true; btn.textContent = "MEMPROSES...";
   const total = order.price * qty;
-  const saved = MalikAuth.saveOrder({
-    product: order.product + " x" + qty,
-    price: total,
-    note: $("note").value.trim()
-  });
-  $("oid").textContent = saved.id;
-  try { window.Notify && Notify.check(); } catch (e) {}   // notifikasi "Order Berhasil"
-  $("osum").textContent = order.product + " • " + qty + " Limit • " + rp(total);
+  const r = await MalikAuth.saveOrder({ product: order.product + " x" + qty, price: total, note: $("note").value.trim() });
+  if(!r.ok){
+    sending = false; btn.disabled = false; btn.textContent = "KONFIRMASI ORDER";
+    alert("Order gagal: " + r.message); return;
+  }
+  $("oid").textContent = MalikAuth.orderCode(r.order.id);
+  $("osum").textContent = order.product + " • " + qty + " Limit • " + rp(r.order.price);
   $("shop").style.display = "none"; $("bar").style.display = "none"; $("done").style.display = "block";
   window.scrollTo(0, 0);
 }

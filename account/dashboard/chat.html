@@ -26,38 +26,47 @@ body{margin:0;height:100dvh;display:flex;flex-direction:column;background:#050a1
 <div class="h"><a href="index.html">&larr;</a><div><b>Chat Admin</b><small id="who"></small></div></div>
 <div id="msgs"></div>
 <div class="s"><input id="mi" maxlength="500" placeholder="Tulis pesan..." autocomplete="off"><button id="sb">KIRIM</button></div>
-<script src="../../js/auth.js?v=5"></script>
-<script src="../../js/notify.js?v=1" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../../js/supabase.js?v=6"></script>
+<script src="../../js/auth.js?v=6"></script>
+<script src="../../js/notify.js?v=2" defer></script>
 <script>
-// Chat private per user: tersimpan di malik_chats[email] (sementara localStorage, belum realtime).
-if(!MalikAuth.isLoggedIn()) location.replace(MalikAuth.pages.account);
-const KEY = "malik_chats", me = (MalikAuth.currentUser() || {}).email || "";
+// Chat private per user: tabel messages (user_id = pemilik percakapan), realtime via Supabase.
 const $ = id => document.getElementById(id);
-$("who").textContent = me;
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } };
-let last = "";
+let me = null, msgs = [], last = "";
+
 function draw(force){
-  const t = load()[me], msgs = (t && t.msgs) || [];
-  const html = msgs.length ? msgs.map(m => '<div class="m ' + (m.from === "admin" ? "admin" : "user") + '">' + esc(m.text) +
-    '<small>' + new Date(m.at).toLocaleTimeString("id-ID", {hour: "2-digit", minute: "2-digit"}) + '</small></div>').join("")
+  const html = msgs.length ? msgs.map(m => '<div class="m ' + (m.sender === "admin" ? "admin" : "user") + '">' + esc(m.message) +
+    '<small>' + new Date(m.created_at).toLocaleTimeString("id-ID", {hour: "2-digit", minute: "2-digit"}) + '</small></div>').join("")
     : '<div class="e">Belum ada pesan.<br>Tulis pesan pertama ke admin.</div>';
   if(html === last && !force) return;
   last = html; $("msgs").innerHTML = html; $("msgs").scrollTop = $("msgs").scrollHeight;
 }
-function send(){
+function add(m){
+  if(msgs.some(x => x.id === m.id)) return;
+  msgs.push(m); msgs.sort((a, b) => new Date(a.created_at) - new Date(b.created_at)); draw(true);
+}
+async function send(){
   const text = $("mi").value.trim().slice(0, 500);
   if(!text || !me) return;
-  const all = load(), t = all[me] || { msgs: [], adminSeen: 0 };
-  t.msgs = t.msgs.concat([{ from: "user", text: text, at: Date.now() }]).slice(-300);
-  all[me] = t;
-  try { localStorage.setItem(KEY, JSON.stringify(all)); } catch (e) {}
-  $("mi").value = ""; draw(true);
+  $("mi").value = "";
+  const r = await supabaseClient.from("messages").insert({ user_id: me.id, sender: "user", message: text }).select().single();
+  if(r.error){ $("mi").value = text; alert("Pesan gagal terkirim: " + r.error.message); return; }
+  add(r.data);
+}
+async function init(){
+  me = await MalikAuth.requireLogin(); if(!me) return;
+  $("who").textContent = me.email;
+  const r = await supabaseClient.from("messages").select("*").eq("user_id", me.id).order("created_at", { ascending: true }).limit(300);
+  msgs = r.data || []; draw(true);
+  supabaseClient.channel("chat-" + me.id)
+    .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: "user_id=eq." + me.id }, p => add(p.new))
+    .subscribe();
 }
 $("sb").onclick = send;
 $("mi").addEventListener("keydown", e => { if(e.key === "Enter") send(); });
-draw(true); setInterval(draw, 2500);
-window.addEventListener("storage", () => draw());
+init();
 </script>
 </body>
 </html>

@@ -6,19 +6,22 @@
 <meta name="robots" content="noindex,nofollow">
 <title>Login Admin - Malik Store</title>
 <link rel="stylesheet" href="assets/admin.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>window.MALIK_SB_STORAGE_KEY = "malik-admin-auth";</script>
+<script src="../js/supabase.js?v=6"></script>
 </head>
 <body class="login-body">
 <div class="lbox">
   <div class="brand">MALIK<span>STORE</span><small>ADMIN PANEL</small></div>
   <h2>MASUK ADMIN</h2>
-  <div class="fld"><label for="id">Username atau Email</label><input id="id" type="text" autocomplete="username" placeholder="Username / email" style="width:100%"></div>
+  <div class="fld"><label for="id">Email</label><input id="id" type="email" autocomplete="username" placeholder="Email admin" style="width:100%"></div>
   <div class="fld"><label for="pw">Password</label><input id="pw" type="password" autocomplete="current-password" placeholder="Password" style="width:100%"></div>
   <p class="err" id="err" role="alert"></p>
   <button class="btn" id="go" type="button">LOGIN</button>
 </div>
-<script src="js/admin.js"></script>
+<script src="js/admin.js?v=6"></script>
 <script>
-if (Admin.isLoggedIn()) location.replace("dashboard.html");
+Admin.isLoggedIn().then(function (ok) { if (ok) location.replace("dashboard.html"); });
 var $ = function (i) { return document.getElementById(i); };
 async function go() {
   $("go").disabled = true; $("err").textContent = "";

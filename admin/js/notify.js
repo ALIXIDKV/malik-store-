@@ -1,19 +1,14 @@
 /*
- * MALIK STORE - NOTIFIKASI (tahap UI / localStorage)
+ * MALIK STORE - NOTIFIKASI (Supabase Realtime)
  *
- * Cara kerja: TIDAK mengubah alur login / register / order / chat yang sudah ada.
- * Mesin ini hanya MEMBACA data localStorage, membandingkan dengan "snapshot" terakhir,
- * lalu memunculkan notifikasi untuk perubahan baru (toast + suara + notifikasi browser).
- *
- * Penerima (private per akun):
- *   user  -> hanya order milik emailnya, chat miliknya sendiri, pengumuman
- *   admin -> user baru, order baru, pesan masuk (per user)
- *
+ * Mendengarkan perubahan tabel lewat Supabase Realtime (dibatasi RLS, jadi private per akun):
+ *   user  -> order miliknya (dibuat / status berubah), balasan admin di chat miliknya, pengumuman
+ *   admin -> user baru (profiles), order baru (orders), pesan masuk dari user (messages)
  * Suara: assets/notif/notif.mp3 (umum) dan assets/notif/chet.mp3 (chat).
- * Key localStorage: malik_notif_state, malik_notif_log, malik_notif_perm, malik_announcements
+ * localStorage hanya untuk UI state di perangkat ini: izin notifikasi & riwayat notifikasi.
+ * User online: Supabase Realtime Presence (channel "malik-online").
  *
- * TODO(backend): ganti check() dengan event realtime (Supabase) dan showNotification
- * dengan Push server (FCM / Web Push) - lihat sw.js.
+ * TODO(push): notifikasi saat browser ditutup butuh Web Push server (FCM) - lihat sw.js.
  */
 (function (g) {
   "use strict";
@@ -25,24 +20,13 @@
   var SW = new URL("../sw.js", SRC).href;
   var ROOT = new URL("../", SRC).href;
   var ICON = ROLE === "admin" ? "" : new URL("assets/image/profile.jpg", ROOT).href;
-  var K = { users: "malik_users", session: "malik_session", orders: "malik_orders", status: "malik_order_status",
-            chats: "malik_chats", ann: "malik_announcements", state: "malik_notif_state", log: "malik_notif_log",
-            perm: "malik_notif_perm", admin: "malik_admin_session" };
+  var K = { log: "malik_notif_log", perm: "malik_notif_perm", annSeen: "malik_ann_seen" };
+  var CUR = "_device";   // penerima saat ini: id user / "admin" / "_device"
 
   function read(k, d) { try { var r = localStorage.getItem(k); return r ? JSON.parse(r) : d; } catch (e) { return d; } }
   function write(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } }
   function clip(s, n) { s = String(s == null ? "" : s); return s.length > n ? s.slice(0, n - 1) + "…" : s; }
   function abs(rel) { return new URL(rel, ROLE === "admin" ? location.href : ROOT).href; }
-
-  /* ---------- penerima ---------- */
-  function who() {
-    if (ROLE === "admin") {
-      var a = read(K.admin, null);
-      return a && a.u && Date.now() - a.at < 8 * 3600 * 1000 ? "admin" : null;
-    }
-    var s = read(K.session, null);
-    return s && s.email ? "u:" + s.email : null;
-  }
 
   /* ---------- suara ---------- */
   var auds = {}, unlocked = false, pending = null;
@@ -143,76 +127,101 @@
     toast(n); sys(n);
   }
 
-  /* ---------- snapshot + diff ---------- */
-  function lastFrom(msgs, from) {
-    var r = { at: 0, t: "" };
-    (msgs || []).forEach(function (m) { if (m.from === from && m.at > r.at) r = { at: m.at, t: clip(m.text, 80) }; });
-    return r;
-  }
-  function adminSnap() {
-    var u = read(K.users, {}), o = read(K.orders, []), c = read(K.chats, {}), snap = { users: {}, orders: {}, msgs: {} };
-    Object.keys(u).forEach(function (e) { snap.users[e] = 1; });
-    o.forEach(function (x) { snap.orders[x.id] = { e: x.email, p: x.product }; });
-    Object.keys(c).forEach(function (e) { snap.msgs[e] = lastFrom((c[e] || {}).msgs, "user"); });
-    return snap;
-  }
-  function userSnap(email) {
-    var map = read(K.status, {}), snap = { orders: {}, chat: { at: 0, t: "" }, annAt: 0 };
-    read(K.orders, []).forEach(function (x) { if (x.email === email) snap.orders[x.id] = { s: map[x.id] || "Pending", p: x.product }; });
-    snap.chat = lastFrom(((read(K.chats, {})[email]) || {}).msgs, "admin");
-    read(K.ann, []).forEach(function (a) { if (a.at > snap.annAt) snap.annAt = a.at; });
-    return snap;
-  }
+  /* ---------- Supabase Realtime ---------- */
+  function sb() { return g.supabaseClient; }
   function splitQty(p) { var m = String(p || "").match(/^(.*?)\s+x(\d+)$/i); return m ? { n: m[1], q: Number(m[2]) } : { n: String(p || ""), q: 1 }; }
-
-  function adminDiff(o, c) {
-    var out = [];
-    Object.keys(c.users).forEach(function (e) {
-      if (!o.users[e]) out.push({ type: "general", tag: "usr-" + e, title: "🔔 User Baru", body: e + " baru mendaftar.", url: abs("users.html") });
-    });
-    Object.keys(c.orders).forEach(function (id) {
-      if (o.orders[id]) return;
-      var x = c.orders[id], p = splitQty(x.p);
-      out.push({ type: "general", tag: "ord-" + id, title: "🔔 Order Baru",
-        body: "User:\n" + x.e + "\n\nProduk:\n" + p.n + (p.q > 1 ? " (x" + p.q + ")" : ""), url: abs("orders.html") });
-    });
-    Object.keys(c.msgs).forEach(function (e) {
-      if (c.msgs[e].at > ((o.msgs[e] || {}).at || 0))
-        out.push({ type: "chat", tag: "chat-" + e, title: "🔔 Pesan Masuk", body: e + ":\n" + c.msgs[e].t, url: abs("chat.html?u=" + encodeURIComponent(e)) });
-    });
-    return out;
+  var mails = {};
+  async function emailOf(uid) {
+    if (mails[uid]) return mails[uid];
+    try { var r = await sb().from("profiles").select("email").eq("id", uid).maybeSingle(); if (r.data && r.data.email) return (mails[uid] = r.data.email); } catch (e) {}
+    return "user";
   }
-  function userDiff(o, c) {
-    var out = [], dash = new URL("account/dashboard/", ROOT).href;
-    Object.keys(c.orders).forEach(function (id) {
-      var n = c.orders[id], old = o.orders[id], p = splitQty(n.p).n;
-      if (!old) out.push({ type: "general", tag: "ord-" + id, title: "🔔 Order Berhasil", body: "Pesanan kamu berhasil dibuat.\n" + p, url: dash });
-      else if (old.s !== n.s) out.push({ type: "general", tag: "ord-" + id, title: "🔔 Order Update",
-        body: (n.s === "Selesai" ? "Pesanan kamu sudah selesai." : n.s === "Diproses" ? "Pesanan kamu sedang diproses." : "Status pesanan kamu: " + n.s + ".") + "\n" + p, url: dash });
-    });
-    if (c.chat.at > (o.chat.at || 0)) out.push({ type: "chat", tag: "chat", title: "🔔 Pesan Baru", body: "Admin membalas chat kamu.\n" + c.chat.t, url: dash + "chat.html" });
-    read(K.ann, []).forEach(function (a) {
-      if (a.at > (o.annAt || 0)) out.push({ type: "general", tag: "ann-" + a.at, title: "📢 " + clip(a.title, 60), body: clip(a.body, 200), url: ROOT + "index.html" });
-    });
-    return out;
-  }
+  function dashUrl() { return new URL("account/dashboard/", ROOT).href; }
+  function fire(n) { deliver(n, CUR); }
 
-  function check() {
+  var chans = [], uid = null;
+  function dropChannels() { chans.forEach(function (c) { try { sb().removeChannel(c); } catch (e) {} }); chans = []; }
+
+  function listenUser(id) {
+    var f = "user_id=eq." + id;
+    chans.push(sb().channel("mn-user-" + id)
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "orders", filter: f }, function (p) {
+        fire({ type: "general", tag: "ord-" + p.new.id, title: "🔔 Order Berhasil", body: "Pesanan kamu berhasil dibuat.\n" + splitQty(p.new.product).n, url: dashUrl() });
+      })
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "orders", filter: f }, function (p) {
+        var n = p.new, o = p.old || {};
+        if (o.status !== undefined && o.status === n.status) return;
+        fire({ type: "general", tag: "ord-" + n.id, title: "🔔 Order Update",
+          body: (n.status === "Selesai" ? "Pesanan kamu sudah selesai." : n.status === "Diproses" ? "Pesanan kamu sedang diproses." : "Status pesanan kamu: " + n.status + ".") + "\n" + splitQty(n.product).n, url: dashUrl() });
+      })
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: f }, function (p) {
+        if (p.new.sender !== "admin") return;
+        fire({ type: "chat", tag: "chat", title: "🔔 Pesan Baru", body: "Admin membalas chat kamu.\n" + clip(p.new.message, 80), url: dashUrl() + "chat.html" });
+      })
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "announcements" }, function (p) {
+        fire({ type: "general", tag: "ann-" + p.new.id, title: "📢 " + clip(p.new.title, 60), body: clip(p.new.body, 200), url: ROOT + "index.html" });
+      })
+      .subscribe());
+    // Presence: tandai user ini online untuk panel admin (hanya id, tanpa email)
+    var pc = sb().channel("malik-online", { config: { presence: { key: id } } });
+    pc.subscribe(function (st) { if (st === "SUBSCRIBED") { try { pc.track({ at: Date.now() }); } catch (e) {} } });
+    chans.push(pc);
+    missedAnnouncements();
+  }
+  async function missedAnnouncements() {   // pengumuman yang terbit saat user tidak membuka website
     try {
-      var w = who(); if (!w) return;
-      var all = read(K.state, {}), old = all[w], cur = w === "admin" ? adminSnap() : userSnap(w.slice(2));
-      all[w] = cur; write(K.state, all);          // simpan dulu supaya tab lain tidak menembak dobel
-      if (!old) return;                            // pertama kali: hanya baseline, jangan banjir notifikasi lama
-      var out = w === "admin" ? adminDiff(old, cur) : userDiff(old, cur);
-      out.slice(0, 4).forEach(function (n) { deliver(n, w); });
-      if (out.length > 4) deliver({ type: "general", tag: "more", title: "🔔 Notifikasi", body: "Ada " + (out.length - 4) + " notifikasi lainnya.", url: "" }, w);
+      var seen = localStorage.getItem(K.annSeen);
+      var q = sb().from("announcements").select("*").order("created_at", { ascending: false }).limit(3);
+      if (seen) q = q.gt("created_at", seen);
+      var r = await q;
+      localStorage.setItem(K.annSeen, new Date().toISOString());
+      if (!seen || !r.data) return;
+      r.data.reverse().forEach(function (a) { fire({ type: "general", tag: "ann-" + a.id, title: "📢 " + clip(a.title, 60), body: clip(a.body, 200), url: ROOT + "index.html" }); });
     } catch (e) {}
+  }
+
+  function listenAdmin() {
+    chans.push(sb().channel("mn-admin")
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "profiles" }, function (p) {
+        if (p.new.role === "admin") return;
+        fire({ type: "general", tag: "usr-" + p.new.id, title: "🔔 User Baru", body: (p.new.email || "User") + " baru mendaftar.", url: new URL("users.html", location.href).href });
+      })
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "orders" }, async function (p) {
+        var x = splitQty(p.new.product), e = await emailOf(p.new.user_id);
+        fire({ type: "general", tag: "ord-" + p.new.id, title: "🔔 Order Baru", body: "User:\n" + e + "\n\nProduk:\n" + x.n + (x.q > 1 ? " (x" + x.q + ")" : ""), url: new URL("orders.html", location.href).href });
+      })
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: "sender=eq.user" }, async function (p) {
+        var e = await emailOf(p.new.user_id);
+        fire({ type: "chat", tag: "chat-" + p.new.user_id, title: "🔔 Pesan Masuk", body: e + ":\n" + clip(p.new.message, 80), url: new URL("chat.html?u=" + encodeURIComponent(e), location.href).href });
+      })
+      .subscribe());
+  }
+
+  var refreshing = false;
+  async function refresh() {   // dipanggil saat halaman dibuka & setiap status login berubah
+    if (refreshing || !sb()) return; refreshing = true;
+    try {
+      var r = await sb().auth.getSession(), u = r.data && r.data.session ? r.data.session.user : null;
+      var want = null;
+      if (u) {
+        if (ROLE === "admin") {
+          var pr = await sb().from("profiles").select("role").eq("id", u.id).maybeSingle();
+          if (pr.data && pr.data.role === "admin") want = "admin";
+        } else want = u.id;
+      }
+      if (want !== uid) {
+        dropChannels(); uid = want;
+        CUR = want || "_device";
+        if (want) { if (ROLE === "admin") listenAdmin(); else listenUser(want); }
+      }
+    } catch (e) {}
+    refreshing = false;
   }
 
   /* ---------- izin notifikasi ---------- */
   function permState() { return "Notification" in g ? Notification.permission : "unsupported"; }
   function savePerm(s) {
-    var P = read(K.perm, {}), k = who() || "_device", v = { s: s, at: Date.now() };
+    var P = read(K.perm, {}), k = CUR, v = { s: s, at: Date.now() };
     P[k] = v; if (k !== "_device" && s === "granted") P._device = v; write(K.perm, P);
   }
   function ask() {
@@ -246,7 +255,7 @@
   }
   function promptWhenReady() {
     if (!("Notification" in g)) return;
-    var st = permState(), P = read(K.perm, {}), me = P[who() || "_device"];
+    var st = permState(), P = read(K.perm, {}), me = P[CUR];
     if (st === "granted") {
       if (!me || me.s !== "granted") savePerm("granted");
       if ("serviceWorker" in navigator) navigator.serviceWorker.register(SW).catch(function () {});
@@ -263,26 +272,27 @@
 
   /* ---------- API publik ---------- */
   g.Notify = {
-    role: ROLE, check: check, ask: ask, permission: permState, sound: sound,
+    role: ROLE, ask: ask, permission: permState, sound: sound,
+    check: function () { refresh(); },   // kompatibilitas: cek ulang status login
     test: function (type) {
       unlock();
       deliver({ type: type === "chat" ? "chat" : "general", tag: "test", title: type === "chat" ? "🔔 Pesan Baru (tes)" : "🔔 Order Update (tes)",
         body: type === "chat" ? "Admin membalas chat kamu." : "Pesanan kamu sudah selesai.", url: "" }, null, true);
     },
-    announce: function (title, body) {     // dipanggil dari panel admin
+    announce: async function (title, body) {     // dipanggil dari panel admin -> tabel announcements
       title = clip(String(title || "").trim(), 80); body = clip(String(body || "").trim(), 300);
-      if (!title || !body) return false;
-      var list = read(K.ann, []); list.push({ title: title, body: body, at: Date.now() });
-      return write(K.ann, list.slice(-30));
+      if (!title || !body || !sb()) return false;
+      var r = await sb().from("announcements").insert({ title: title, body: body });
+      return !r.error;
     },
-    log: function (n) { return (read(K.log, {})[who() || ""] || []).slice(0, n || 10); }
+    log: function (n) { return (read(K.log, {})[CUR] || []).slice(0, n || 10); }
   };
 
   function start() {
-    check();
-    setInterval(check, 2000);
-    g.addEventListener("storage", check);
-    document.addEventListener("visibilitychange", function () { if (!document.hidden) check(); });
+    if (sb()) {
+      refresh();
+      sb().auth.onAuthStateChange(function () { setTimeout(refresh, 0); });   // jangan await Supabase di dalam callback ini
+    }
     promptWhenReady();
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();

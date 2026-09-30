@@ -1,5 +1,4 @@
 {
-  "version": 2,
-  "outputDirectory": ".",
-  "cleanUrls": false
+  "cleanUrls": false,
+  "trailingSlash": true
 }

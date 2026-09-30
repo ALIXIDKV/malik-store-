@@ -6,10 +6,13 @@
 <meta name="robots" content="noindex,nofollow">
 <title>Users - Malik Admin</title>
 <link rel="stylesheet" href="assets/admin.css">
-<script src="js/notify.js?v=1" data-role="admin" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>window.MALIK_SB_STORAGE_KEY = "malik-admin-auth";</script>
+<script src="../js/supabase.js?v=6"></script>
+<script src="js/notify.js?v=2" data-role="admin" defer></script>
 </head>
 <body>
-<script src="js/admin.js"></script>
+<script src="js/admin.js?v=6"></script>
 <script>
 Admin.mount("users", "Users", function (v) {
   var A = Admin, e = A.esc, q = "", open = "";
@@ -20,7 +23,7 @@ Admin.mount("users", "Users", function (v) {
     cnt.textContent = "Total " + all.length;
     var rows = list.map(function (u) {
       var isOpen = open === u.email;
-      var r = "<tr><td><b>" + e(u.email) + "</b>" + (u.demo ? "<span class='demo'>DEMO</span>" : "") + "<br><small class='mut'>" + e(u.username) + "</small></td>" +
+      var r = "<tr><td><b>" + e(u.email) + "</b>" + "<br><small class='mut'>" + e(u.username) + "</small></td>" +
         "<td><span class='pill " + (u.online ? "p-on" : "p-off") + "'>" + (u.online ? "Online" : "Offline") + "</span></td>" +
         "<td>" + (u.createdAt ? A.fmt(u.createdAt) : "-") + "</td>" +
         "<td>" + u.orders.length + " order<br><small class='g'>" + A.rp(u.total) + "</small></td>" +
@@ -28,7 +31,7 @@ Admin.mount("users", "Users", function (v) {
         "<a class='btn ghost sm' style='text-decoration:none' href='chat.html?u=" + encodeURIComponent(u.email) + "'>Chat</a></td></tr>";
       if (isOpen) {
         r += "<tr class='sub'><td colspan='5'>" + (u.orders.length ? u.orders.map(function (o) {
-          return "<div class='bar' style='padding:6px 0'><span>" + e(o.id) + " &bull; " + e(o.product) + " x" + o.qty + " <span class='mut'>(" + A.fmt(o.createdAt) + ")</span></span><span>" + A.rp(o.price) + " " + A.pill(o.status) + "</span></div>";
+          return "<div class='bar' style='padding:6px 0'><span>" + e(o.code) + " &bull; " + e(o.product) + " x" + o.qty + " <span class='mut'>(" + A.fmt(o.createdAt) + ")</span></span><span>" + A.rp(o.price) + " " + A.pill(o.status) + "</span></div>";
         }).join("") : "<span class='mut'>Belum ada riwayat order.</span>") + "</td></tr>";
       }
       return r;

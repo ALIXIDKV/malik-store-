@@ -9,12 +9,30 @@ h1 span{color:#00ff66}.btn{display:block;background:#00ff66;color:#000;text-deco
 <body><div class="card">
 <h1>MALIK<span>STORE</span></h1>
 <p>Dashboard User</p>
-<h2>Halo, User 👋</h2>
+<h2>Halo, <span id="uname" style="color:inherit">User</span> 👋</h2>
 <a class="btn" href="order.html" onclick="return checkOrderAccess(event)">ORDER PANEL</a>
 <a class="btn" href="#">RIWAYAT ORDER</a>
 <a class="btn" href="chat.html">CHAT ADMIN</a>
-<a class="btn" href="../">LOGOUT</a>
+<a class="btn" href="../" onclick="return doLogout(event)">LOGOUT</a>
 </div>
-<script src="../../js/auth.js?v=5"></script>
-<script src="../../js/notify.js?v=1" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../../js/supabase.js?v=6"></script>
+<script src="../../js/auth.js?v=6"></script>
+<script src="../../js/notify.js?v=2" defer></script>
+<script>
+// Halaman ini hanya untuk user yang sudah login (sesi Supabase).
+(async function(){
+  const u = await MalikAuth.requireLogin(); if(!u) return;
+  window.__malikOk = true;
+  const p = await MalikAuth.profile();
+  document.getElementById("uname").textContent = (p && p.username) || (u.email || "").split("@")[0] || "User";
+})();
+function checkOrderAccess(e){
+  if(window.__malikOk) return true;
+  e.preventDefault(); location.href = MalikAuth.pages.account; return false;
+}
+async function doLogout(e){
+  e.preventDefault(); await MalikAuth.logout(); location.href = MalikAuth.pages.account; return false;
+}
+</script>
 </body></html>

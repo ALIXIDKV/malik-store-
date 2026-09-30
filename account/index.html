@@ -184,64 +184,58 @@ Sudah punya akun?
 
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../js/supabase.js"></script>
-<script src="../js/auth.js"></script>
+<script src="../js/supabase.js?v=6"></script>
+<script src="../js/auth.js?v=6"></script>
 <script>
 const login=document.getElementById("login");
 const register=document.getElementById("register");
-const verify=document.getElementById("verify");
 
 function loginPage(){
 login.classList.remove("hide");
 register.classList.add("hide");
-verify.classList.add("hide");
 }
 
 function registerPage(){
 login.classList.add("hide");
 register.classList.remove("hide");
-verify.classList.add("hide");
-}
-
-function verifyPage(){
-register.classList.add("hide");
-verify.classList.remove("hide");
 }
 
 const $ = (id) => document.getElementById(id);
 const say = (t) => { $("auth-msg").textContent = t || ""; };
+let busy = false;
 
-// Setelah login: lanjut ke order (paket yang tadi dipilih dibawa serta), atau ke beranda.
+// Setelah login: lanjut ke order (paket yang tadi dipilih dibawa serta), atau ke dashboard.
 function afterLogin(){
   const pending = MalikAuth.takePending();
   location.href = pending ? MalikAuth.orderUrl(pending) : "dashboard/index.html";
 }
 
 async function doLogin(){
+  if(busy) return; busy = true; say("");
   const r = await MalikAuth.login($("login-email").value, $("login-pass").value);
+  busy = false;
   r.ok ? afterLogin() : say(r.message);
 }
 
-let pendingReg = null;
-function doRegister(){
+// Register: Supabase Auth -> profil dibuat otomatis di tabel profiles (trigger database).
+async function doRegister(){
+  if(busy) return;
   const email = $("reg-email").value.trim(), pass = $("reg-pass").value;
   if(!/^\S+@\S+\.\S+$/.test(email)) return alert("Email tidak valid.");
   if(pass.length < 6) return alert("Password minimal 6 karakter.");
-  pendingReg = { email, pass };
-  verifyPage();
-}
-
-// TODO(backend): kirim & cek OTP ke server. Sementara hanya cek format 6 digit.
-async function doVerify(){
-  if(!/^\d{6}$/.test($("otp").value.trim())) return alert("Masukkan 6 digit kode OTP.");
-  const r = await MalikAuth.register(pendingReg.email, pendingReg.pass);
-  if(!r.ok){ alert(r.message); loginPage(); return; }
-  await MalikAuth.login(pendingReg.email, pendingReg.pass);
+  busy = true;
+  const r = await MalikAuth.register(email, pass);
+  busy = false;
+  if(!r.ok){ alert(r.message); return; }
+  if(r.needsConfirm){
+    alert("Pendaftaran berhasil. Cek email kamu untuk konfirmasi, lalu login.");
+    $("login-email").value = email; loginPage(); return;
+  }
   afterLogin();
 }
 
 // Sudah login? langsung lanjut.
-if(MalikAuth.isLoggedIn()) afterLogin();
+MalikAuth.isLoggedIn().then(function(ok){ if(ok) afterLogin(); });
 </script>
 
 </body>

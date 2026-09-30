@@ -6,10 +6,13 @@
 <meta name="robots" content="noindex,nofollow">
 <title>Dashboard - Malik Admin</title>
 <link rel="stylesheet" href="assets/admin.css">
-<script src="js/notify.js?v=1" data-role="admin" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>window.MALIK_SB_STORAGE_KEY = "malik-admin-auth";</script>
+<script src="../js/supabase.js?v=6"></script>
+<script src="js/notify.js?v=2" data-role="admin" defer></script>
 </head>
 <body>
-<script src="js/admin.js"></script>
+<script src="js/admin.js?v=6"></script>
 <script>
 Admin.mount("dashboard", "Dashboard", function (v) {
   var A = Admin, e = A.esc;
@@ -43,15 +46,17 @@ Admin.mount("dashboard", "Dashboard", function (v) {
     if (id === "nt1") N().test("general");
     if (id === "nt2") N().test("chat");
     if (id === "asend") {
-      var ok = N().announce(nc.querySelector("#at").value, nc.querySelector("#ab").value);
-      nc.querySelector("#am").textContent = ok ? "Terkirim. User yang sedang membuka website akan menerima notifikasi." : "Judul dan isi wajib diisi.";
-      if (ok) { nc.querySelector("#at").value = ""; nc.querySelector("#ab").value = ""; }
+      nc.querySelector("#am").textContent = "Mengirim...";
+      N().announce(nc.querySelector("#at").value, nc.querySelector("#ab").value).then(function (ok) {
+        nc.querySelector("#am").textContent = ok ? "Terkirim. User yang sedang membuka website akan menerima notifikasi." : "Gagal: judul & isi wajib diisi, atau akun ini belum admin.";
+        if (ok) { nc.querySelector("#at").value = ""; nc.querySelector("#ab").value = ""; }
+      });
     }
   });
   function draw() {
     var s = A.stats(), o = A.orders().slice(0, 5), t = A.threads().slice(0, 5);
     var rows = o.length ? o.map(function (x) {
-      return "<tr><td>" + e(x.id) + "</td><td>" + e(x.username) + "</td><td>" + e(x.product) + " <span class='mut'>x" + x.qty + "</span></td><td>" + A.rp(x.price) + "</td><td>" + A.pill(x.status) + "</td></tr>";
+      return "<tr><td>" + e(x.code) + "</td><td>" + e(x.username) + "</td><td>" + e(x.product) + " <span class='mut'>x" + x.qty + "</span></td><td>" + A.rp(x.price) + "</td><td>" + A.pill(x.status) + "</td></tr>";
     }).join("") : "<tr><td colspan='5' class='empty'>Belum ada order.</td></tr>";
     var chats = t.length ? t.map(function (c) {
       return "<a class='li' href='chat.html?u=" + encodeURIComponent(c.email) + "'><span class='av " + (c.online ? "on" : "") + "'>" + e(c.email[0]) + "</span>" +
@@ -64,14 +69,10 @@ Admin.mount("dashboard", "Dashboard", function (v) {
       "<div class='stat'><span class='ic'>" + A.icon("bag") + "</span><div><small>Total Order</small><b>" + s.orders + "</b></div></div>" +
       "<div class='stat'><span class='ic'>" + A.icon("cash") + "</span><div><small>Total Pendapatan</small><b>" + A.rp(s.revenue) + "</b></div></div>" +
       "<div class='stat'><span class='ic'>" + A.icon("pulse") + "</span><div><small>User Online</small><b>" + s.online + "</b></div></div></div>" +
-      "<div class='bar'><span class='hint'>Pendapatan = order berstatus Selesai. Mode data: " + (A.demoOn() ? "Demo + data asli" : "Data asli saja") + ".</span>" +
-      "<button class='btn ghost sm' data-demo>" + (A.demoOn() ? "Matikan data demo" : "Nyalakan data demo") + "</button></div>" +
+      "<div class='bar'><span class='hint'>Pendapatan = order berstatus Selesai. Data langsung dari database (realtime).</span></div>" +
       "<div class='cols'><div class='card'><h3>Order Terbaru</h3><div class='tw'><table><thead><tr><th>ID</th><th>User</th><th>Produk</th><th>Harga</th><th>Status</th></tr></thead><tbody>" + rows + "</tbody></table></div></div>" +
       "<div class='card'><h3>Chat Terbaru</h3><div class='list'>" + chats + "</div></div></div>");
   }
-  v.addEventListener("click", function (ev) {
-    if (ev.target.closest("[data-demo]")) { A.setDemo(!A.demoOn()); draw(); }
-  });
   draw(); drawNotif(); A.onTick(function () { draw(); drawNotif(); });
 });
 </script>

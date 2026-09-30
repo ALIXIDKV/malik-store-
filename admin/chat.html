@@ -6,10 +6,13 @@
 <meta name="robots" content="noindex,nofollow">
 <title>Chat - Malik Admin</title>
 <link rel="stylesheet" href="assets/admin.css">
-<script src="js/notify.js?v=1" data-role="admin" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>window.MALIK_SB_STORAGE_KEY = "malik-admin-auth";</script>
+<script src="../js/supabase.js?v=6"></script>
+<script src="js/notify.js?v=2" data-role="admin" defer></script>
 </head>
 <body>
-<script src="js/admin.js"></script>
+<script src="js/admin.js?v=6"></script>
 <script>
 Admin.mount("chat", "Chat User", function (v) {
   var A = Admin, e = A.esc, cur = new URLSearchParams(location.search).get("u") || "", q = "", built = "";
@@ -23,7 +26,7 @@ Admin.mount("chat", "Chat User", function (v) {
     var list = A.threads().filter(function (t) { return t.email.toLowerCase().indexOf(q) > -1; });
     A.setHTML(cl, list.length ? list.map(function (t) {
       return "<div class='li " + (t.email === cur ? "on" : "") + "' data-e='" + e(t.email) + "'><span class='av " + (t.online ? "on" : "") + "'>" + e(t.email[0]) + "</span>" +
-        "<span class='tx'><b>" + e(t.email) + (t.demo ? "<span class='demo'>DEMO</span>" : "") + "</b><small>" + e(t.last ? t.last.text : "") + "</small></span>" +
+        "<span class='tx'><b>" + e(t.email) + "</b><small>" + e(t.last ? t.last.text : "") + "</small></span>" +
         (t.unread ? "<span class='n'>" + t.unread + "</span>" : "") + "</div>";
     }).join("") : "<div class='empty'>Belum ada chat.<br><small>User mengirim pesan lewat Dashboard User &gt; Chat Admin.</small></div>");
   }

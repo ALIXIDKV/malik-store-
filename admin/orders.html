@@ -6,10 +6,13 @@
 <meta name="robots" content="noindex,nofollow">
 <title>Orders - Malik Admin</title>
 <link rel="stylesheet" href="assets/admin.css">
-<script src="js/notify.js?v=1" data-role="admin" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>window.MALIK_SB_STORAGE_KEY = "malik-admin-auth";</script>
+<script src="../js/supabase.js?v=6"></script>
+<script src="js/notify.js?v=2" data-role="admin" defer></script>
 </head>
 <body>
-<script src="js/admin.js"></script>
+<script src="js/admin.js?v=6"></script>
 <script>
 Admin.mount("orders", "Orders", function (v) {
   var A = Admin, e = A.esc, f = "Semua", q = "";
@@ -22,10 +25,10 @@ Admin.mount("orders", "Orders", function (v) {
       return "<button class='chip " + (f === s ? "on" : "") + "' data-f='" + s + "'>" + s + " (" + n + ")</button>";
     }).join(""));
     var list = all.filter(function (o) {
-      return (f === "Semua" || o.status === f) && (o.id + " " + o.username + " " + o.email + " " + o.product).toLowerCase().indexOf(q) > -1;
+      return (f === "Semua" || o.status === f) && (o.code + " " + o.username + " " + o.email + " " + o.product).toLowerCase().indexOf(q) > -1;
     });
     var rows = list.map(function (o) {
-      return "<tr><td><b>" + e(o.id) + "</b>" + (o.demo ? "<span class='demo'>DEMO</span>" : "") + "</td><td>" + e(o.username) + "</td>" +
+      return "<tr><td><b>" + e(o.code) + "</b>" + "</td><td>" + e(o.username) + "</td>" +
         "<td>" + e(o.product) + " <span class='mut'>x" + o.qty + "</span>" + (o.note ? "<br><small class='mut'>" + e(o.note) + "</small>" : "") + "</td>" +
         "<td class='g'><b>" + A.rp(o.price) + "</b></td>" +
         "<td><select class='st' data-id='" + e(o.id) + "'>" + A.STATUSES.map(function (s) { return "<option" + (s === o.status ? " selected" : "") + ">" + s + "</option>"; }).join("") + "</select></td>" +
