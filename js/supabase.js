@@ -17,6 +17,10 @@
   var SUPABASE_KEY = "sb_publishable_XOfLKCrIEpTssI-le_Zk3Q_Jxv2F7PZ";
   // Dipakai js/auth.js untuk diagnosa (?debug=1). Keduanya publik, aman di frontend.
   g.MALIK_SB_CONFIG = { url: SUPABASE_URL, key: SUPABASE_KEY };
+  // Domain utama Malik Store. Dipakai untuk link konfirmasi email / redirect auth,
+  // sehingga tidak pernah mengarah ke alamat lokal atau domain lama.
+  g.MALIK_SITE_URL = "https://malik-store.aliz.web.id";
+  g.MALIK_ADMIN_URL = g.MALIK_SITE_URL + "/admin/";
 
   // Bersihkan sisa data sistem lama (tahap localStorage): akun, order, chat, hash password.
   try {
@@ -30,7 +34,9 @@
     g.supabaseClient = null;
     return;
   }
-  var auth = { persistSession: true, autoRefreshToken: true };
+  // Sesi Supabase disimpan di localStorage (persistSession) dan diperbarui otomatis (autoRefreshToken),
+  // jadi refresh halaman / buka ulang website tidak membuat user logout.
+  var auth = { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true };
   if (g.MALIK_SB_STORAGE_KEY) auth.storageKey = g.MALIK_SB_STORAGE_KEY;
   g.supabaseClient = g.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: auth });
 })(window);

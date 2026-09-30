@@ -15,6 +15,9 @@
   var ME = null;
   var C = { profiles: [], orders: [], messages: [], online: {}, tmp: 0 };
 
+  // Panel admin hidup di sub-path /admin pada domain utama (https://malik-store.aliz.web.id/admin), bukan domain baru.
+  var ADMIN_LOGIN = "/admin/login.html";
+
   /* ---------- util ---------- */
   function sb() { return g.supabaseClient; }
   function esc(s) {
@@ -73,7 +76,7 @@
     if (!(await adminSession())) { await sb().auth.signOut(); return { ok: false, message: "Akun ini bukan admin." }; }
     return { ok: true };
   }
-  async function logout() { try { await sb().auth.signOut(); } catch (e) {} location.replace("login.html"); }
+  async function logout() { try { await sb().auth.signOut(); } catch (e) {} location.replace(ADMIN_LOGIN); }
 
   /* ---------- data (cache dari Supabase) ---------- */
   async function loadAll() {
@@ -197,7 +200,7 @@
 
   async function mount(page, title, render) {
     var sess = await adminSession();
-    if (!sess) { location.replace("login.html"); return; }
+    if (!sess) { location.replace(ADMIN_LOGIN); return; }
     document.title = title + " - Malik Admin";
     var links = NAV.map(function (n) {
       return '<a href="' + n[0] + '.html" class="' + (n[0] === page ? "on" : "") + '">' + icon(n[2]) + "<span>" + n[1] +
@@ -222,7 +225,7 @@
     }
     view.innerHTML = "";
     subscribe();
-    sb().auth.onAuthStateChange(function (ev) { if (ev === "SIGNED_OUT") location.replace("login.html"); });
+    sb().auth.onAuthStateChange(function (ev) { if (ev === "SIGNED_OUT") location.replace(ADMIN_LOGIN); });
     render(view);
     badges();
     setInterval(runTicks, 3000);

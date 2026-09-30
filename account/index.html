@@ -116,6 +116,10 @@ a{
     display:none;
 }
 
+.auth-box.checking{
+    visibility:hidden;
+}
+
 .msg{
     min-height:18px;
     margin:0;
@@ -128,7 +132,7 @@ a{
 
 <body>
 
-<div class="auth-box">
+<div class="auth-box checking" id="auth-box">
 
 <div class="brand">
 <h1>MALIK<span>STORE</span></h1>
@@ -185,8 +189,9 @@ Sudah punya akun?
 
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../js/supabase.js?v=7"></script>
-<script src="../js/auth.js?v=7"></script>
+<script src="../js/supabase.js?v=8"></script>
+<script src="../js/auth.js?v=8"></script>
+<script src="../js/password-toggle.js?v=1"></script>
 <script>
 const login=document.getElementById("login");
 const register=document.getElementById("register");
@@ -239,8 +244,17 @@ async function doRegister(){
   afterLogin();
 }
 
-// Sudah login? langsung lanjut.
-MalikAuth.isLoggedIn().then(function(ok){ if(ok) afterLogin(); });
+// Sudah punya sesi aktif? Jangan tampilkan form login, langsung ke dashboard (atau lanjut order).
+// Form disembunyikan dulu selama pengecekan supaya tidak berkedip.
+(function(){
+  const box = $("auth-box");
+  const show = () => box.classList.remove("checking");
+  const t = setTimeout(show, 2500);   // jaga-jaga jika jaringan lambat
+  MalikAuth.hasSession().then(function(ok){
+    clearTimeout(t);
+    if(ok) afterLogin(); else show();
+  }).catch(function(){ clearTimeout(t); show(); });
+})();
 if(MalikAuth.debug) MalikAuth.diagnose().then(dbg);
 </script>
 

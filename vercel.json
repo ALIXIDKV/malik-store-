@@ -1,5 +1,27 @@
 {
   "version": 2,
   "outputDirectory": ".",
-  "cleanUrls": false
+  "cleanUrls": false,
+  "redirects": [
+    { "source": "/admin", "destination": "/admin/", "permanent": false },
+    { "source": "/admin/login", "destination": "/admin/login.html", "permanent": false },
+    { "source": "/admin/dashboard", "destination": "/admin/dashboard.html", "permanent": false },
+    { "source": "/admin/orders", "destination": "/admin/orders.html", "permanent": false },
+    { "source": "/admin/users", "destination": "/admin/users.html", "permanent": false },
+    { "source": "/admin/chat", "destination": "/admin/chat.html", "permanent": false }
+  ],
+  "headers": [
+    {
+      "source": "/admin/(.*)",
+      "headers": [ { "key": "X-Robots-Tag", "value": "noindex, nofollow" } ]
+    },
+    {
+      "source": "/sw.js",
+      "headers": [ { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" } ]
+    },
+    {
+      "source": "/admin/sw.js",
+      "headers": [ { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" } ]
+    }
+  ]
 }

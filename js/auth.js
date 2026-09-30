@@ -16,6 +16,20 @@
     return (r.data && r.data.session) || null;
   }
   async function getUser() { var s = await session(); return s ? s.user : null; }
+  // Sesi lokal (localStorage) dicek ulang ke server supaya sesi kadaluarsa / akun terhapus tidak lolos.
+  // Jika hanya masalah jaringan, sesi lokal tetap dipakai (user tidak dipaksa login ulang).
+  async function verifiedUser() {
+    var u = await getUser();
+    if (u) {
+      var v = await sb().auth.getUser();
+      if (v.error && (v.error.status === 401 || v.error.status === 403 || v.error.status === 404)) {
+        logErr("verifiedUser", v.error);
+        try { await sb().auth.signOut({ scope: "local" }); } catch (e) {}
+        u = null;
+      }
+    }
+    return u;
+  }
 
   // ---- DEBUG: aktif jika URL memakai ?debug=1 (tidak mengubah tampilan untuk user biasa) ----
   var DEBUG = /[?&]debug=1(&|$)/.test(location.search);
@@ -61,18 +75,20 @@
     // Sesi dari getSession() (localStorage) dicek ulang ke server lewat getUser(), supaya sesi kadaluarsa /
     // akun yang sudah dihapus tidak lolos. Jika hanya masalah jaringan, sesi lokal tetap dipakai.
     requireLogin: async function () {
-      var u = await getUser();
-      if (u) {
-        var v = await sb().auth.getUser();
-        if (v.error && (v.error.status === 401 || v.error.status === 403 || v.error.status === 404)) {
-          logErr("requireLogin", v.error);
-          try { await sb().auth.signOut({ scope: "local" }); } catch (e) {}
-          u = null;
-        }
+      var u = await verifiedUser();
+      if (!u) {
+        // Buka /order/?product=..&price=.. tanpa login: ingat paket yang dipilih, lanjut setelah login.
+        try {
+          var q = new URLSearchParams(location.search), pr = q.get("product"), pc = Number(q.get("price")) || 0;
+          if (pr && pc) MalikAuth.setPending({ product: pr.slice(0, 80), price: pc });
+        } catch (e) {}
+        location.replace(PAGES.account); return null;
       }
-      if (!u) { location.replace(PAGES.account); return null; }
       return u;
     },
+
+    // Untuk halaman login/register: true jika sudah ada sesi Supabase yang valid (tanpa redirect).
+    hasSession: async function () { return !!(await verifiedUser()); },
 
     debug: DEBUG,
     lastError: null,
@@ -103,9 +119,10 @@
       if (!sb()) return { ok: false, message: "Koneksi database belum siap." };
       email = String(email || "").trim().toLowerCase();
       var meta = username ? { username: String(username).trim().slice(0, 40) } : {};
-      // emailRedirectTo: link konfirmasi email kembali ke domain situs ini (bukan Site URL bawaan Supabase / localhost).
-      // Domain ini juga harus ada di Supabase > Authentication > URL Configuration > Redirect URLs.
-      var r = await sb().auth.signUp({ email: email, password: password, options: { data: meta, emailRedirectTo: PAGES.account } });
+      // emailRedirectTo: link konfirmasi email selalu kembali ke domain utama https://malik-store.aliz.web.id
+      // (bukan domain lama). Domain ini harus ada di Supabase > Authentication > URL Configuration >
+      // Redirect URLs (mis. https://malik-store.aliz.web.id/** ) dan Site URL.
+      var r = await sb().auth.signUp({ email: email, password: password, options: { data: meta, emailRedirectTo: (global.MALIK_SITE_URL || location.origin) + "/account/index.html" } });
       if (r.error) { MalikAuth.lastError = logErr("register", r.error); return { ok: false, message: friendly(r.error), raw: MalikAuth.lastError }; }
       if (r.data.user && Array.isArray(r.data.user.identities) && r.data.user.identities.length === 0)
         return { ok: false, message: "Email sudah terdaftar. Silakan login." };
@@ -127,7 +144,12 @@
       return { ok: true };
     },
 
-    logout: async function () { profileCache = null; if (sb()) await sb().auth.signOut(); },
+    logout: async function () {
+      profileCache = null;
+      if (!sb()) return;
+      try { await sb().auth.signOut(); } catch (e) { logErr("logout", e); }
+      try { await sb().auth.signOut({ scope: "local" }); } catch (e) {}   // pastikan sesi di browser terhapus
+    },
 
     // Simpan order ke tabel orders (harga final dihitung ulang oleh database dari tabel products).
     saveOrder: async function (o) {
