@@ -143,3 +143,6 @@ table{min-width:620px}
 .chat.open .cth{display:flex}
 .snd input{min-width:0}
 }
+
+.chat-actions{padding:10px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:flex-end}.chat-actions .btn{font-size:12px}
+@media(max-width:820px){.tw{overflow:visible;border:0}.tw table{min-width:0}.tw thead{display:none}.tw tr{display:block;background:var(--panel);border:1px solid var(--line);border-radius:16px;margin-bottom:12px;padding:10px}.tw td{display:flex;justify-content:space-between;gap:12px;border:0;padding:8px 4px}.tw td:before{content:attr(data-label);color:var(--mut);font-size:11px}.tw tr.sub{display:none}.chat-actions{padding:8px}}

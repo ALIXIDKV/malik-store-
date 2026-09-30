@@ -50,7 +50,7 @@ Admin.mount("chat", "Chat User", function (v) {
     var t = find(em);
     cth.innerHTML = "<div class='th-h'><button class='btn ghost sm back' id='bk'>" + A.icon("back") + "</button>" +
       "<span class='av'>" + e(em[0]) + "</span><div><b>" + e(em) + "</b><small id='tst'>" + (t && t.online ? "Online" : "Offline") + "</small></div></div>" +
-      "<div id='msgs'></div><div class='snd'><input id='mi' type='text' maxlength='1000' placeholder='Tulis balasan...' autocomplete='off'><button class='btn' id='sb'>" + A.icon("send") + "</button></div>";
+      "<div class='chat-actions'><button class='btn ghost sm' id='dc'>Hapus Chat</button></div><div id='msgs'></div><div class='snd'><input id='mi' type='text' maxlength='1000' placeholder='Tulis balasan...' autocomplete='off'><button class='btn' id='sb'>" + A.icon("send") + "</button></div>";
     var mi = cth.querySelector("#mi");
     function send() { if (A.sendAdmin(cur, mi.value)) { mi.value = ""; drawMsgs(true); drawList(); } }
     cth.querySelector("#sb").onclick = send;
