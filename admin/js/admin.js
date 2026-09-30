@@ -166,6 +166,14 @@
     });
     return true;
   }
+  async function deleteChat(email) {
+    var p = profileByEmail(email);
+    if (!p) return false;
+    var r = await sb().from("messages").delete().eq("user_id", p.id);
+    if (r.error) return false;
+    C.messages = C.messages.filter(function (m) { return m.user_id !== p.id; });
+    return true;
+  }
   function markSeen(email) {
     var p = profileByEmail(email), any = false; if (!p) return;
     C.messages.forEach(function (m) { if (m.user_id === p.id && m.sender === "user" && !m.is_read) { m.is_read = true; any = true; } });
@@ -233,6 +241,6 @@
   }
 
   g.Admin = { mount: mount, onTick: onTick, isLoggedIn: isLoggedIn, login: login, logout: logout,
-    users: users, orders: orders, threads: threads, stats: stats, setStatus: setStatus, sendAdmin: sendAdmin, markSeen: markSeen,
+    users: users, orders: orders, threads: threads, stats: stats, setStatus: setStatus, sendAdmin: sendAdmin, markSeen: markSeen, deleteChat: deleteChat,
     STATUSES: STATUSES, esc: esc, rp: rp, fmt: fmt, ago: ago, icon: icon, pill: pill, setHTML: setHTML };
 })(window);

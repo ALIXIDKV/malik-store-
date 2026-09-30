@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>Malik Store Dashboard</title>
 <style>
 body{margin:0;background:#050505;color:white;font-family:Arial;padding:20px}
@@ -26,7 +26,7 @@ h1 span{color:#00ff66}.btn{display:block;background:#00ff66;color:#000;text-deco
   window.__malikOk = true;
   const p = await MalikAuth.profile();
   document.getElementById("uname").textContent = (p && p.username) || (u.email || "").split("@")[0] || "User";
-  if (p && p.role === "admin") { document.querySelector("a[href="chat.html"]").style.display = "none"; location.replace("/admin/dashboard.html"); }
+  if (p && p.role === "admin") { document.querySelector("a[href='chat.html']").style.display = "none"; location.replace("/admin/dashboard.html"); }
 })();
 function checkOrderAccess(e){
   if(window.__malikOk) return true;

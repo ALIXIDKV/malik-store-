@@ -56,6 +56,7 @@ Admin.mount("chat", "Chat User", function (v) {
     cth.querySelector("#sb").onclick = send;
     mi.addEventListener("keydown", function (ev) { if (ev.key === "Enter") send(); });
     cth.querySelector("#bk").onclick = function () { chat.classList.remove("open"); cur = ""; built = ""; drawList(); };
+    cth.querySelector("#dc").onclick = async function () { if (await A.deleteChat(cur)) { drawMsgs(true); drawList(); } };
     drawMsgs(true); drawList();
   }
 
