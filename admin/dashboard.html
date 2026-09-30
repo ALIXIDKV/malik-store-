@@ -28,9 +28,6 @@ Admin.mount("dashboard", "Dashboard", function (v) {
     "<div class='bar'><span>Notifikasi browser: <b id='np'></b></span><div class='chips'>" +
     "<button class='btn sm' id='nen'>Aktifkan</button><button class='btn ghost sm' id='nt1'>Tes notif.mp3</button><button class='btn ghost sm' id='nt2'>Tes chet.mp3</button></div></div>" +
     "<p class='hint'>Admin mendapat notifikasi saat ada user baru, order baru, dan pesan masuk (suara chat untuk pesan). Buka halaman admin dulu, baru lakukan tes dari sisi user.</p>" +
-    "<h3 style='margin-top:18px'>Kirim Pengumuman ke Semua User</h3>" +
-    "<div style='display:grid;gap:10px'><input id='at' maxlength='80' placeholder='Judul pengumuman'><input id='ab' maxlength='300' placeholder='Isi pengumuman'>" +
-    "<button class='btn' id='asend'>Kirim Pengumuman</button><span class='hint' id='am'></span></div>" +
     "<h3 style='margin-top:18px'>Riwayat Notifikasi Admin</h3><div class='list' id='nlog'></div>";
   function drawNotif() {
     nc.querySelector("#np").textContent = permLabel();
@@ -45,13 +42,6 @@ Admin.mount("dashboard", "Dashboard", function (v) {
     if (id === "nen") N().ask().then(drawNotif);
     if (id === "nt1") N().test("general");
     if (id === "nt2") N().test("chat");
-    if (id === "asend") {
-      nc.querySelector("#am").textContent = "Mengirim...";
-      N().announce(nc.querySelector("#at").value, nc.querySelector("#ab").value).then(function (ok) {
-        nc.querySelector("#am").textContent = ok ? "Terkirim. User yang sedang membuka website akan menerima notifikasi." : "Gagal: judul & isi wajib diisi, atau akun ini belum admin.";
-        if (ok) { nc.querySelector("#at").value = ""; nc.querySelector("#ab").value = ""; }
-      });
-    }
   });
   function draw() {
     var s = A.stats(), o = A.orders().slice(0, 5), t = A.threads().slice(0, 5);

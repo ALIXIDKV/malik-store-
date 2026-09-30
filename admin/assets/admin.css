@@ -125,3 +125,21 @@ select.st{padding:7px 10px;font-size:12px;font-weight:bold}
 .lbox .btn{width:100%;padding:14px}
 
 @media(max-width:820px){body{overflow-x:hidden}.card,.checkout,.wrap{max-width:100%;width:100%}button,a{max-width:100%}img,video{max-width:100%;height:auto}}
+
+@media (max-width:700px){
+.shell{display:block;min-height:100vh}
+.side{display:none}
+.main{width:100%;padding:12px}
+.top h1{font-size:24px}
+.stats{grid-template-columns:1fr}
+.cols{grid-template-columns:1fr}
+.card,.chat{width:100%;max-width:100%;box-sizing:border-box}
+.tw{overflow-x:auto}
+table{min-width:620px}
+.chat{height:calc(100vh - 110px);display:block}
+.clist{width:100%;height:auto}
+.cth{width:100%;height:calc(100vh - 250px)}
+.chat.open .clist{display:none}
+.chat.open .cth{display:flex}
+.snd input{min-width:0}
+}
