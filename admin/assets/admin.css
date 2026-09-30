@@ -123,3 +123,5 @@ select.st{padding:7px 10px;font-size:12px;font-weight:bold}
 .fld{margin-bottom:16px}.fld label{display:block;margin-bottom:8px;color:#cfd8ea;font-size:13px}.fld input{width:100%}
 .err{min-height:18px;margin:0 0 6px;color:var(--bad);font-size:13px;text-align:center}
 .lbox .btn{width:100%;padding:14px}
+
+@media(max-width:820px){body{overflow-x:hidden}.card,.checkout,.wrap{max-width:100%;width:100%}button,a{max-width:100%}img,video{max-width:100%;height:auto}}

@@ -26,6 +26,7 @@ h1 span{color:#00ff66}.btn{display:block;background:#00ff66;color:#000;text-deco
   window.__malikOk = true;
   const p = await MalikAuth.profile();
   document.getElementById("uname").textContent = (p && p.username) || (u.email || "").split("@")[0] || "User";
+  if (p && p.role === "admin") { document.querySelector("a[href="chat.html"]").style.display = "none"; location.replace("/admin/dashboard.html"); }
 })();
 function checkOrderAccess(e){
   if(window.__malikOk) return true;

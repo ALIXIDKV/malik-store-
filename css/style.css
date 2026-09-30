@@ -663,3 +663,5 @@ html.popup-open, html.popup-open body{ overflow:hidden; }
 @media (max-width:480px){
   .ad-popup-close{ top:-12px; right:-6px; width:36px; height:36px; font-size:26px; }
 }
+
+@media(max-width:820px){body{overflow-x:hidden}.card,.checkout,.wrap{max-width:100%;width:100%}button,a{max-width:100%}img,video{max-width:100%;height:auto}}
