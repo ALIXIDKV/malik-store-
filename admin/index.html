@@ -7,17 +7,15 @@
 <title>Admin - Malik Store</title>
 <style>body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#060b16;color:#8b9ab4;font-family:Arial,sans-serif;font-size:14px}</style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>window.MALIK_SB_STORAGE_KEY = "malik-admin-auth";</script>
-<script src="../js/supabase.js?v=8"></script>
+<script src="../js/supabase.js?v=9"></script>
 </head>
 <body>
 <p>Memuat panel admin...</p>
 <noscript><a href="/admin/login.html">Masuk admin</a></noscript>
-<script src="js/admin.js?v=9"></script>
+<script src="js/admin.js?v=10"></script>
 <script>
-// https://malik-store.aliz.web.id/admin -> sudah login admin: dashboard, belum: halaman login admin.
-Admin.isLoggedIn().then(function (ok) { location.replace(ok ? "/admin/dashboard.html" : "/admin/login.html"); },
-                        function () { location.replace("/admin/login.html"); });
+// /admin -> admin: dashboard, user biasa: website user, belum login: halaman login.
+Admin.route().then(function (to) { location.replace(to); }, function () { location.replace("/admin/login.html"); });
 </script>
 </body>
 </html>

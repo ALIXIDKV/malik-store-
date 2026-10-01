@@ -2,6 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
+<meta name="robots" content="noindex,nofollow,noarchive">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Malik Store Account</title>
 
@@ -156,8 +157,8 @@ input::placeholder{color:rgba(255,255,255,.4)}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../js/supabase.js?v=8"></script>
-<script src="../js/auth.js?v=10"></script>
+<script src="../js/supabase.js?v=9"></script>
+<script src="../js/auth.js?v=11"></script>
 <script src="../js/password-toggle.js?v=1"></script>
 <script>
 const $ = (id) => document.getElementById(id);
@@ -183,11 +184,15 @@ function showTab(t){
   note("login-msg", ""); note("reg-msg", "");
 }
 
-// Setelah login: lanjut ke order (paket yang tadi dipilih), ke halaman tujuan (mis. Chat Admin), atau dashboard.
-function afterLogin(){
+// Setelah login (satu sesi untuk user & admin): lanjut ke order yang tadi dipilih, ke halaman tujuan (Riwayat/Profil/Chat),
+// admin ke panel admin, user biasa ke homepage.
+async function afterLogin(){
   const pending = MalikAuth.takePending();
   if(pending){ location.href = MalikAuth.orderUrl(pending); return; }
-  location.href = MalikAuth.takeNext() || "dashboard/index.html";
+  const next = MalikAuth.takeNext();
+  if(next){ location.href = next; return; }
+  let admin = false; try { admin = await MalikAuth.isAdmin(); } catch(e) {}
+  location.href = admin ? "/admin/dashboard.html" : "../index.html";
 }
 
 let busy = false;

@@ -51,20 +51,6 @@ function closeLoginModal(){
             setTimeout(() => toast.remove(), 3000);
         }
 
-        // RAM Filter in Pricing Grid
-        function filterRamPackages() {
-            const query = document.getElementById('ram-filter').value.toLowerCase().trim();
-            const cards = document.querySelectorAll('.ram-card');
-            cards.forEach(card => {
-                const ramAttr = card.getAttribute('data-ram').toLowerCase();
-                if(!query || ramAttr.includes(query)) {
-                    card.classList.remove('hidden');
-                } else {
-                    card.classList.add('hidden');
-                }
-            });
-        }
-
         // Interactive Panel Controls
         function switchPanelTab(tabName) {
             ['console', 'files', 'env'].forEach(t => {

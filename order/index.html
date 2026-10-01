@@ -2,13 +2,14 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
+<meta name="robots" content="noindex,nofollow,noarchive">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Order - Malik Store</title>
 <style>
 @font-face{font-family:Malik;src:url("../assets/font/font.ttf")}
 :root{--g:#00ff66;--c:#00d9ff;--bg:#050a14;--card:#0d1627;--line:#1f2d45;--mut:#9aa7bd}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;min-height:100vh;color:#fff;font-family:Malik,Arial,sans-serif;padding-bottom:110px;
+body{margin:0;min-height:100vh;color:#fff;font-family:Malik,Arial,sans-serif;padding-bottom:calc(110px + var(--mk-nav-h,0px));
 background:linear-gradient(rgba(3,8,20,.82),rgba(3,8,20,.96)),url("../assets/image/login-bg.jpg") center/cover fixed}
 .top{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(5,10,20,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
 .logo{font-size:18px;font-weight:bold;letter-spacing:2px;text-decoration:none;color:#fff}.logo span{color:var(--g)}
@@ -44,7 +45,7 @@ textarea:focus{border-color:var(--g)}
 .tabs{display:flex;gap:18px;border-bottom:1px solid var(--line);margin-top:18px}
 .tabs span{padding:10px 0;font-size:14px;color:var(--mut)}.tabs span.on{color:#fff;border-bottom:2px solid var(--g)}
 .empty{font-size:13px;color:var(--mut);padding:14px 0}
-.bar{position:fixed;left:0;right:0;bottom:0;z-index:6;background:rgba(5,10,20,.96);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px))}
+.bar{position:fixed;left:0;right:0;bottom:var(--mk-nav-h,0px);z-index:6;background:rgba(5,10,20,.96);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px))}
 .bar div{max-width:520px;margin:0 auto;display:flex;align-items:center;gap:14px}
 .bar .t{flex:none;font-size:11px;color:var(--mut)}.bar .t b{display:block;font-size:18px;color:var(--g)}
 .go{flex:1;padding:15px;border:0;border-radius:12px;font:inherit;font-weight:bold;font-size:14px;cursor:pointer;background:linear-gradient(90deg,var(--g),var(--c));color:#000;box-shadow:0 0 20px rgba(0,255,150,.35)}
@@ -52,6 +53,10 @@ textarea:focus{border-color:var(--g)}
 .ok{display:none;text-align:center;padding:30px 20px}.ok .tick{width:70px;height:70px;margin:0 auto 14px;border-radius:50%;background:rgba(0,255,102,.15);border:2px solid var(--g);color:var(--g);font-size:34px;display:flex;align-items:center;justify-content:center}
 .ok b{color:var(--g)}
 .empty-state{display:none;text-align:center;padding:50px 20px}
+.rate{display:block;margin:6px 0 0;padding:0;border:0;background:none;color:var(--c);font:inherit;font-size:13px;cursor:pointer;text-align:left}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips button{min-height:40px;padding:8px 14px;border:1px solid var(--line);border-radius:10px;background:#0a1424;color:#fff;font:inherit;font-size:13px;cursor:pointer}
+.chips button[aria-checked="true"]{background:linear-gradient(90deg,var(--g),var(--c));color:#000;border-color:transparent;font-weight:bold}
 </style>
 </head>
 <body>
@@ -61,21 +66,22 @@ textarea:focus{border-color:var(--g)}
   <div id="shop">
     <div class="crumb"><a href="../index.html">Beranda</a> / <a href="../index.html#harga-panel">Produk</a> / <span id="crumb"></span></div>
 
-    <div class="hero"><span class="badge">LEGAL PANEL</span>
-      <div class="chip"><div class="ram" id="ram">—</div><small>PTERODACTYL PANEL</small></div>
+    <div class="hero"><span class="badge" id="badge"></span>
+      <div class="chip"><div class="ram" id="ram">—</div><small id="chipsub"></small></div>
     </div>
 
     <h2 id="pname">-</h2>
-    <div class="price"><span id="pprice"></span> <small>/ bulan</small></div>
-    <div class="meta">Kategori: <i id="pcat">Panel</i> &nbsp;•&nbsp; Stok: <b>Tersedia</b></div>
+    <button class="rate" id="rate" type="button">Memuat ulasan...</button>
+    <div class="price"><span id="pprice"></span> <small id="punit"></small></div>
+    <div class="meta">Kategori: <i id="pcat"></i> &nbsp;•&nbsp; Stok: <b>Tersedia</b></div>
 
-    <div class="card"><h3>Detail Produk</h3>
-      <ul class="feat"><li>Auto Setup</li><li>Server 24/7</li><li>Support</li><li>Legal Panel</li></ul>
-    </div>
+    <div class="card"><h3 id="vlabel">Varian</h3><div class="chips" id="chips" role="radiogroup"></div></div>
+
+    <div class="card"><h3>Detail Produk</h3><ul class="feat" id="perks"></ul></div>
 
     <div class="card"><h3>Jumlah Pembelian</h3>
       <div class="qty">
-        <div><label for="qty">Jumlah Limit</label><small>Maksimal 99</small></div>
+        <div><label for="qty">Jumlah</label><small>Maksimal 99</small></div>
         <div class="step"><button type="button" id="minus" aria-label="Kurangi">−</button><input id="qty" type="number" inputmode="numeric" min="1" max="99" value="1"><button type="button" id="plus" aria-label="Tambah">+</button></div>
       </div>
     </div>
@@ -83,8 +89,9 @@ textarea:focus{border-color:var(--g)}
     <div class="card"><h3>Ringkasan</h3>
       <div class="sum">
         <div><span>Produk</span><span id="s-name"></span></div>
+        <div><span>Varian</span><span id="s-var"></span></div>
         <div><span>Harga satuan</span><span id="s-unit"></span></div>
-        <div><span>Beli</span><span id="s-qty"></span></div>
+        <div><span>Jumlah</span><span id="s-qty"></span></div>
         <div><span>Setup</span><span>Gratis</span></div>
         <div class="tot"><span>Total</span><span id="s-total"></span></div>
       </div>
@@ -92,16 +99,13 @@ textarea:focus{border-color:var(--g)}
 
     <div class="card"><h3>Catatan</h3><textarea id="note" rows="2" placeholder="Catatan (opsional)"></textarea></div>
 
-    <div class="tabs"><span class="on">Detail</span><span>Ulasan (0)</span></div>
-    <div class="empty">Belum ada ulasan untuk produk ini.</div>
-
-    <a class="link" href="../index.html#harga-panel">Pilih paket lain</a>
-    <button class="out" onclick="MalikAuth.logout().then(function(){location.href=MalikAuth.pages.account})">Keluar</button>
+    <button class="link" id="reviewBtn" type="button">Lihat Ulasan</button>
+    <a class="link" href="../index.html#harga-panel">Pilih produk lain</a>
   </div>
 
   <div class="empty-state" id="none">
     <p>Belum ada paket dipilih.</p>
-    <a class="link" href="../index.html#harga-panel">Lihat daftar paket</a>
+    <a class="link" href="../index.html#harga-panel">Lihat daftar produk</a>
   </div>
 
   <div class="card ok" id="done">
@@ -109,6 +113,7 @@ textarea:focus{border-color:var(--g)}
     <p>Order tercatat 🎉<br>ID: <b id="oid"></b></p>
     <p style="color:var(--mut);font-size:13px" id="osum"></p>
     <a class="link" href="/account/dashboard/chat.html">Chat Admin</a>
+    <a class="link" href="/account/dashboard/index.html#hist">Lihat Riwayat</a>
   </div>
 </div>
 
@@ -118,60 +123,74 @@ textarea:focus{border-color:var(--g)}
 </div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../js/supabase.js?v=8"></script>
-<script src="../js/auth.js?v=10"></script>
-<script src="../js/notify.js?v=2" defer></script>
+<script src="../js/supabase.js?v=9"></script>
+<script src="../js/products.js?v=1"></script>
+<script src="../js/auth.js?v=11"></script>
+<script src="../js/reviews.js?v=1"></script>
+<script src="../js/nav.js?v=1"></script>
+<script src="../js/notify.js?v=3" defer></script>
 <script>
-// Halaman ini hanya untuk user yang sudah login (sesi Supabase).
-
-const params = new URLSearchParams(location.search);
-const order = { product: (params.get("product") || "").slice(0, 80), price: Number(params.get("price")) || 0 };
+// Halaman ini hanya untuk user yang sudah login (sesi Supabase). Produk, varian & harga SELALU dari js/products.js
+// (query ?p=&v=&q=). Link lama ?product=&price= tetap dikenali, tetapi harga dari link diabaikan.
+const P = MalikProducts, params = new URLSearchParams(location.search);
 const $ = id => document.getElementById(id);
-const rp = n => "Rp" + n.toLocaleString("id-ID");
-let qty = 1;
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const rp = P.rp;
+let key = params.get("p"), vid = params.get("v"), qty = P.clampQty(params.get("q"));
+if(!P.valid(key, vid)){ const m = P.fromName(params.get("product")); key = m ? m.key : null; vid = m ? m.vid : null; }
 
 MalikAuth.requireLogin().then(u => { if(u) $("user").textContent = u.email || ""; });
 
-if(!order.product || !order.price){
+if(!P.valid(key, vid)){
   $("shop").style.display = "none"; $("bar").style.display = "none"; $("none").style.display = "block";
 }else{
-  const name = order.product;
-  const m = name.match(/RAM\s+(\S+)/i);
-  $("pname").textContent = name;
-  $("crumb").textContent = name;
-  $("pprice").textContent = rp(order.price);
-  $("ram").textContent = m ? m[1].toUpperCase() : (/RESELLER/i.test(name) ? "RESELLER" : /ADMIN/i.test(name) ? "ADMIN" : "PANEL");
-  $("pcat").textContent = /RESELLER|ADMIN/i.test(name) ? "Reseller & Admin" : "Open Panel";
-  $("s-name").textContent = name;
-  $("s-unit").textContent = rp(order.price);
+  const prod = P.product(key);
+  $("crumb").textContent = prod.name;
+  $("pname").textContent = prod.name;
+  $("pcat").textContent = prod.name;
+  $("vlabel").textContent = prod.variantLabel;
+  $("s-name").textContent = prod.name;
+  $("chips").innerHTML = prod.variants.map(v => '<button type="button" role="radio" aria-checked="false" data-v="' + v.id + '">' + esc(v.label) + '</button>').join("");
+  $("chips").addEventListener("click", e => { const b = e.target.closest("[data-v]"); if(b){ vid = b.dataset.v; render(); } });
   render();
+  const loadRate = () => { if(window.MalikReviews) MalikReviews.stats().then(a => { $("rate").textContent = MalikReviews.line(a[key]); }); };
+  loadRate();
+  $("rate").onclick = $("reviewBtn").onclick = () => MalikReviews.open(key, { onClose: loadRate });
 }
 
 function render(){
+  const prod = P.product(key), v = P.variant(key, vid);
+  Array.prototype.forEach.call($("chips").children, b => b.setAttribute("aria-checked", String(b.dataset.v === vid)));
+  const big = v.label.toUpperCase();
+  $("ram").textContent = big; $("ram").style.fontSize = big.length <= 4 ? "54px" : big.length <= 8 ? "38px" : "26px";
+  $("chipsub").textContent = prod.name; $("badge").textContent = v.tag;
+  $("pprice").textContent = rp(v.price); $("punit").textContent = P.unit(prod, v).replace("/", "/ ");
+  $("perks").innerHTML = v.perks.map(x => "<li>" + esc(x) + "</li>").join("");
+  $("s-var").textContent = v.label; $("s-unit").textContent = rp(v.price); $("s-qty").textContent = qty;
   $("qty").value = qty;
-  $("s-qty").textContent = qty + " Limit";
-  const total = order.price * qty;
-  $("s-total").textContent = rp(total);
-  $("b-total").textContent = rp(total);
+  const total = v.price * qty;
+  $("s-total").textContent = rp(total); $("b-total").textContent = rp(total);
+  history.replaceState(null, "", location.pathname + P.orderQuery(key, vid, qty));   // refresh / login ulang tetap di pilihan yang sama
 }
-function setQty(v){ v = parseInt(v, 10); qty = Math.min(99, Math.max(1, isNaN(v) ? 1 : v)); render(); }
+function setQty(n){ qty = P.clampQty(n); render(); }
 $("minus").onclick = () => setQty(qty - 1);
 $("plus").onclick = () => setQty(qty + 1);
 $("qty").onchange = e => setQty(e.target.value);
 
-// Order disimpan ke tabel orders (Supabase). Harga final divalidasi database.
+// Order disimpan ke tabel orders (Supabase): nama "<produk> x<jumlah>" + total. Harga final divalidasi database;
+// varian, jumlah & harga satuan dicatat otomatis oleh trigger database.
 let sending = false;
 async function confirmOrder(){
   if(sending) return; sending = true;
   const btn = $("confirm"); btn.disabled = true; btn.textContent = "MEMPROSES...";
-  const total = order.price * qty;
-  const r = await MalikAuth.saveOrder({ product: order.product + " x" + qty, price: total, note: $("note").value.trim() });
+  const r = await MalikAuth.saveOrder({ key: key, vid: vid, qty: qty, note: $("note").value.trim() });
   if(!r.ok){
     sending = false; btn.disabled = false; btn.textContent = "KONFIRMASI ORDER";
     alert("Order gagal: " + r.message); return;
   }
+  const v = P.variant(key, vid);
   $("oid").textContent = MalikAuth.orderCode(r.order.id);
-  $("osum").textContent = order.product + " • " + qty + " Limit • " + rp(r.order.price);
+  $("osum").textContent = P.product(key).name + " • " + v.label + " • " + qty + " × " + rp(v.price) + " = " + rp(r.order.price);
   $("shop").style.display = "none"; $("bar").style.display = "none"; $("done").style.display = "block";
   window.scrollTo(0, 0);
 }

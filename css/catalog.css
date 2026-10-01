@@ -1,0 +1,49 @@
+/* MALIK STORE - katalog 3 produk (dirender js/catalog.js dari js/products.js). Gaya mengikuti homepage: dark, neon hijau/cyan. */
+.mk-catalog{padding:56px 16px;border-bottom:4px solid #000;background:#0A0A0A}
+.mk-wrap{max-width:1180px;margin:0 auto}
+.mk-head{text-align:center;max-width:640px;margin:0 auto 32px}
+.mk-kicker{display:inline-block;padding:4px 12px;background:#FFE600;color:#000;border:2px solid #000;box-shadow:3px 3px 0 #000;font-size:12px;font-weight:800;text-transform:uppercase}
+.mk-head h2{margin:14px 0 8px;font-family:'Space Grotesk',sans-serif;font-weight:900;font-size:clamp(26px,5vw,44px);line-height:1.1;color:#fff}
+.mk-head p{color:#9ca3af;font-size:15px}
+.mk-grid{display:grid;gap:22px;grid-template-columns:minmax(0,1fr)}
+@media(min-width:900px){.mk-grid{grid-template-columns:repeat(3,minmax(0,1fr));align-items:start}}
+
+.mk-card{--ac:#00FF66;display:flex;flex-direction:column;gap:14px;padding:20px;background:#12141A;border:4px solid #000;box-shadow:5px 5px 0 #000;transition:border-color .2s}
+.mk-card.a-blue{--ac:#00E5FF}.mk-card.a-yellow{--ac:#FFE600}
+.mk-card:hover{border-color:var(--ac)}
+.mk-ch{display:flex;align-items:center;gap:12px}
+.mk-ic{flex:none;width:48px;height:48px;display:flex;align-items:center;justify-content:center;font-size:22px;background:var(--ac);color:#000;border:3px solid #000;box-shadow:3px 3px 0 #000}
+.mk-ch h3{font-family:'Space Grotesk',sans-serif;font-weight:900;font-size:22px;line-height:1.1;color:#fff}
+.mk-rate{display:block;margin-top:5px;padding:0;border:0;background:none;color:#cbd5e1;font-size:13px;text-align:left;cursor:pointer}
+.mk-rate:hover{color:var(--ac)}
+.mk-desc{font-size:14px;line-height:1.55;color:#cbd5e1}
+.mk-lbl{margin-bottom:-6px;font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#9ca3af}
+.mk-chips{display:flex;flex-wrap:wrap;gap:8px}
+.mk-chips button{min-height:40px;padding:8px 13px;border:2px solid #2a3142;border-radius:0;background:#0A0A0A;color:#e5e7eb;font-size:13px;font-weight:700;cursor:pointer}
+.mk-chips button[aria-checked="true"]{background:var(--ac);color:#000;border-color:#000;box-shadow:3px 3px 0 #000}
+.mk-price{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 10px;padding-top:14px;border-top:4px solid #000}
+.mk-price b{font-family:'Space Grotesk',sans-serif;font-size:34px;font-weight:900;line-height:1;color:var(--ac)}
+.mk-price small{margin-left:4px;font-size:12px;color:#9ca3af}
+.mk-tag{padding:3px 8px;background:#000;border:1px solid #2a3142;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:800;color:var(--ac);max-width:100%}
+.mk-perks{display:grid;gap:8px;font-size:13px;font-weight:600;color:#d1d5db}
+.mk-perks li{display:flex;gap:8px;align-items:flex-start}
+.mk-perks li:before{content:"✓";flex:none;font-weight:900;color:var(--ac)}
+.mk-qty{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:14px;font-weight:700;color:#d1d5db}
+.mk-step{display:flex}
+.mk-step button{width:42px;height:42px;border:2px solid #2a3142;border-radius:0;background:#0A0A0A;color:#fff;font-size:20px;cursor:pointer}
+.mk-step button:active{background:var(--ac);color:#000}
+.mk-step input{width:56px;height:42px;padding:0;text-align:center;border:2px solid #2a3142;border-left:0;border-right:0;border-radius:0;background:#0A0A0A;color:#fff;font-size:16px;font-weight:700;-moz-appearance:textfield;appearance:textfield}
+.mk-step input::-webkit-outer-spin-button,.mk-step input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.mk-total{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;background:#0A0A0A;border:2px dashed #2a3142}
+.mk-total span{font-size:13px;color:#9ca3af}.mk-total em{display:block;margin-top:2px;font-style:normal;font-size:11px;color:#6b7280}
+.mk-total b{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:900;color:#fff}
+.mk-act{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mk-btn{min-height:46px;padding:10px;border:3px solid #000;border-radius:0;font-size:13px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;cursor:pointer}
+.mk-btn.p{background:var(--ac);color:#000;box-shadow:4px 4px 0 #000}
+.mk-btn.p:active{transform:translate(2px,2px);box-shadow:2px 2px 0 #000}
+.mk-btn.g{background:#12141A;color:#fff;border-color:#2a3142}
+.mk-btn.g:hover{border-color:var(--ac);color:var(--ac)}
+
+/* beri ruang untuk bottom nav global (js/nav.js) */
+body.mk-has-nav{padding-bottom:calc(var(--mk-nav-h,0px) + 16px)}
+body.mk-has-nav .malik-float-wa{bottom:calc(var(--mk-nav-h,0px) + 12px)}

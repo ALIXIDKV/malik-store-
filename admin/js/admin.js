@@ -1,11 +1,11 @@
 /*
  * MALIK STORE - ADMIN CORE (Supabase)
- * Login admin (Supabase Auth + profiles.role = 'admin'), data dari Supabase, layout panel.
+ * Akses admin = sesi Supabase yang SAMA dengan website user + profiles.role = 'admin'. Tidak ada sesi admin terpisah.
  *
  * Data dimuat sekali ke cache memori lalu diperbarui lewat Supabase Realtime, sehingga
  * tampilan halaman admin tetap sama. Keamanan sebenarnya ada di RLS database (supabase_setup.sql):
  * hanya akun dengan role 'admin' yang bisa membaca semua user/order/chat.
- * Sesi admin memakai storage key terpisah ("malik-admin-auth") dari sesi user.
+ * Non-admin yang membuka /admin/* ditolak dan dialihkan ke website user (HOME_URL).
  */
 (function (g) {
   "use strict";
@@ -17,6 +17,7 @@
 
   // Panel admin hidup di sub-path /admin pada domain utama (https://malik-store.aliz.web.id/admin), bukan domain baru.
   var ADMIN_LOGIN = "/admin/login.html";
+  var HOME_URL = "/index.html";
 
   /* ---------- util ---------- */
   function sb() { return g.supabaseClient; }
@@ -80,17 +81,30 @@
   var MIGRATE_HINT = " Jalankan file supabase_delete_migration.sql di Supabase > SQL Editor.";
 
 
-  /* ---------- auth admin ---------- */
-  async function adminSession() {
-    if (!sb()) return null;
+  /* ---------- auth admin (sesi Supabase yang sama dengan website user) ---------- */
+  // Hasil: { state: "admin" | "user" | "guest", session }. Peran dibaca dari profiles.role (dilindungi RLS).
+  // Sesi dicek ke server (getUser) supaya token kadaluarsa / akun terhapus tidak lolos.
+  async function access() {
+    if (!sb()) return { state: "guest", session: null };
     var r = await sb().auth.getSession(), s = r.data && r.data.session;
-    if (!s) return null;
+    if (!s) return { state: "guest", session: null };
+    var v = await sb().auth.getUser();
+    if (v.error && (v.error.status === 401 || v.error.status === 403 || v.error.status === 404)) {
+      try { await sb().auth.signOut({ scope: "local" }); } catch (e) {}
+      return { state: "guest", session: null };
+    }
     var p = await sb().from("profiles").select("*").eq("id", s.user.id).maybeSingle();
-    if (!p.data || p.data.role !== "admin") return null;
+    if (!p.data || p.data.role !== "admin") return { state: "user", session: s };
     ME = p.data;
-    return s;
+    return { state: "admin", session: s };
   }
+  async function adminSession() { var a = await access(); return a.state === "admin" ? a.session : null; }
   async function isLoggedIn() { return !!(await adminSession()); }
+  // Tujuan yang benar untuk halaman pembuka admin: admin -> dashboard, user biasa -> website user, guest -> login admin.
+  async function route() {
+    var a = await access();
+    return a.state === "admin" ? "/admin/dashboard.html" : a.state === "user" ? HOME_URL : ADMIN_LOGIN;
+  }
   async function login(email, pw) {
     if (!sb()) return { ok: false, message: "Koneksi database belum siap." };
     var r = await sb().auth.signInWithPassword({ email: String(email || "").trim().toLowerCase(), password: String(pw || "") });
@@ -98,7 +112,8 @@
       console.error("[Malik][admin login] Supabase error:", { name: r.error.name, status: r.error.status, code: r.error.code, message: r.error.message });
       return { ok: false, message: (r.error.code === "invalid_credentials" || /invalid login/i.test(r.error.message)) ? "Email atau password salah." : r.error.message };
     }
-    if (!(await adminSession())) { await sb().auth.signOut(); return { ok: false, message: "Akun ini bukan admin." }; }
+    // Sesi dipakai bersama website user, jadi akun non-admin TIDAK di-logout; cukup ditolak dari /admin.
+    if (!(await adminSession())) return { ok: false, notAdmin: true, message: "Akun ini bukan admin." };
     return { ok: true };
   }
   async function logout() { try { await sb().auth.signOut(); } catch (e) {} location.replace(ADMIN_LOGIN); }
@@ -271,8 +286,8 @@
   function runTicks() { badges(); ticks.forEach(function (f) { try { f(); } catch (e) { console.error(e); } }); }
 
   async function mount(page, title, render) {
-    var sess = await adminSession();
-    if (!sess) { location.replace(ADMIN_LOGIN); return; }
+    var acc = await access();
+    if (acc.state !== "admin") { location.replace(acc.state === "user" ? HOME_URL : ADMIN_LOGIN); return; }
     document.title = title + " - Malik Admin";
     var links = NAV.map(function (n) {
       return '<a href="' + n[0] + '.html" class="' + (n[0] === page ? "on" : "") + '">' + icon(n[2]) + "<span>" + n[1] +
@@ -304,7 +319,7 @@
     return view;
   }
 
-  g.Admin = { mount: mount, onTick: onTick, isLoggedIn: isLoggedIn, login: login, logout: logout,
+  g.Admin = { mount: mount, onTick: onTick, isLoggedIn: isLoggedIn, route: route, access: access, login: login, logout: logout,
     users: users, orders: orders, threads: threads, stats: stats, setStatus: setStatus, sendAdmin: sendAdmin, markSeen: markSeen, deleteChat: deleteChat,
     deleteMessages: deleteMessages, deleteOrder: deleteOrder, deleteUser: deleteUser, dialog: dialog, confirmBox: confirmBox, alertBox: alertBox,
     STATUSES: STATUSES, esc: esc, rp: rp, fmt: fmt, ago: ago, icon: icon, pill: pill, setHTML: setHTML };

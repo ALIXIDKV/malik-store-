@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
 Disallow: /admin/
+Disallow: /account/
+Disallow: /order/
+Disallow: /api/
+
 Sitemap: https://malik-store.aliz.web.id/sitemap.xml

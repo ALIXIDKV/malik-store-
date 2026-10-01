@@ -8,8 +8,8 @@
  *   <script src="js/supabase.js"></script>
  * Hasil: window.supabaseClient
  *
- * Panel admin memakai sesi terpisah dari sesi user dengan mengisi
- * window.MALIK_SB_STORAGE_KEY sebelum file ini dimuat.
+ * SATU sesi untuk website user DAN /admin/*. Hak akses admin ditentukan oleh public.profiles.role = 'admin'
+ * (dicek di halaman admin + dipaksa oleh RLS / API server), bukan oleh sesi terpisah.
  */
 (function (g) {
   "use strict";
@@ -26,7 +26,9 @@
   try {
     ["malik_users", "malik_session", "malik_orders", "malik_chats", "malik_order_status", "malik_presence",
      "malik_notif_state", "malik_announcements", "malik_admin_session", "malik_admin_demo",
-     "malik_admin_demo_on", "malik_admin_lock"].forEach(function (k) { localStorage.removeItem(k); });
+     "malik_admin_demo_on", "malik_admin_lock",
+     // sesi admin terpisah (sudah dihapus): bersihkan sisa token lama
+     "malik-admin-auth", "malik-admin-auth-code-verifier"].forEach(function (k) { localStorage.removeItem(k); });
   } catch (e) {}
 
   if (!g.supabase || typeof g.supabase.createClient !== "function") {
@@ -37,6 +39,5 @@
   // Sesi Supabase disimpan di localStorage (persistSession) dan diperbarui otomatis (autoRefreshToken),
   // jadi refresh halaman / buka ulang website tidak membuat user logout.
   var auth = { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true };
-  if (g.MALIK_SB_STORAGE_KEY) auth.storageKey = g.MALIK_SB_STORAGE_KEY;
   g.supabaseClient = g.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: auth });
 })(window);

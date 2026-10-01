@@ -8,7 +8,8 @@
   var BASE = new URL("../", document.currentScript.src).href;
   var PAGES = { home: BASE + "index.html", account: BASE + "account/index.html", order: BASE + "order/index.html", chat: BASE + "account/dashboard/chat.html" };
   var API = new URL("../api/", document.currentScript.src).href;
-  var NEXT_RE = /^\/account\/dashboard\/[a-z]+\.html$/;
+  var NEXT_RE = /^\/account\/dashboard\/[a-z]+\.html(#[a-z]+)?$/;
+  var ID_RE = /^[a-z0-9_]{1,24}$/;
   var profileCache = null;
 
   function sb() { return global.supabaseClient; }
@@ -73,19 +74,24 @@
       profileCache = p; return p;
     },
 
+    // Admin = profiles.role 'admin' (sesi Supabase yang sama dipakai website user dan /admin).
+    isAdmin: async function () { var p = await MalikAuth.profile(); return !!(p && p.role === "admin"); },
+
     // Halaman yang wajib login: kembalikan user, atau arahkan ke halaman login.
     // Sesi dari getSession() (localStorage) dicek ulang ke server lewat getUser(), supaya sesi kadaluarsa /
     // akun yang sudah dihapus tidak lolos. Jika hanya masalah jaringan, sesi lokal tetap dipakai.
     requireLogin: async function () {
       var u = await verifiedUser();
       if (!u) {
-        // Buka /order/?product=..&price=.. tanpa login: ingat paket yang dipilih, lanjut setelah login.
+        // Buka /order/?p=..&v=..&q=.. tanpa login: ingat paket yang dipilih, lanjut setelah login.
+        // (Link lama ?product=..&price=.. tetap dikenali; harga TIDAK dipercaya dari link, selalu dari js/products.js.)
         try {
-          var q = new URLSearchParams(location.search), pr = q.get("product"), pc = Number(q.get("price")) || 0;
-          if (pr && pc) MalikAuth.setPending({ product: pr.slice(0, 80), price: pc });
+          var q = new URLSearchParams(location.search), pk = q.get("p"), pv = q.get("v"), pr = q.get("product");
+          if (pk && pv && ID_RE.test(pk) && ID_RE.test(pv)) MalikAuth.setPending({ p: pk, v: pv, q: Math.min(99, Math.max(1, parseInt(q.get("q"), 10) || 1)) });
+          else if (pr) MalikAuth.setPending({ product: pr.slice(0, 80) });
         } catch (e) {}
-        // Buka halaman dashboard (mis. chat) tanpa login: setelah login kembali ke halaman itu.
-        if (NEXT_RE.test(location.pathname)) MalikAuth.setNext(location.pathname);
+        // Buka halaman dashboard (riwayat/profil/chat) tanpa login: setelah login kembali ke halaman itu.
+        if (NEXT_RE.test(location.pathname + location.hash)) MalikAuth.setNext(location.pathname + location.hash);
         location.replace(PAGES.account); return null;
       }
       return u;
@@ -159,27 +165,42 @@
       try { await sb().auth.signOut({ scope: "local" }); } catch (e) {}   // pastikan sesi di browser terhapus
     },
 
-    // Simpan order ke tabel orders (harga final dihitung ulang oleh database dari tabel products).
+    // Simpan order ke tabel orders. Input baru: { key, vid, qty, note } -> nama, harga satuan & total dihitung dari js/products.js.
+    // Input lama { product, price, note } tetap didukung. Harga final tetap divalidasi database dari tabel products,
+    // dan kolom product_key / variant / qty / unit_price diisi otomatis oleh trigger database (supabase_reviews_migration.sql).
     saveOrder: async function (o) {
       var u = await getUser();
       if (!u) return { ok: false, message: "Sesi habis. Silakan login lagi." };
+      var P = global.MalikProducts, name, total;
+      if (o.key) {
+        var v = P && P.variant(o.key, o.vid);
+        if (!v) return { ok: false, message: "Produk tidak valid." };
+        var q = P.clampQty(o.qty);
+        name = P.orderName(o.key, o.vid, q); total = v.price * q;
+      } else { name = String(o.product || "").slice(0, 120); total = Math.round(Number(o.price) || 0); }
       var r = await sb().from("orders").insert({
-        user_id: u.id, product: String(o.product || "").slice(0, 120), price: Math.round(Number(o.price) || 0), note: String(o.note || "").slice(0, 500)
+        user_id: u.id, product: name, price: total, note: String(o.note || "").slice(0, 500)
       }).select().single();
       if (r.error) { logErr("saveOrder", r.error); return { ok: false, message: friendly(r.error) }; }
       // Order tercatat -> otomatis kirim pesan order ke chat admin (tabel messages yang sama). Gagal kirim chat tidak membatalkan order.
       try { await MalikAuth.orderToChat(r.data, o); } catch (e) { logErr("orderToChat", e); }
       return { ok: true, order: r.data };
     },
-    // Kirim ringkasan order ke chat admin. Cek dulu apakah pesan untuk Order ID ini sudah ada, supaya tidak terkirim dobel.
+    // Kirim ringkasan order ke chat admin (tabel messages -> realtime ke admin). Dicek dulu per Order ID, jadi tidak dobel
+    // saat refresh / klik ganda / dipanggil ulang. Format: Pesanan Baru, Customer, Produk, Harga, Status.
     orderToChat: async function (order, o) {
       var u = await getUser(); if (!u || !order || !order.id) return false;
       var code = MalikAuth.orderCode(order.id);
       var d = await sb().from("messages").select("id").eq("user_id", u.id).like("message", "%Order ID: " + code + "%").limit(1);
-      if (!d.error && d.data && d.data.length) return false;
-      var raw = String(order.product || (o && o.product) || ""), m = raw.match(/^(.*?)\s+x(\d+)$/i);
-      var lines = ["\uD83D\uDED2 Pesanan Baru", m ? m[1] : raw, "Order ID: " + code, "Jumlah: " + (m ? Number(m[2]) : 1),
-                   "Total: Rp" + (Number(order.price) || 0).toLocaleString("id-ID"), "Status: " + (order.status || "Pending")];
+      if (d.error) { logErr("orderToChat", d.error); return false; }
+      if (d.data && d.data.length) return false;
+      var p = null; try { p = await MalikAuth.profile(); } catch (e) {}
+      var who = (p && p.username) || String(u.email || "").split("@")[0] || "User";
+      var raw = String(order.product || (o && o.product) || ""), m = raw.match(/^(.*?)\s+x(\d+)$/i), qty = m ? Number(m[2]) : 1;
+      var total = Number(order.price) || 0, st = order.status || "Pending";
+      var lines = ["\uD83D\uDED2 Pesanan Baru", "", "Customer:", who, "", "Produk:", m ? m[1] : raw, "",
+                   (qty > 1 ? "Jumlah: " + qty + "\n" : "") + "Harga:", "Rp" + (qty > 1 ? Math.round(total / qty) : total).toLocaleString("id-ID") + (qty > 1 ? " x " + qty + " = Rp" + total.toLocaleString("id-ID") : ""), "",
+                   "Status:", st === "Pending" ? "Menunggu proses" : st, "", "Order ID: " + code];
       var note = String(order.note || (o && o.note) || "").trim();
       if (note) lines.push("Catatan: " + note.slice(0, 200));
       var ins = await sb().from("messages").insert({ user_id: u.id, sender: "user", message: lines.join("\n") });
@@ -188,7 +209,10 @@
     },
     orderCode: function (id) { return "ORD-" + String(id || "").replace(/-/g, "").slice(0, 8).toUpperCase(); },
 
-    orderUrl: function (o) { return PAGES.order + (o && o.product ? "?product=" + encodeURIComponent(o.product) + "&price=" + encodeURIComponent(o.price) : ""); },
+    orderUrl: function (o) {
+      if (o && o.p && o.v && ID_RE.test(o.p) && ID_RE.test(o.v)) return PAGES.order + "?p=" + o.p + "&v=" + o.v + "&q=" + Math.min(99, Math.max(1, parseInt(o.q, 10) || 1));
+      return PAGES.order + (o && o.product ? "?product=" + encodeURIComponent(o.product) : "");
+    },
     setPending: function (o) { try { sessionStorage.removeItem("malik_next"); sessionStorage.setItem("malik_pending_order", JSON.stringify(o)); } catch (e) {} },
     // Tujuan setelah login (hanya path /account/dashboard/*.html yang diterima).
     setNext: function (p) { try { sessionStorage.removeItem("malik_pending_order"); sessionStorage.setItem("malik_next", p); } catch (e) {} },
@@ -210,8 +234,18 @@
     return false;
   };
 
-  global.startOrder = async function (product, price) {
-    var o = { product: product || "", price: Number(price) || 0 };
+  // startOrder("panel", "2gb", 3)  -> order produk/varian/jumlah dari js/products.js.
+  // startOrder("OPEN PANEL RAM 2GB", 2000) (pemanggilan lama) -> dipetakan ke produk baru; harga diabaikan.
+  // startOrder() tanpa argumen -> ke katalog produk di homepage.
+  global.startOrder = async function (a, b, c) {
+    var P = global.MalikProducts, o = null;
+    if (a && P && P.valid(a, b)) o = { p: a, v: b, q: P.clampQty(c) };
+    else if (a && P) { var m = P.fromName(a); if (m) o = { p: m.key, v: m.vid, q: 1 }; }
+    if (!o) {
+      var el = document.getElementById("harga-panel");
+      if (el) { if (global.scrollToSection) global.scrollToSection("harga-panel"); else el.scrollIntoView({ behavior: "smooth", block: "start" }); return false; }
+      location.href = PAGES.home + "#harga-panel"; return false;
+    }
     if (await MalikAuth.isLoggedIn()) location.href = MalikAuth.orderUrl(o);
     else { MalikAuth.setPending(o); location.href = PAGES.account; }
     return false;

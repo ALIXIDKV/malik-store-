@@ -1,1 +1,3 @@
 supabase_otp.sql
+supabase_reviews_migration.sql
+supabase_delete_migration.sql

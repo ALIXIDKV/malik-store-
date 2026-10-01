@@ -7,8 +7,7 @@
 <title>Login Admin - Malik Store</title>
 <link rel="stylesheet" href="assets/admin.css?v=2">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>window.MALIK_SB_STORAGE_KEY = "malik-admin-auth";</script>
-<script src="../js/supabase.js?v=8"></script>
+<script src="../js/supabase.js?v=9"></script>
 </head>
 <body class="login-body">
 <div class="lbox">
@@ -19,16 +18,19 @@
   <p class="err" id="err" role="alert"></p>
   <button class="btn" id="go" type="button">LOGIN</button>
 </div>
-<script src="js/admin.js?v=9"></script>
+<script src="js/admin.js?v=10"></script>
 <script src="../js/password-toggle.js?v=1"></script>
 <script>
-Admin.isLoggedIn().then(function (ok) { if (ok) location.replace("/admin/dashboard.html"); });
+// Sesi SAMA dengan website user: admin langsung ke dashboard, user biasa dialihkan ke website user, guest tetap di sini.
+Admin.route().then(function (to) { if (to !== "/admin/login.html") location.replace(to); }, function () {});
 var $ = function (i) { return document.getElementById(i); };
 async function go() {
   $("go").disabled = true; $("err").textContent = "";
   var r = await Admin.login($("id").value, $("pw").value);
   if (r.ok) { location.replace("/admin/dashboard.html"); return; }
-  $("err").textContent = r.message; $("go").disabled = false;
+  $("err").textContent = r.message;
+  if (r.notAdmin) { setTimeout(function () { location.replace("/index.html"); }, 1200); return; }   // login berhasil tapi bukan admin: ke website user
+  $("go").disabled = false;
 }
 $("go").onclick = go;
 ["id", "pw"].forEach(function (i) { $(i).addEventListener("keydown", function (e) { if (e.key === "Enter") go(); }); });
