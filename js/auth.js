@@ -167,7 +167,24 @@
         user_id: u.id, product: String(o.product || "").slice(0, 120), price: Math.round(Number(o.price) || 0), note: String(o.note || "").slice(0, 500)
       }).select().single();
       if (r.error) { logErr("saveOrder", r.error); return { ok: false, message: friendly(r.error) }; }
+      // Order tercatat -> otomatis kirim pesan order ke chat admin (tabel messages yang sama). Gagal kirim chat tidak membatalkan order.
+      try { await MalikAuth.orderToChat(r.data, o); } catch (e) { logErr("orderToChat", e); }
       return { ok: true, order: r.data };
+    },
+    // Kirim ringkasan order ke chat admin. Cek dulu apakah pesan untuk Order ID ini sudah ada, supaya tidak terkirim dobel.
+    orderToChat: async function (order, o) {
+      var u = await getUser(); if (!u || !order || !order.id) return false;
+      var code = MalikAuth.orderCode(order.id);
+      var d = await sb().from("messages").select("id").eq("user_id", u.id).like("message", "%Order ID: " + code + "%").limit(1);
+      if (!d.error && d.data && d.data.length) return false;
+      var raw = String(order.product || (o && o.product) || ""), m = raw.match(/^(.*?)\s+x(\d+)$/i);
+      var lines = ["\uD83D\uDED2 Pesanan Baru", m ? m[1] : raw, "Order ID: " + code, "Jumlah: " + (m ? Number(m[2]) : 1),
+                   "Total: Rp" + (Number(order.price) || 0).toLocaleString("id-ID"), "Status: " + (order.status || "Pending")];
+      var note = String(order.note || (o && o.note) || "").trim();
+      if (note) lines.push("Catatan: " + note.slice(0, 200));
+      var ins = await sb().from("messages").insert({ user_id: u.id, sender: "user", message: lines.join("\n") });
+      if (ins.error) { logErr("orderToChat", ins.error); return false; }
+      return true;
     },
     orderCode: function (id) { return "ORD-" + String(id || "").replace(/-/g, "").slice(0, 8).toUpperCase(); },
 

@@ -1,39 +1,129 @@
 <!DOCTYPE html>
-<html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
 <title>Malik Store Dashboard</title>
 <style>
-body{margin:0;background:#050505;color:white;font-family:Arial;padding:20px}
-.card{max-width:420px;margin:40px auto;background:#111;border:2px solid #00ff66;padding:25px;border-radius:15px}
-h1 span{color:#00ff66}.btn{display:block;background:#00ff66;color:#000;text-decoration:none;padding:15px;margin:15px 0;text-align:center;border-radius:10px;font-weight:bold}
+@font-face{font-family:Malik;src:url("../../assets/font/font.ttf")}
+:root{--g:#00ff66;--c:#00d9ff;--bg:#050a14;--card:#0d1627;--card2:#111c32;--line:#1c2a44;--mut:#8b9ab4;--warn:#ffb020;--bad:#ff5c6c}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;min-height:100dvh;color:#fff;font-family:Malik,Arial,sans-serif;padding-bottom:calc(86px + env(safe-area-inset-bottom,0px));
+background:radial-gradient(700px 420px at 0 -10%,rgba(0,255,102,.10),transparent 60%),radial-gradient(700px 420px at 100% 0,rgba(0,217,255,.10),transparent 60%),var(--bg);background-attachment:fixed}
+svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:calc(12px + env(safe-area-inset-top,0px)) 18px 12px;background:rgba(5,10,20,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.logo{font-size:18px;font-weight:bold;letter-spacing:2px}.logo span{color:var(--g)}
+.ttl{font-size:13px;color:var(--mut)}
+.wrap{max-width:520px;margin:0 auto;padding:16px 16px 8px}
+.tab{display:none}.tab.on{display:block}
+h3{margin:22px 0 10px;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--c)}
+h3:first-child{margin-top:4px}
+.sum{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.st{padding:16px;border-radius:16px;background:linear-gradient(135deg,rgba(0,255,102,.12),rgba(0,217,255,.10));border:1px solid rgba(0,255,200,.28)}
+.st small{display:block;color:var(--mut);font-size:12px}.st b{display:block;margin-top:4px;font-size:26px;color:var(--g)}
+.row{display:flex;align-items:center;gap:12px;padding:13px;margin-bottom:8px;border-radius:14px;background:var(--card);border:1px solid var(--line)}
+.chipx{width:46px;height:46px;flex:none;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:12px;color:var(--g);background:rgba(0,255,102,.10);border:1px solid rgba(0,255,102,.35)}
+.row .tx{flex:1;min-width:0}.row .tx b{display:block;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .tx small{display:block;margin-top:3px;color:var(--mut);font-size:12px}.row .tx small i{font-style:normal;color:var(--g)}
+.go{flex:none;padding:9px 16px;border:0;border-radius:10px;font:inherit;font-weight:bold;font-size:13px;cursor:pointer;color:#031008;background:linear-gradient(90deg,var(--g),var(--c))}
+.oc{padding:14px;margin-bottom:10px;border-radius:14px;background:var(--card);border:1px solid var(--line)}
+.oc .a{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.oc .a b{font-size:14px}
+.oc .b{display:flex;justify-content:space-between;gap:10px;margin-top:8px;font-size:12px;color:var(--mut)}.oc .b i{font-style:normal;color:var(--g);font-weight:bold;font-size:14px}
+.pill{flex:none;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:bold;border:1px solid}
+.p-pending{color:var(--warn);border-color:rgba(255,176,32,.4);background:rgba(255,176,32,.08)}
+.p-diproses{color:var(--c);border-color:rgba(0,217,255,.4);background:rgba(0,217,255,.08)}
+.p-selesai{color:var(--g);border-color:rgba(0,255,102,.4);background:rgba(0,255,102,.08)}
+.empty{text-align:center;color:var(--mut);padding:40px 10px}.empty .go{margin-top:14px}
+.me{text-align:center;padding:26px 16px;border-radius:18px;background:var(--card);border:1px solid var(--line)}
+.av{width:78px;height:78px;margin:0 auto 12px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:bold;text-transform:uppercase;color:#031008;background:linear-gradient(135deg,var(--g),var(--c));box-shadow:0 0 26px rgba(0,255,150,.3)}
+.me b{display:block;font-size:18px}.me small{display:block;margin-top:4px;color:var(--mut);word-break:break-all}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:12px;padding:14px;border-radius:14px;font:inherit;font-weight:bold;font-size:14px;text-decoration:none;cursor:pointer}
+.btn.n{color:var(--g);background:rgba(0,255,102,.08);border:1px solid rgba(0,255,102,.45)}
+.btn.o{color:var(--bad);background:rgba(255,92,108,.08);border:1px solid rgba(255,92,108,.45)}
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:10;display:flex;justify-content:space-around;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));background:rgba(5,10,20,.96);backdrop-filter:blur(14px);border-top:1px solid var(--line)}
+.nav button{flex:1;max-width:160px;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 6px;border:0;background:none;color:var(--mut);font:inherit;font-size:11px;cursor:pointer;position:relative}
+.nav button.on{color:var(--g)}.nav button.on svg{filter:drop-shadow(0 0 6px rgba(0,255,102,.7))}
+.nav button.on:before{content:"";position:absolute;top:-7px;left:30%;right:30%;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--g),var(--c))}
 </style></head>
-<body><div class="card">
-<h1>MALIK<span>STORE</span></h1>
-<p>Dashboard User</p>
-<h2>Halo, <span id="uname" style="color:inherit">User</span> 👋</h2>
-<a class="btn" href="order.html" onclick="return checkOrderAccess(event)">ORDER PANEL</a>
-<a class="btn" href="#">RIWAYAT ORDER</a>
-<a class="btn" href="chat.html?v=9">CHAT ADMIN</a>
-<a class="btn" href="../" onclick="return doLogout(event)">LOGOUT</a>
+<body>
+<div class="top"><span class="logo">MALIK<span>STORE</span></span><span class="ttl" id="ttl">Beranda</span></div>
+<div class="wrap">
+  <section class="tab on" id="t-home">
+    <div class="sum"><div class="st"><small>Total Order</small><b id="n-all">0</b></div><div class="st"><small>Sedang Berjalan</small><b id="n-run">0</b></div></div>
+    <h3>Open Panel</h3><div id="p-open"></div>
+    <h3>Reseller &amp; Admin</h3><div id="p-adm"></div>
+  </section>
+  <section class="tab" id="t-hist"><div id="olist"><div class="empty">Memuat...</div></div></section>
+  <section class="tab" id="t-prof">
+    <div class="me"><div class="av" id="av">U</div><b id="pn">User</b><small id="pe"></small></div>
+    <a class="btn n" id="chatBtn" href="chat.html?v=9"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Chat Admin</a>
+    <a class="btn o" href="../" onclick="return doLogout(event)"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Logout</a>
+  </section>
 </div>
+<nav class="nav">
+  <button data-t="home" class="on"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Beranda</button>
+  <button data-t="hist"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>Riwayat</button>
+  <button data-t="prof"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg>Profil</button>
+</nav>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../../js/supabase.js?v=8"></script>
-<script src="../../js/auth.js?v=9"></script>
+<script src="../../js/auth.js?v=10"></script>
 <script src="../../js/notify.js?v=2" defer></script>
 <script>
 // Halaman ini hanya untuk user yang sudah login (sesi Supabase).
-(async function(){
-  const u = await MalikAuth.requireLogin(); if(!u) return;
-  window.__malikOk = true;
-  const p = await MalikAuth.profile();
-  document.getElementById("uname").textContent = (p && p.username) || (u.email || "").split("@")[0] || "User";
-  if (p && p.role === "admin") { document.querySelector("a[href^='chat.html']").style.display = "none"; location.replace("/admin/dashboard.html"); }
-})();
-function checkOrderAccess(e){
-  if(window.__malikOk) return true;
-  e.preventDefault(); location.href = MalikAuth.pages.account; return false;
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const rp = n => "Rp" + (Number(n) || 0).toLocaleString("id-ID");
+const OPEN = [["1GB",1000],["2GB",2000],["3GB",3000],["4GB",4000],["5GB",5000],["6GB",6000],["7GB",7000],["8GB",8000],["9GB",9000],["10GB",10000],["UNLIMITED",12000]]
+  .map(x => ["OPEN PANEL RAM " + x[0], x[1], x[0].replace("UNLIMITED", "∞")]);
+const ADM = [["RESELLER PANEL PTERODACTYL", 15000, "RSL"], ["ADMIN PANEL PTERODACTYL", 20000, "ADM"]];
+const TITLES = { home: "Beranda", hist: "Riwayat", prof: "Profil" };
+let orders = [];
+
+function prod(p){
+  return '<div class="row"><span class="chipx">' + esc(p[2]) + '</span><div class="tx"><b>' + esc(p[0]) + '</b><small><i>' + rp(p[1]) + '</i> / bulan</small></div>' +
+    '<button class="go" data-n="' + esc(p[0]) + '" data-p="' + p[1] + '">Order</button></div>';
+}
+$("p-open").innerHTML = OPEN.map(prod).join("");
+$("p-adm").innerHTML = ADM.map(prod).join("");
+document.addEventListener("click", e => { const b = e.target.closest("[data-n]"); if(b) startOrder(b.dataset.n, Number(b.dataset.p)); });
+
+function show(t){
+  if(!TITLES[t]) t = "home";
+  document.querySelectorAll(".tab").forEach(s => s.classList.toggle("on", s.id === "t-" + t));
+  document.querySelectorAll(".nav button").forEach(b => b.classList.toggle("on", b.dataset.t === t));
+  $("ttl").textContent = TITLES[t]; window.scrollTo(0, 0);
+  if(location.hash !== "#" + t) history.replaceState(null, "", "#" + t);
+}
+document.querySelector(".nav").addEventListener("click", e => { const b = e.target.closest("[data-t]"); if(b) show(b.dataset.t); });
+window.addEventListener("hashchange", () => show(location.hash.slice(1)));
+
+function drawOrders(){
+  $("n-all").textContent = orders.length;
+  $("n-run").textContent = orders.filter(o => o.status !== "Selesai").length;
+  $("olist").innerHTML = orders.length ? orders.map(o => {
+    const m = String(o.product || "").match(/^(.*?)\s+x(\d+)$/i), st = ["Pending","Diproses","Selesai"].includes(o.status) ? o.status : "Pending";
+    return '<div class="oc"><div class="a"><b>' + esc(m ? m[1] : o.product) + '</b><span class="pill p-' + st.toLowerCase() + '">' + st + '</span></div>' +
+      '<div class="b"><span>' + esc(MalikAuth.orderCode(o.id)) + ' • ' + (m ? m[2] : 1) + ' Limit<br>' +
+      new Date(o.created_at).toLocaleString("id-ID", {day:"2-digit", month:"short", year:"numeric", hour:"2-digit", minute:"2-digit"}) + '</span><i>' + rp(o.price) + '</i></div></div>';
+  }).join("") : '<div class="empty">Belum ada riwayat order.<br><button class="go" onclick="show(\'home\')">Lihat Produk</button></div>';
+}
+async function loadOrders(uid){
+  const r = await supabaseClient.from("orders").select("*").eq("user_id", uid).order("created_at", { ascending: false });
+  orders = r.data || []; drawOrders();
 }
 async function doLogout(e){
   e.preventDefault(); await MalikAuth.logout(); location.href = MalikAuth.pages.account; return false;
 }
+
+(async function(){
+  const u = await MalikAuth.requireLogin(); if(!u) return;
+  const p = await MalikAuth.profile();
+  if (p && p.role === "admin") { $("chatBtn").style.display = "none"; location.replace("/admin/dashboard.html"); return; }
+  const name = (p && p.username) || (u.email || "").split("@")[0] || "User";
+  $("pn").textContent = name; $("pe").textContent = u.email || ""; $("av").textContent = name[0] || "U";
+  show(location.hash.slice(1));
+  loadOrders(u.id);
+  supabaseClient.channel("dash-orders-" + u.id)
+    .on("postgres_changes", { event: "*", schema: "public", table: "orders", filter: "user_id=eq." + u.id }, () => loadOrders(u.id))
+    .subscribe();
+})();
 </script>
 </body></html>

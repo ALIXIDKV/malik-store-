@@ -50,9 +50,34 @@
     pulse: '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>',
     out: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>',
     send: '<line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>',
-    back: '<line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>'
+    back: '<line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>',
+    close: '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+    trash: '<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>'
   };
   function icon(n) { return '<svg class="i" viewBox="0 0 24 24" aria-hidden="true">' + (ICONS[n] || "") + "</svg>"; }
+
+  /* ---------- dialog konfirmasi (dark/neon) ---------- */
+  // o: { title, text, actions: [{ label, value, kind }] } -> Promise(value yang dipilih, atau null jika ditutup)
+  function dialog(o) {
+    return new Promise(function (resolve) {
+      var w = document.createElement("div"); w.className = "dlg";
+      w.innerHTML = '<div class="dlg-b" role="dialog" aria-modal="true"><h4>' + esc(o.title) + "</h4>" + (o.text ? "<p>" + esc(o.text) + "</p>" : "") +
+        '<div class="dlg-a">' + o.actions.map(function (a, i) { return '<button type="button" class="btn ' + (a.kind || "ghost") + '" data-i="' + i + '">' + esc(a.label) + "</button>"; }).join("") + "</div></div>";
+      function key(ev) { if (ev.key === "Escape") done(null); }
+      function done(v) { document.removeEventListener("keydown", key); w.remove(); resolve(v); }
+      w.addEventListener("click", function (ev) {
+        if (ev.target === w) return done(null);
+        var b = ev.target.closest("[data-i]"); if (b) done(o.actions[Number(b.getAttribute("data-i"))].value);
+      });
+      document.addEventListener("keydown", key); document.body.appendChild(w);
+    });
+  }
+  function confirmBox(title, text, label) {
+    return dialog({ title: title, text: text, actions: [{ label: "Batal", value: false }, { label: label || "Hapus", value: true, kind: "danger" }] })
+      .then(function (v) { return v === true; });
+  }
+  function alertBox(title, text) { return dialog({ title: title, text: text, actions: [{ label: "OK", value: true }] }); }
+  var MIGRATE_HINT = " Jalankan file supabase_delete_migration.sql di Supabase > SQL Editor.";
 
 
   /* ---------- auth admin ---------- */
@@ -132,10 +157,10 @@
   function threads() {
     var pm = {}, by = {};
     C.profiles.forEach(function (p) { pm[p.id] = p; });
-    C.messages.forEach(function (m) { (by[m.user_id] = by[m.user_id] || []).push(m); });
+    C.messages.forEach(function (m) { if (!m.hidden_for_admin) (by[m.user_id] = by[m.user_id] || []).push(m); });   // hidden_for_admin = "Hapus untuk saya"
     return Object.keys(by).map(function (uid) {
       var p = pm[uid] || {}, list = by[uid];
-      var msgs = list.map(function (m) { return { from: m.sender === "admin" ? "admin" : "user", text: m.message, at: ms(m.created_at) }; })
+      var msgs = list.map(function (m) { return { id: m.id, from: m.sender === "admin" ? "admin" : "user", text: m.message, at: ms(m.created_at) }; })
                      .sort(function (a, b) { return a.at - b.at; });
       return { email: p.email || uid, userId: uid, msgs: msgs, last: msgs.length ? msgs[msgs.length - 1] : null, online: !!C.online[uid],
                unread: list.filter(function (m) { return m.sender === "user" && !m.is_read; }).length };
@@ -166,13 +191,52 @@
     });
     return true;
   }
+  // Hapus seluruh percakapan (tabel messages saja). Akun user TIDAK disentuh.
   async function deleteChat(email) {
     var p = profileByEmail(email);
-    if (!p) return false;
-    var r = await sb().from("messages").delete().eq("user_id", p.id);
-    if (r.error) return false;
+    if (!p) return { ok: false, message: "User tidak ditemukan." };
+    var r = await sb().from("messages").delete().eq("user_id", p.id).select("id");
+    if (r.error) return { ok: false, message: r.error.message };
+    if (!(r.data || []).length && C.messages.some(function (m) { return m.user_id === p.id; })) return { ok: false, message: "Chat tidak terhapus." + MIGRATE_HINT };
     C.messages = C.messages.filter(function (m) { return m.user_id !== p.id; });
-    return true;
+    runTicks(); return { ok: true };
+  }
+  // scope "me" = sembunyikan dari admin saja (hidden_for_admin), "all" = hapus pesan dari database (user juga tidak melihatnya).
+  async function deleteMessages(ids, scope) {
+    ids = (ids || []).filter(function (id) { return String(id).indexOf("tmp-") !== 0; });
+    if (!ids.length) return { ok: false, message: "Tidak ada pesan yang dipilih." };
+    var q = scope === "all" ? sb().from("messages").delete().in("id", ids).select("id")
+                            : sb().from("messages").update({ hidden_for_admin: true }).in("id", ids).select("id");
+    var r = await q;
+    if (r.error) return { ok: false, message: r.error.message + (/hidden_for_admin/.test(r.error.message) ? MIGRATE_HINT : "") };
+    var done = (r.data || []).map(function (x) { return String(x.id); });
+    if (!done.length) return { ok: false, message: "Pesan tidak terhapus." + MIGRATE_HINT };
+    if (scope === "all") C.messages = C.messages.filter(function (m) { return done.indexOf(String(m.id)) < 0; });
+    else C.messages.forEach(function (m) { if (done.indexOf(String(m.id)) > -1) m.hidden_for_admin = true; });
+    runTicks(); return { ok: true };
+  }
+  async function deleteOrder(id) {
+    var r = await sb().from("orders").delete().eq("id", id).select("id");
+    if (r.error) return { ok: false, message: r.error.message };
+    if (!(r.data || []).length) return { ok: false, message: "Order tidak terhapus." + MIGRATE_HINT };
+    C.orders = C.orders.filter(function (o) { return o.id !== id; });
+    runTicks(); return { ok: true };
+  }
+  // Hapus akun permanen lewat /api/delete-user (butuh Service Role di server; token admin diverifikasi di sana).
+  async function deleteUser(id) {
+    var s = await sb().auth.getSession(), tok = s.data && s.data.session && s.data.session.access_token;
+    if (!tok) return { ok: false, message: "Sesi admin habis. Silakan login ulang." };
+    var j = null;
+    try {
+      var res = await fetch("/api/delete-user", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + tok }, body: JSON.stringify({ userId: id }) });
+      try { j = await res.json(); } catch (e) {}
+      if (!j) return { ok: false, message: "Server tidak merespons (" + res.status + ")." };
+    } catch (e) { return { ok: false, message: "Koneksi bermasalah. Coba lagi." }; }
+    if (!j.ok) return { ok: false, message: j.message || "Gagal menghapus user." };
+    C.profiles = C.profiles.filter(function (p) { return p.id !== id; });
+    C.orders = C.orders.filter(function (o) { return o.user_id !== id; });
+    C.messages = C.messages.filter(function (m) { return m.user_id !== id; });
+    runTicks(); return { ok: true };
   }
   function markSeen(email) {
     var p = profileByEmail(email), any = false; if (!p) return;
@@ -242,5 +306,6 @@
 
   g.Admin = { mount: mount, onTick: onTick, isLoggedIn: isLoggedIn, login: login, logout: logout,
     users: users, orders: orders, threads: threads, stats: stats, setStatus: setStatus, sendAdmin: sendAdmin, markSeen: markSeen, deleteChat: deleteChat,
+    deleteMessages: deleteMessages, deleteOrder: deleteOrder, deleteUser: deleteUser, dialog: dialog, confirmBox: confirmBox, alertBox: alertBox,
     STATUSES: STATUSES, esc: esc, rp: rp, fmt: fmt, ago: ago, icon: icon, pill: pill, setHTML: setHTML };
 })(window);

@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="robots" content="noindex,nofollow">
 <title>Orders - Malik Admin</title>
-<link rel="stylesheet" href="assets/admin.css">
+<link rel="stylesheet" href="assets/admin.css?v=2">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>window.MALIK_SB_STORAGE_KEY = "malik-admin-auth";</script>
 <script src="../js/supabase.js?v=8"></script>
 <script src="js/notify.js?v=2" data-role="admin" defer></script>
 </head>
 <body>
-<script src="js/admin.js?v=8"></script>
+<script src="js/admin.js?v=9"></script>
 <script>
 Admin.mount("orders", "Orders", function (v) {
   var A = Admin, e = A.esc, f = "Semua", q = "";
@@ -32,12 +32,22 @@ Admin.mount("orders", "Orders", function (v) {
         "<td>" + e(o.product) + " <span class='mut'>x" + o.qty + "</span>" + (o.note ? "<br><small class='mut'>" + e(o.note) + "</small>" : "") + "</td>" +
         "<td class='g'><b>" + A.rp(o.price) + "</b></td>" +
         "<td><select class='st' data-id='" + e(o.id) + "'>" + A.STATUSES.map(function (s) { return "<option" + (s === o.status ? " selected" : "") + ">" + s + "</option>"; }).join("") + "</select></td>" +
-        "<td class='mut'>" + A.fmt(o.createdAt) + "</td></tr>";
-    }).join("") || "<tr><td colspan='6' class='empty'>Tidak ada order.</td></tr>";
-    A.setHTML(tw, "<div class='tw'><table><thead><tr><th>ID Order</th><th>Username</th><th>Produk</th><th>Harga</th><th>Status</th><th>Waktu</th></tr></thead><tbody>" + rows + "</tbody></table></div>");
+        "<td class='mut'>" + A.fmt(o.createdAt) + "</td>" +
+        "<td data-label='Aksi'><button class='btn ghost sm dz' data-del='" + e(o.id) + "' title='Hapus Order' aria-label='Hapus Order'>" + A.icon("trash") + "</button></td></tr>";
+    }).join("") || "<tr><td colspan='7' class='empty'>Tidak ada order.</td></tr>";
+    A.setHTML(tw, "<div class='tw'><table><thead><tr><th>ID Order</th><th>Username</th><th>Produk</th><th>Harga</th><th>Status</th><th>Waktu</th><th>Aksi</th></tr></thead><tbody>" + rows + "</tbody></table></div>");
   }
   v.querySelector("#q").addEventListener("input", function (ev) { q = ev.target.value.trim().toLowerCase(); draw(); });
   v.addEventListener("click", function (ev) { var b = ev.target.closest("[data-f]"); if (b) { f = b.getAttribute("data-f"); draw(); } });
+  tw.addEventListener("click", async function (ev) {
+    var d = ev.target.closest("[data-del]"); if (!d) return;
+    var id = d.getAttribute("data-del"), o = A.orders().filter(function (x) { return x.id === id; })[0]; if (!o) return;
+    if (!(await A.confirmBox("Hapus order?", o.code + " (" + o.product + " x" + o.qty + ", " + A.rp(o.price) + ") akan dihapus permanen dari database.", "Hapus Order"))) return;
+    d.disabled = true;
+    var r = await A.deleteOrder(id);
+    if (!r.ok) { d.disabled = false; A.alertBox("Gagal menghapus order", r.message); return; }
+    draw();
+  });
   tw.addEventListener("change", function (ev) {
     var s = ev.target.closest("select[data-id]"); if (!s) return;
     A.setStatus(s.getAttribute("data-id"), s.value); tw.__h = null; draw();

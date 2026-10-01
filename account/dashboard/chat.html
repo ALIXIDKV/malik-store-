@@ -28,7 +28,7 @@ body{margin:0;height:100dvh;display:flex;flex-direction:column;background:#050a1
 <div class="s"><input id="mi" maxlength="500" placeholder="Tulis pesan..." autocomplete="off"><button id="sb">KIRIM</button></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../../js/supabase.js?v=8"></script>
-<script src="../../js/auth.js?v=9"></script>
+<script src="../../js/auth.js?v=10"></script>
 <script src="../../js/notify.js?v=2" defer></script>
 <script>
 // Chat private per user: tabel messages (user_id = pemilik percakapan), realtime via Supabase.
@@ -62,6 +62,10 @@ async function init(){
   msgs = r.data || []; draw(true);
   supabaseClient.channel("chat-" + me.id)
     .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: "user_id=eq." + me.id }, p => add(p.new))
+    .on("postgres_changes", { event: "DELETE", schema: "public", table: "messages" }, p => {   // admin menghapus pesan / chat
+      const id = p.old && p.old.id; if(id == null) return;
+      const n = msgs.length; msgs = msgs.filter(x => x.id !== id); if(msgs.length !== n) draw(true);
+    })
     .subscribe();
 }
 $("sb").onclick = send;

@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="robots" content="noindex,nofollow">
 <title>Users - Malik Admin</title>
-<link rel="stylesheet" href="assets/admin.css">
+<link rel="stylesheet" href="assets/admin.css?v=2">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>window.MALIK_SB_STORAGE_KEY = "malik-admin-auth";</script>
 <script src="../js/supabase.js?v=8"></script>
 <script src="js/notify.js?v=2" data-role="admin" defer></script>
 </head>
 <body>
-<script src="js/admin.js?v=8"></script>
+<script src="js/admin.js?v=9"></script>
 <script>
 Admin.mount("users", "Users", function (v) {
   var A = Admin, e = A.esc, q = "", open = "";
@@ -28,7 +28,8 @@ Admin.mount("users", "Users", function (v) {
         "<td>" + (u.createdAt ? A.fmt(u.createdAt) : "-") + "</td>" +
         "<td>" + u.orders.length + " order<br><small class='g'>" + A.rp(u.total) + "</small></td>" +
         "<td><button class='btn ghost sm' data-u='" + e(u.email) + "'>" + (isOpen ? "Tutup" : "Riwayat") + "</button> " +
-        "<a class='btn ghost sm' style='text-decoration:none' href='chat.html?u=" + encodeURIComponent(u.email) + "'>Chat</a></td></tr>";
+        "<a class='btn ghost sm' style='text-decoration:none' href='chat.html?u=" + encodeURIComponent(u.email) + "'>Chat</a> " +
+        "<button class='btn ghost sm dz' data-del='" + e(u.id) + "' title='Hapus User' aria-label='Hapus User'>" + A.icon("trash") + "</button></td></tr>";
       if (isOpen) {
         r += "<tr class='sub'><td colspan='5'>" + (u.orders.length ? u.orders.map(function (o) {
           return "<div class='bar' style='padding:6px 0'><span>" + e(o.code) + " &bull; " + e(o.product) + " x" + o.qty + " <span class='mut'>(" + A.fmt(o.createdAt) + ")</span></span><span>" + A.rp(o.price) + " " + A.pill(o.status) + "</span></div>";
@@ -39,7 +40,18 @@ Admin.mount("users", "Users", function (v) {
     A.setHTML(tw, "<div class='tw'><table><thead><tr><th>Email</th><th>Status Login</th><th>Terdaftar</th><th>Order</th><th>Aksi</th></tr></thead><tbody>" + rows + "</tbody></table></div>");
   }
   v.querySelector("#q").addEventListener("input", function (ev) { q = ev.target.value.trim().toLowerCase(); draw(); });
+  async function delUser(id, btn) {
+    var u = A.users().filter(function (x) { return x.id === id; })[0]; if (!u) return;
+    if (!(await A.confirmBox("Hapus user permanen?", u.email + " akan dihapus permanen beserta akun login, order, dan chat-nya. Tindakan ini tidak bisa dibatalkan.", "Hapus Permanen"))) return;
+    btn.disabled = true;
+    var r = await A.deleteUser(id);
+    btn.disabled = false;
+    if (!r.ok) { A.alertBox("Gagal menghapus user", r.message); return; }
+    if (open === u.email) open = "";
+    draw();
+  }
   tw.addEventListener("click", function (ev) {
+    var d = ev.target.closest("[data-del]"); if (d) { delUser(d.getAttribute("data-del"), d); return; }
     var b = ev.target.closest("[data-u]"); if (!b) return;
     open = open === b.getAttribute("data-u") ? "" : b.getAttribute("data-u"); draw();
   });
