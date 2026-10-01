@@ -10,7 +10,7 @@
   var LIST = [
     {
       key: "panel", name: "OPEN PANEL", icon: "fa-box-open", accent: "lime",
-      desc: "Panel Pterodactyl praktis untuk menjalankan bot, aplikasi, dan kebutuhan server kamu. Pilih kapasitas RAM sesuai kebutuhan dan mulai tanpa setup yang ribet.",
+      desc: "Panel Pterodactyl dengan RAM dedicated untuk menjalankan bot WhatsApp, Discord, Telegram, hingga aplikasi Node.js dan Python. Aktivasi cepat, console realtime, dan dukungan teknis langsung dari tim Malik Store.",
       variantLabel: "Pilih RAM", qtyLabel: "Jumlah", unit: "/bulan",
       variants: [
         { id: "1gb",  label: "1GB",  tag: "STARTER",    name: "OPEN PANEL RAM 1GB",  price: 1000,  perks: ["1GB Dedicated RAM", "CPU Core Shared 50%", "Panel Pterodactyl Full Access", "Server Active 24 Jam"] },
@@ -28,7 +28,7 @@
     },
     {
       key: "sewa_bot", name: "SEWA BOT", icon: "fa-robot", accent: "blue",
-      desc: "Cocok untuk kamu yang ingin menjalankan bot tanpa repot mengurus server sendiri. Pilih kapasitas sesuai kebutuhan dan biarkan layanan berjalan stabil.",
+      desc: "Bot WhatsApp siap pakai tanpa perlu mengurus server sendiri. Aktif permanen, fitur selalu diperbarui, dan respons cepat untuk kebutuhan group Anda.",
       variantLabel: "Pilih Paket", qtyLabel: "Jumlah", unit: "/sekali bayar",
       variants: [
         { id: "1g", label: "1 Group", tag: "PERMANEN", name: "SEWA BOT - 1 GROUP PERMANEN", price: 15000, perks: ["Bot aktif permanen", "Berlaku untuk 1 Group", "Support update fitur", "Anti-delay response"] },
@@ -38,7 +38,7 @@
     },
     {
       key: "reseller_admin", name: "RESELLER & ADMIN", icon: "fa-user-shield", accent: "yellow",
-      desc: "Pilihan untuk kamu yang ingin mulai menjual layanan digital atau membutuhkan akses pengelolaan yang lebih luas.",
+      desc: "Akses untuk membangun bisnis layanan digital Anda sendiri: kelola panel, jual kembali server dan bot, dengan pendampingan teknis dari Malik Store.",
       variantLabel: "Pilih Akses", qtyLabel: "Jumlah", unit: "/bulan",
       variants: [
         { id: "rpanel", label: "Reseller Panel", tag: "RESELLER LEVEL", name: "RESELLER PANEL PTERODACTYL", price: 15000, unit: "/bulan",

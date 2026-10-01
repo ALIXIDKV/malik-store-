@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Detail Produk - Malik Store</title>
+<meta name="description" content="Detail produk Malik Store: Open Panel Pterodactyl, Sewa Bot WhatsApp, Reseller & Admin Panel.">
+<meta name="theme-color" content="#0b0f14">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<script src="../js/role.js"></script>
+<style>
+:root{--g:#34d399;--bg:#0b0f14;--card:rgba(255,255,255,.04);--line:rgba(255,255,255,.09);--mut:#93a0b4;--tx:#e8edf5;--nav:calc(62px + env(safe-area-inset-bottom,0px))}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;min-height:100vh;color:var(--tx);font-family:'Plus Jakarta Sans',Arial,sans-serif;padding-bottom:calc(var(--nav) + 96px);background:radial-gradient(800px 420px at 80% -10%,rgba(52,211,153,.12),transparent 60%),var(--bg)}
+a{color:inherit;text-decoration:none}
+.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:rgba(11,15,20,.78);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.logo{font-weight:800;letter-spacing:.14em;font-size:15px}.logo span{color:var(--g)}
+.wrap{max-width:1040px;margin:0 auto;padding:18px 16px}
+.crumb{font-size:12px;color:var(--mut);margin-bottom:14px}.crumb a:hover{color:var(--g)}
+.grid{display:grid;gap:22px}@media(min-width:860px){.grid{grid-template-columns:5fr 6fr;align-items:start}}
+.media{position:relative;display:flex;align-items:center;justify-content:center;min-height:260px;border-radius:24px;border:1px solid var(--line);background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.015));overflow:hidden;perspective:800px}
+.media:before{content:"";position:absolute;inset:auto -20% -40% -20%;height:70%;background:radial-gradient(closest-side,var(--ac,var(--g)),transparent);opacity:.18}
+.orb{position:relative;width:128px;height:128px;border-radius:32px;display:flex;align-items:center;justify-content:center;font-size:54px;color:#04120c;background:linear-gradient(145deg,#fff8,var(--ac,var(--g)));box-shadow:0 30px 60px -20px var(--ac,var(--g)),inset 0 1px 0 #fff8;transform:rotateX(14deg) rotateY(-16deg);animation:fl 5s ease-in-out infinite}
+@keyframes fl{50%{transform:rotateX(8deg) rotateY(-8deg) translateY(-8px)}}
+.tag{position:absolute;top:14px;left:14px;padding:5px 12px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.08em;background:rgba(0,0,0,.35);border:1px solid var(--line)}
+h1{margin:0 0 6px;font-size:clamp(26px,5vw,36px);line-height:1.15;letter-spacing:-.02em}
+.rate{padding:0;border:0;background:none;color:var(--mut);font:inherit;font-size:13px;cursor:pointer}.rate b{color:var(--tx)}
+.st{color:#2b3548;letter-spacing:1px;position:relative;display:inline-block}.st:before{content:"★★★★★";position:absolute;left:0;width:var(--p);overflow:hidden;color:#f5b942}
+.desc{color:#b7c2d3;line-height:1.65;font-size:15px;margin:12px 0 18px}
+.lbl{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);margin:0 0 8px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.chips button{min-height:42px;padding:8px 15px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--tx);font:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:.2s}
+.chips button:hover{border-color:var(--ac,var(--g))}
+.chips button[aria-checked=true]{background:var(--ac,var(--g));color:#04120c;border-color:transparent;box-shadow:0 8px 22px -10px var(--ac,var(--g))}
+.price{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}.price b{font-size:36px;letter-spacing:-.02em;color:var(--ac,var(--g))}.price small{color:var(--mut)}
+.qty{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:16px 0;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:var(--card);font-size:14px}
+.step{display:flex}.step button{width:42px;height:42px;border:1px solid var(--line);background:var(--card);color:var(--tx);font-size:20px;cursor:pointer}
+.step button:first-child{border-radius:12px 0 0 12px}.step button:last-child{border-radius:0 12px 12px 0}
+.step input{width:56px;height:42px;text-align:center;border:1px solid var(--line);border-left:0;border-right:0;background:transparent;color:var(--tx);font:inherit;font-size:16px;font-weight:700;-moz-appearance:textfield}
+.step input::-webkit-inner-spin-button,.step input::-webkit-outer-spin-button{-webkit-appearance:none}
+.card{margin-top:22px;padding:20px;border-radius:20px;border:1px solid var(--line);background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.02))}
+.card h2{margin:0 0 14px;font-size:17px}
+.ben{display:grid;gap:12px}@media(min-width:640px){.ben{grid-template-columns:1fr 1fr}}
+.ben div{display:flex;gap:12px;font-size:14px;line-height:1.5;color:#c3cddd}.ben i{flex:none;width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--ac,var(--g));background:rgba(255,255,255,.06)}
+.ben b{display:block;color:var(--tx);font-size:14px}
+.perks{list-style:none;margin:0;padding:0;display:grid;gap:10px;font-size:14px}.perks li{display:flex;gap:10px}.perks li:before{content:"✓";color:var(--ac,var(--g));font-weight:800}
+.rv{padding:14px 0;border-bottom:1px solid var(--line)}.rv:last-of-type{border-bottom:0}.rv b{font-size:14px}.rv .s{float:right;color:#f5b942;font-size:13px}.rv small{display:block;margin-top:2px;color:var(--mut);font-size:11px}.rv p{margin:8px 0 0;font-size:14px;line-height:1.55;color:#c3cddd;word-break:break-word}
+.ver{display:inline-block;margin-top:6px;font-size:11px;font-weight:700;color:var(--g)}
+.empty{color:var(--mut);font-size:13px;padding:8px 0}
+.ghost{margin-top:12px;padding:11px 16px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--tx);font:inherit;font-weight:600;font-size:13px;cursor:pointer}
+.bar{position:fixed;left:0;right:0;bottom:var(--nav);z-index:6;padding:12px 16px;background:rgba(11,15,20,.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--line)}
+.bar>div{max-width:1040px;margin:0 auto;display:flex;align-items:center;gap:14px}
+.bar .t{flex:none;font-size:11px;color:var(--mut)}.bar .t b{display:block;font-size:19px;color:var(--tx)}
+.go{flex:1;min-height:48px;border:0;border-radius:14px;font:inherit;font-weight:800;font-size:14px;cursor:pointer;color:#04120c;background:var(--ac,var(--g));box-shadow:0 14px 30px -12px var(--ac,var(--g))}
+.go:active{transform:translateY(1px)}
+.mk-admin-note{display:none;flex:1;padding:12px 14px;border-radius:12px;border:1px dashed var(--line);color:var(--mut);font-size:13px}
+.nf{text-align:center;padding:70px 10px;color:var(--mut)}.nf a{color:var(--g)}
+body.a-blue{--ac:#38bdf8}body.a-yellow{--ac:#fbbf24}body.a-lime{--ac:#34d399}
+@media(prefers-reduced-motion:reduce){.orb{animation:none}}
+</style>
+</head>
+<body>
+<div class="top"><a class="logo" href="../index.html">MALIK<span>STORE</span></a><a class="crumb" style="margin:0" href="../index.html#harga-panel">&larr; Semua produk</a></div>
+<div class="wrap" id="app">
+  <div class="crumb"><a href="../index.html">Beranda</a> / <a href="../index.html#harga-panel">Produk</a> / <span id="crumb"></span></div>
+  <section class="grid">
+    <div class="media"><span class="tag" id="tag"></span><div class="orb"><i id="icon" class="fa-solid"></i></div></div>
+    <div>
+      <h1 id="name"></h1>
+      <button class="rate" id="rate" type="button">Memuat ulasan...</button>
+      <p class="desc" id="desc"></p>
+      <div class="lbl" id="vlabel"></div><div class="chips" id="chips" role="radiogroup"></div>
+      <div class="price"><b id="price"></b><small id="unit"></small></div>
+      <div class="qty mk-hide-admin"><span>Jumlah</span><div class="step"><button type="button" id="minus" aria-label="Kurangi">−</button><input id="qty" type="number" inputmode="numeric" min="1" max="99" value="1"><button type="button" id="plus" aria-label="Tambah">+</button></div></div>
+    </div>
+  </section>
+  <section class="card"><h2>Keunggulan</h2><div class="ben" id="ben"></div></section>
+  <section class="card"><h2>Spesifikasi paket <span id="pk" style="color:var(--mut);font-weight:600"></span></h2><ul class="perks" id="perks"></ul></section>
+  <section class="card"><h2>Ulasan Pembeli</h2><div id="revs"><div class="empty">Memuat ulasan...</div></div><button class="ghost" id="allrev" type="button">Lihat semua &amp; tulis ulasan</button></section>
+</div>
+<div class="nf" id="nf" style="display:none"><p>Produk tidak ditemukan.</p><a href="../index.html#harga-panel">Lihat semua produk</a></div>
+<div class="bar" id="bar"><div>
+  <span class="t mk-hide-admin">Total<b id="total"></b></span>
+  <button class="go mk-hide-admin" id="order" type="button">Order Sekarang</button>
+  <div class="mk-admin-note">Mode admin: pembuatan order &amp; chat user dinonaktifkan. Kelola lewat <a href="/admin/dashboard.html" style="color:var(--g)">Panel Admin</a>.</div>
+</div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js?v=9"></script>
+<script src="../js/products.js?v=2"></script>
+<script src="../js/auth.js?v=13"></script>
+<script src="../js/reviews.js?v=1"></script>
+<script src="../js/nav.js?v=1"></script>
+<script src="../js/notify.js?v=3" defer></script>
+<script>
+(function () {
+  var P = MalikProducts, $ = function (i) { return document.getElementById(i); }, q = new URLSearchParams(location.search);
+  var SLUG = { "open-panel": "panel", "sewa-bot": "sewa_bot", "reseller-admin": "reseller_admin" };
+  var key = q.get("p") || SLUG[location.pathname.split("/").filter(Boolean).pop()] || "", prod = P.product(key);
+  var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
+  if (!prod) { $("app").style.display = $("bar").style.display = "none"; $("nf").style.display = "block"; return; }
+  var BEN = {
+    panel: [["fa-bolt", "Aktivasi cepat", "Panel disiapkan otomatis setelah order dikonfirmasi."], ["fa-shield-halved", "Pterodactyl legal", "Lisensi resmi, aman untuk bot dan aplikasi produksi."], ["fa-server", "Resource dedicated", "RAM dedicated, tidak berebut dengan pengguna lain."], ["fa-headset", "Dukungan teknis", "Bantuan langsung dari tim Malik Store via chat."]],
+    sewa_bot: [["fa-robot", "Siap pakai", "Tanpa server sendiri, bot langsung aktif di group Anda."], ["fa-infinity", "Aktif permanen", "Sekali bayar, tanpa biaya perpanjangan bulanan."], ["fa-rotate", "Update fitur", "Fitur baru otomatis tersedia tanpa biaya tambahan."], ["fa-gauge-high", "Respons cepat", "Server dioptimalkan agar bot tetap responsif."]],
+    reseller_admin: [["fa-store", "Bangun bisnis sendiri", "Jual kembali panel dan bot dengan harga Anda."], ["fa-sliders", "Kontrol penuh", "Kelola user, server, dan resource dengan bebas."], ["fa-handshake-angle", "Pendampingan", "Dibantu tim teknis dari tahap awal hingga berjalan."], ["fa-chart-line", "Margin keuntungan", "Struktur harga dirancang untuk penjualan kembali."]]
+  };
+  var vid = q.get("v"), qty = P.clampQty(q.get("q")); if (!P.valid(key, vid)) vid = prod.variants[0].id;
+  document.body.classList.add("a-" + prod.accent);
+  document.title = prod.name + " - Malik Store"; $("crumb").textContent = prod.name; $("name").textContent = prod.name; $("desc").textContent = prod.desc;
+  $("icon").className = "fa-solid " + prod.icon; $("vlabel").textContent = prod.variantLabel;
+  var md = document.querySelector('meta[name="description"]'); if (md) md.content = prod.desc;
+  var low = Math.min.apply(null, prod.variants.map(function (v) { return v.price; })), high = Math.max.apply(null, prod.variants.map(function (v) { return v.price; }));
+  var ld = document.createElement("script"); ld.type = "application/ld+json";
+  ld.textContent = JSON.stringify({ "@context": "https://schema.org", "@type": "Product", name: prod.name, description: prod.desc, brand: { "@type": "Brand", name: "Malik Store" }, offers: { "@type": "AggregateOffer", priceCurrency: "IDR", lowPrice: low, highPrice: high, offerCount: prod.variants.length } });
+  document.head.appendChild(ld);
+  $("ben").innerHTML = BEN[key].map(function (b) { return '<div><i class="fa-solid ' + b[0] + '"></i><span><b>' + esc(b[1]) + "</b>" + esc(b[2]) + "</span></div>"; }).join("");
+  $("chips").innerHTML = prod.variants.map(function (v) { return '<button type="button" role="radio" aria-checked="false" data-v="' + v.id + '">' + esc(v.label) + "</button>"; }).join("");
+  $("chips").onclick = function (e) { var b = e.target.closest("[data-v]"); if (b) { vid = b.dataset.v; draw(); } };
+  function draw() {
+    var v = P.variant(key, vid);
+    Array.prototype.forEach.call($("chips").children, function (b) { b.setAttribute("aria-checked", String(b.dataset.v === vid)); });
+    $("price").textContent = P.rp(v.price); $("unit").textContent = P.unit(prod, v); $("tag").textContent = v.tag; $("pk").textContent = "· " + v.label;
+    $("perks").innerHTML = v.perks.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("");
+    $("qty").value = qty; $("total").textContent = P.rp(v.price * qty);
+    history.replaceState(null, "", location.pathname + "?p=" + key + "&v=" + vid + "&q=" + qty);
+  }
+  $("minus").onclick = function () { qty = P.clampQty(qty - 1); draw(); };
+  $("plus").onclick = function () { qty = P.clampQty(qty + 1); draw(); };
+  $("qty").onchange = function (e) { qty = P.clampQty(e.target.value); draw(); };
+  // Order: admin tidak bisa (tombol disembunyikan role.js + dijaga startOrder & database). Guest -> login dulu, lalu lanjut.
+  $("order").onclick = function () { startOrder(key, vid, qty); };
+  draw();
+  // Rating & ulasan: dari database (hanya pembeli dengan order Selesai yang bisa menulis; dijaga RLS + trigger).
+  function load() {
+    MalikReviews.stats().then(function (a) {
+      var s = a[key]; $("rate").innerHTML = s.total ? '<span class="st" style="--p:' + Math.round(s.avg / 5 * 100) + '%">★★★★★</span> <b>' + s.avg.toFixed(1) + "</b> (" + s.total + " ulasan)" : "Belum ada ulasan";
+    });
+    supabaseClient.from("reviews").select("username,rating,comment,variant,created_at").eq("product_key", key).order("created_at", { ascending: false }).limit(5).then(function (r) {
+      var l = r.data || [];
+      $("revs").innerHTML = l.length ? l.map(function (x) {
+        return '<div class="rv"><span class="s">' + MalikReviews.stars(x.rating) + "</span><b>" + esc(x.username || "Pembeli") + "</b><small>" + esc(new Date(x.created_at).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })) + (x.variant ? " · " + esc(x.variant) : "") + '</small><span class="ver">✔ Pembelian terverifikasi</span>' + (x.comment ? "<p>" + esc(x.comment) + "</p>" : "") + "</div>";
+      }).join("") : '<div class="empty">Belum ada ulasan. Ulasan hanya dari pembeli yang ordernya sudah selesai.</div>';
+    }, function () { $("revs").innerHTML = '<div class="empty">Ulasan belum dapat dimuat.</div>'; });
+  }
+  $("rate").onclick = $("allrev").onclick = function () { MalikReviews.open(key, { onClose: load }); };
+  load();
+})();
+</script>
+</body>
+</html>

@@ -45,7 +45,8 @@
 <link rel="apple-touch-icon" href="/assets/image/apple-touch-icon.png"/>
 <!-- Schema.org JSON-LD -->
 <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Organization", "@id": "https://malik-store.aliz.web.id/#org", "name": "Malik Store", "url": "https://malik-store.aliz.web.id/", "logo": "https://malik-store.aliz.web.id/assets/image/favicon-512.png", "image": "https://malik-store.aliz.web.id/assets/image/popup.jpg", "sameAs": ["https://whatsapp.com/channel/0029Vb8xDuZDeON4wmxV6O1P"], "contactPoint": {"@type": "ContactPoint", "contactType": "customer support", "url": "https://wa.me/6285782100757", "availableLanguage": "id"}}, {"@type": "WebSite", "@id": "https://malik-store.aliz.web.id/#website", "url": "https://malik-store.aliz.web.id/", "name": "Malik Store", "inLanguage": "id-ID", "publisher": {"@id": "https://malik-store.aliz.web.id/#org"}}, {"@type": "ProfessionalService", "@id": "https://malik-store.aliz.web.id/#business", "name": "Malik Store", "url": "https://malik-store.aliz.web.id/", "image": "https://malik-store.aliz.web.id/assets/image/popup.jpg", "description": "Malik Store menyediakan Open Panel Pterodactyl legal dengan RAM dedicated, Sewa Bot WhatsApp permanen, serta paket Reseller & Admin Panel. Harga terjangkau, aktivasi cepat, support responsif.", "priceRange": "Rp1.000 - Rp30.000", "areaServed": "ID", "parentOrganization": {"@id": "https://malik-store.aliz.web.id/#org"}, "hasOfferCatalog": {"@type": "OfferCatalog", "name": "Layanan Malik Store", "itemListElement": [{"@type": "Offer", "priceCurrency": "IDR", "price": "1000", "itemOffered": {"@type": "Service", "name": "Open Panel Pterodactyl", "description": "Panel Pterodactyl legal dengan pilihan RAM 1GB sampai Unlimited."}}, {"@type": "Offer", "priceCurrency": "IDR", "price": "15000", "itemOffered": {"@type": "Service", "name": "Sewa Bot WhatsApp", "description": "Bot WhatsApp aktif permanen untuk 1 sampai 3 group."}}, {"@type": "Offer", "priceCurrency": "IDR", "price": "15000", "itemOffered": {"@type": "Service", "name": "Reseller & Admin Panel", "description": "Reseller Panel, Admin Panel, dan Reseller Bot untuk mulai berjualan layanan digital."}}]}}]}</script>
-<link href="css/style.css?v=4" rel="stylesheet"/><link href="css/catalog.css?v=2" rel="stylesheet"/>
+<link href="css/style.css?v=4" rel="stylesheet"/><link href="css/catalog.css?v=2" rel="stylesheet"/><link href="css/premium.css?v=4" rel="stylesheet"/>
+<script src="js/role.js"></script>
 </head>
 <body class="min-h-screen flex flex-col selection:bg-neo-lime selection:text-black">
 <div id="malik-loader">
@@ -64,6 +65,7 @@
     </div>
 </div>
 
+<script>try{if(sessionStorage.getItem("malik_loaded")){var l=document.getElementById("malik-loader");if(l)l.remove();}}catch(e){}</script>
 <!-- ANNOUNCEMENT BANNER -->
 <div class="bg-neo-yellow text-black font-extrabold text-xs md:text-sm py-2 px-4 border-b-4 border-black text-center tracking-wide flex items-center justify-center gap-2">
 <span class="bg-black text-white px-2 py-0.5 text-xs font-mono">OFFICIAL</span>
@@ -98,7 +100,7 @@
 <span class="w-2.5 h-2.5 rounded-full bg-neo-lime pulse-status"></span>
 <span class="text-gray-300">Node Status: <strong class="text-neo-lime">ONLINE (99.9%)</strong></span>
 </div>
-<button class="btn-neo bg-neo-lime text-black border-3 border-black px-3 md:px-4 py-2 font-black text-xs md:text-sm shadow-brutal flex items-center gap-2 whitespace-nowrap shrink-0" onclick="startOrder()">
+<button class="mk-hide-admin btn-neo bg-neo-lime text-black border-3 border-black px-3 md:px-4 py-2 font-black text-xs md:text-sm shadow-brutal flex items-center gap-2 whitespace-nowrap shrink-0" onclick="startOrder()">
 <i class="fa-solid fa-bolt"></i> Mulai Order
                 </button>
 <div class="hidden xl:flex items-center gap-3">
@@ -135,6 +137,7 @@
 <!-- HERO SECTION -->
 <section class="hero-section relative pt-12 pb-20 px-4 lg:px-8 border-b-4 border-black bg-[radial-gradient(#1f2937_1px,transparent_1px)] [background-size:24px_24px]">
 <div class="hero-glow g1"></div><div class="hero-glow g2"></div>
+<div class="hero-visual" aria-hidden="true"><div class="hv hv-b"><small>Uptime 30 hari</small><b>99.9%</b></div><div class="hv hv-a"><span class="hv-dot"></span><small>OPEN PANEL</small><b>Server Online</b><div class="hv-bar"><i></i></div><div class="hv-row"><span>RAM</span><span>Dedicated</span></div></div></div>
 <div class="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 items-center">
 <!-- LEFT COLUMN -->
 <div class="lg:col-span-12 max-w-4xl space-y-6">
@@ -173,7 +176,7 @@
                         </p>
 <!-- CTA BUTTONS -->
 <div class="hero-cta">
-<button class="hero-btn hero-btn-primary" onclick="startOrder()">
+<button class="mk-hide-admin hero-btn hero-btn-primary" onclick="startOrder()">
 <svg aria-hidden="true" viewbox="0 0 24 24"><path d="M12 3a9 9 0 00-7.8 13.5L3 21l4.6-1.2A9 9 0 1012 3z"></path></svg>
                                 Mulai Order Sekarang
                                 <svg aria-hidden="true" class="arrow" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
@@ -223,7 +226,7 @@
 <div class="mk-head" id="categories">
 <span class="mk-kicker">Katalog</span>
 <h2>Layanan Hosting &amp; Bot Pilihan</h2>
-<p>Pilih produk, tentukan varian dan jumlah, lalu order lewat akun Malik Store.</p>
+<p>Pilih produk, lihat detail dan ulasan pembeli, lalu order lewat akun Malik Store.</p>
 </div>
 <div class="mk-grid" id="mk-catalog"></div>
 <noscript><p style="color:#9ca3af;text-align:center;margin-top:20px">Aktifkan JavaScript untuk melihat katalog produk.</p></noscript>
@@ -273,7 +276,7 @@
 </div>
 <div class="max-w-7xl mx-auto border-t border-gray-900 mt-8 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs font-mono">
 <p>© 2026 Malik Bot Rental. All Rights Reserved.</p>
-<p class="text-gray-500 mt-2 sm:mt-0">Neo-Brutalist SaaS Platform • Open Panel Legal Pterodactyl</p>
+<p class="text-gray-500 mt-2 sm:mt-0">Open Panel Legal Pterodactyl • Sewa Bot • Reseller</p>
 </div>
 <section class="py-16 px-4 lg:px-8 bg-black border-b-4 border-black">
 <div class="max-w-4xl mx-auto bg-neo-card border-4 border-black p-8 shadow-brutal-lg">
@@ -297,7 +300,7 @@ Chat Konsultasi
 
 <!-- MALIKBOT V11 POLISH -->
 
-<a class="malik-float-wa" href="/account/dashboard/chat.html" onclick="startChat();return false;" aria-label="Chat Admin">
+<a class="malik-float-wa mk-hide-admin" href="/account/dashboard/chat.html" onclick="startChat();return false;" aria-label="Chat Admin">
 <i class="fa-solid fa-comment-dots"></i> CHAT ADMIN
 </a>
 
@@ -355,10 +358,10 @@ WhatsApp Channel Malik Bot
 
 </div></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase.js?v=9"></script>
-<script src="js/products.js?v=1"></script>
-<script src="js/auth.js?v=11"></script>
+<script src="js/products.js?v=2"></script>
+<script src="js/auth.js?v=13"></script>
 <script src="js/reviews.js?v=1"></script>
-<script src="js/catalog.js?v=1"></script>
+<script src="js/catalog.js?v=3"></script>
 <script src="js/nav.js?v=1"></script>
 <script src="js/notify.js?v=3" defer></script>
 <script src="js/script.js?v=6"></script>
@@ -379,6 +382,7 @@ WhatsApp Channel Malik Bot
     if (!loader || !video) return;
 
     var finished = false;
+    try { sessionStorage.setItem("malik_loaded", "1"); } catch (e) {}   // loading hanya sekali per sesi browser
 
     /** @param {number} value */
     function setProgress(value) {
@@ -420,6 +424,7 @@ WhatsApp Channel Malik Bot
     function finish() {
         if (finished) return;
         finished = true;
+        try { sessionStorage.setItem("malik_loaded", "1"); } catch (e) {}
         setProgress(100);
         if (label) label.textContent = "SELESAI!";
 
@@ -528,8 +533,10 @@ WhatsApp Channel Malik Bot
 (function () {
     var popup = document.getElementById("ad-popup");
     if (!popup) return;
+    try { if (sessionStorage.getItem("malik_popup_seen")) return; } catch (e) {}   // sekali per sesi browser
 
     function open() {
+        try { sessionStorage.setItem("malik_popup_seen", "1"); } catch (e) {}
         popup.hidden = false;
         requestAnimationFrame(function () { popup.classList.add("show"); });
         document.documentElement.classList.add("popup-open");

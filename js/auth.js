@@ -71,7 +71,9 @@
       if (profileCache && profileCache.id === u.id && !force) return profileCache;
       var r = await sb().from("profiles").select("*").eq("id", u.id).maybeSingle();
       var p = r.data || { id: u.id, email: u.email, username: String(u.email || "").split("@")[0], role: "user", created_at: u.created_at };
-      profileCache = p; return p;
+      profileCache = p;
+      try { localStorage.setItem("malik_role_hint", JSON.stringify({ uid: u.id, role: p.role === "admin" ? "admin" : "user" })); sessionStorage.setItem("malik_role", p.role === "admin" ? "admin" : "user"); document.documentElement.classList.toggle("mk-admin", p.role === "admin"); } catch (e) {}
+      return p;
     },
 
     // Admin = profiles.role 'admin' (sesi Supabase yang sama dipakai website user dan /admin).
@@ -94,6 +96,13 @@
         if (NEXT_RE.test(location.pathname + location.hash)) MalikAuth.setNext(location.pathname + location.hash);
         location.replace(PAGES.account); return null;
       }
+      return u;
+    },
+
+    // Halaman khusus customer (order, chat admin): admin dialihkan ke panel admin.
+    requireCustomer: async function (adminTo) {
+      var u = await MalikAuth.requireLogin(); if (!u) return null;
+      if (await MalikAuth.isAdmin()) { location.replace(adminTo || "/admin/dashboard.html"); return null; }
       return u;
     },
 
@@ -160,6 +169,7 @@
 
     logout: async function () {
       profileCache = null;
+      try { localStorage.removeItem("malik_role_hint"); sessionStorage.removeItem("malik_role"); document.documentElement.classList.remove("mk-admin"); } catch (e) {}
       if (!sb()) return;
       try { await sb().auth.signOut(); } catch (e) { logErr("logout", e); }
       try { await sb().auth.signOut({ scope: "local" }); } catch (e) {}   // pastikan sesi di browser terhapus
@@ -171,6 +181,7 @@
     saveOrder: async function (o) {
       var u = await getUser();
       if (!u) return { ok: false, message: "Sesi habis. Silakan login lagi." };
+      if (await MalikAuth.isAdmin()) return { ok: false, message: "Akun admin tidak dapat membuat order." };
       var P = global.MalikProducts, name, total;
       if (o.key) {
         var v = P && P.variant(o.key, o.vid);
@@ -190,6 +201,7 @@
     // saat refresh / klik ganda / dipanggil ulang. Format: Pesanan Baru, Customer, Produk, Harga, Status.
     orderToChat: async function (order, o) {
       var u = await getUser(); if (!u || !order || !order.id) return false;
+      if (await MalikAuth.isAdmin()) return false;
       var code = MalikAuth.orderCode(order.id);
       var d = await sb().from("messages").select("id").eq("user_id", u.id).like("message", "%Order ID: " + code + "%").limit(1);
       if (d.error) { logErr("orderToChat", d.error); return false; }
@@ -226,9 +238,11 @@
     }
   };
   global.MalikAuth = MalikAuth;
+  getUser().then(function (u) { if (u) MalikAuth.profile().catch(function () {}); }).catch(function () {});   // sinkronkan role (class mk-admin)
 
   // Floating button CHAT ADMIN: sudah login -> langsung chat; belum -> login dulu lalu otomatis ke chat.
   global.startChat = async function () {
+    if (await MalikAuth.isAdmin()) { location.href = "/admin/chat.html"; return false; }   // admin -> inbox admin, bukan chat user
     if (await MalikAuth.isLoggedIn()) location.href = PAGES.chat;
     else { MalikAuth.setNext("/account/dashboard/chat.html"); location.href = PAGES.account; }
     return false;
@@ -246,6 +260,7 @@
       if (el) { if (global.scrollToSection) global.scrollToSection("harga-panel"); else el.scrollIntoView({ behavior: "smooth", block: "start" }); return false; }
       location.href = PAGES.home + "#harga-panel"; return false;
     }
+    if (await MalikAuth.isAdmin()) { location.href = "/admin/dashboard.html"; return false; }   // admin tidak boleh order
     if (await MalikAuth.isLoggedIn()) location.href = MalikAuth.orderUrl(o);
     else { MalikAuth.setPending(o); location.href = PAGES.account; }
     return false;

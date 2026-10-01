@@ -103,5 +103,19 @@
         }
       ]
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/produk/open-panel",
+      "destination": "/product/index.html?p=panel"
+    },
+    {
+      "source": "/produk/sewa-bot",
+      "destination": "/product/index.html?p=sewa_bot"
+    },
+    {
+      "source": "/produk/reseller-admin",
+      "destination": "/product/index.html?p=reseller_admin"
+    }
   ]
 }

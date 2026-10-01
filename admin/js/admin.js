@@ -78,7 +78,8 @@
       .then(function (v) { return v === true; });
   }
   function alertBox(title, text) { return dialog({ title: title, text: text, actions: [{ label: "OK", value: true }] }); }
-  var MIGRATE_HINT = " Jalankan file supabase_delete_migration.sql di Supabase > SQL Editor.";
+  var MIGRATE_HINT = " Jalankan file supabase_final_migration.sql di Supabase > SQL Editor.";
+  function dbMsg(e) { var m = String((e && e.message) || e || ""); return /permission denied|42501/i.test(m) || (e && e.code === "42501") ? m + MIGRATE_HINT : m; }
 
 
   /* ---------- auth admin (sesi Supabase yang sama dengan website user) ---------- */
@@ -211,7 +212,7 @@
     var p = profileByEmail(email);
     if (!p) return { ok: false, message: "User tidak ditemukan." };
     var r = await sb().from("messages").delete().eq("user_id", p.id).select("id");
-    if (r.error) return { ok: false, message: r.error.message };
+    if (r.error) return { ok: false, message: dbMsg(r.error) };
     if (!(r.data || []).length && C.messages.some(function (m) { return m.user_id === p.id; })) return { ok: false, message: "Chat tidak terhapus." + MIGRATE_HINT };
     C.messages = C.messages.filter(function (m) { return m.user_id !== p.id; });
     runTicks(); return { ok: true };
@@ -223,7 +224,7 @@
     var q = scope === "all" ? sb().from("messages").delete().in("id", ids).select("id")
                             : sb().from("messages").update({ hidden_for_admin: true }).in("id", ids).select("id");
     var r = await q;
-    if (r.error) return { ok: false, message: r.error.message + (/hidden_for_admin/.test(r.error.message) ? MIGRATE_HINT : "") };
+    if (r.error) return { ok: false, message: dbMsg(r.error) + (/hidden_for_admin/.test(r.error.message) ? MIGRATE_HINT : "") };
     var done = (r.data || []).map(function (x) { return String(x.id); });
     if (!done.length) return { ok: false, message: "Pesan tidak terhapus." + MIGRATE_HINT };
     if (scope === "all") C.messages = C.messages.filter(function (m) { return done.indexOf(String(m.id)) < 0; });

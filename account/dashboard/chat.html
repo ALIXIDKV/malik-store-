@@ -5,6 +5,7 @@
 <meta name="robots" content="noindex,nofollow,noarchive">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Chat Admin - Malik Store</title>
+<script src="../../js/role.js"></script>
 <style>
 @font-face{font-family:Malik;src:url("../../assets/font/font.ttf")}
 *{box-sizing:border-box}
@@ -29,7 +30,7 @@ body{margin:0;height:100dvh;padding-bottom:var(--mk-nav-h,0px);display:flex;flex
 <div class="s"><input id="mi" maxlength="500" placeholder="Tulis pesan..." autocomplete="off"><button id="sb">KIRIM</button></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../../js/supabase.js?v=9"></script>
-<script src="../../js/auth.js?v=11"></script>
+<script src="../../js/auth.js?v=13"></script>
 <script src="../../js/nav.js?v=1"></script>
 <script src="../../js/notify.js?v=3" defer></script>
 <script>
@@ -58,7 +59,7 @@ async function send(){
   add(r.data);
 }
 async function init(){
-  me = await MalikAuth.requireLogin(); if(!me) return;
+  me = await MalikAuth.requireCustomer("/admin/chat.html"); if(!me) return;
   $("who").textContent = me.email;
   const r = await supabaseClient.from("messages").select("*").eq("user_id", me.id).order("created_at", { ascending: true }).limit(300);
   msgs = r.data || []; draw(true);
