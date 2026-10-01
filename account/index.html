@@ -10,11 +10,7 @@
     font-family:Malik;
     src:url("../assets/font/font.ttf");
 }
-
-*{
-    box-sizing:border-box;
-}
-
+*{box-sizing:border-box}
 body{
     margin:0;
     min-height:100vh;
@@ -30,103 +26,71 @@ body{
     justify-content:center;
     padding:20px;
 }
-
 .auth-box{
     width:100%;
     max-width:390px;
-    padding:35px 28px;
+    padding:30px 26px 28px;
     border-radius:22px;
     background:rgba(255,255,255,.08);
     backdrop-filter:blur(15px);
     border:1px solid rgba(0,255,255,.35);
     box-shadow:0 0 40px rgba(0,200,255,.25);
 }
+.brand{text-align:center}
+.brand h1{margin:0;font-size:34px;letter-spacing:2px}
+.brand span{color:#00ff66}
+.brand p{color:#b8c1d1;letter-spacing:3px;font-size:13px;margin:6px 0 0}
 
-.brand{
-    text-align:center;
+.tabs{display:flex;margin:24px 0 20px;border-bottom:1px solid rgba(255,255,255,.18)}
+.tabs button{
+    flex:1;width:auto;margin:0;padding:12px 0;border:0;border-radius:0;background:transparent;
+    color:#b8c1d1;font:inherit;font-weight:bold;letter-spacing:2px;font-size:14px;cursor:pointer;
+    border-bottom:2px solid transparent;margin-bottom:-1px;
 }
+.tabs button.on{color:#fff;border-bottom-color:#00ff66}
 
-.brand h1{
-    margin:0;
-    font-size:34px;
-    letter-spacing:2px;
-}
-
-.brand span{
-    color:#00ff66;
-}
-
-.brand p{
-    color:#b8c1d1;
-    letter-spacing:3px;
-    font-size:13px;
-}
-
-.page-title{
-    text-align:center;
-    margin:35px 0 20px;
-}
-
-.field{
-    margin-bottom:18px;
-}
-
-.field label{
-    display:block;
-    margin-bottom:8px;
-    color:#d8d8d8;
-}
-
+.field{margin-bottom:16px}
+.field label{display:block;margin-bottom:8px;color:#d8d8d8;font-size:14px}
 input{
     width:100%;
-    padding:15px;
+    padding:14px 15px;
     border-radius:12px;
     border:1px solid rgba(255,255,255,.25);
     background:rgba(0,0,0,.35);
     color:white;
     outline:none;
+    font:inherit;
+    font-size:16px;
 }
+input:focus{border-color:#00ff66}
+input::placeholder{color:rgba(255,255,255,.4)}
 
-input:focus{
-    border-color:#00ff66;
+.code-row{display:flex;gap:10px}
+.code-row input{flex:1;min-width:0;letter-spacing:4px}
+.code-row .send{
+    flex:none;width:auto;min-width:118px;margin:0;padding:0 12px;border:1px solid #00ff66;border-radius:12px;
+    background:transparent;color:#00ff66;font:inherit;font-weight:bold;font-size:13px;cursor:pointer;
 }
+.code-row .send:disabled{opacity:.55;cursor:not-allowed}
 
-button{
-    width:100%;
-    padding:15px;
-    margin-top:10px;
-    border:0;
-    border-radius:12px;
-    background:linear-gradient(90deg,#00ff66,#00d9ff);
-    font-weight:bold;
-    cursor:pointer;
+.btn{
+    display:block;width:100%;padding:15px;margin-top:6px;border:0;border-radius:12px;
+    background:linear-gradient(90deg,#00ff66,#00d9ff);color:#000;
+    font:inherit;font-weight:bold;font-size:15px;cursor:pointer;
 }
+.btn:disabled{opacity:.7;cursor:wait}
+.btn.loading:after,.send.loading:after{
+    content:"";display:inline-block;width:12px;height:12px;margin-left:8px;vertical-align:-1px;
+    border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .7s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-.link{
-    text-align:center;
-    margin-top:22px;
-    color:#ddd;
-}
-
-a{
-    color:#00ff66;
-}
-
-.hide{
-    display:none;
-}
-
-.auth-box.checking{
-    visibility:hidden;
-}
-
-.msg{
-    min-height:18px;
-    margin:0;
-    color:#ff6b6b;
-    font-size:13px;
-    text-align:center;
-}
+.msg{min-height:18px;margin:2px 0 10px;font-size:13px;text-align:center;line-height:1.4}
+.msg.err{color:#ff6b6b}
+.msg.ok{color:#00ff66}
+.hint{margin:6px 0 0;font-size:12px;color:#9aa7bd}
+.hide{display:none}
+.auth-box.checking{visibility:hidden}
 </style>
 </head>
 
@@ -139,112 +103,152 @@ a{
 <p>DIGITAL SERVICE HUB</p>
 </div>
 
+<div class="tabs" role="tablist">
+<button type="button" id="tab-login" class="on" role="tab" aria-selected="true" onclick="showTab('login')">MASUK</button>
+<button type="button" id="tab-register" role="tab" aria-selected="false" onclick="showTab('register')">DAFTAR</button>
+</div>
 
-<div id="login">
-<h2 class="page-title">Masuk Akun</h2>
-
+<form id="login" novalidate onsubmit="return doLogin(event)">
 <div class="field">
-<label>Email</label>
-<input id="login-email" type="email" placeholder="email@gmail.com" autocomplete="email">
+<label for="login-email">Email</label>
+<input id="login-email" type="email" placeholder="email@gmail.com" autocomplete="email" inputmode="email">
 </div>
 
 <div class="field">
-<label>Password</label>
+<label for="login-pass">Password</label>
 <input id="login-pass" type="password" placeholder="Password" autocomplete="current-password">
 </div>
 
-<p id="auth-msg" class="msg" role="alert"></p>
+<p id="login-msg" class="msg err" role="alert"></p>
 <pre id="auth-debug" class="hide" style="white-space:pre-wrap;word-break:break-all;font-size:11px;color:#9fe;background:rgba(0,0,0,.45);padding:10px;border-radius:10px;margin:8px 0 0"></pre>
-<button onclick="doLogin()">LOGIN</button>
+<button type="submit" id="login-btn" class="btn">MASUK</button>
+</form>
 
-<div class="link">
-Belum punya akun?
-<a onclick="registerPage()">Daftar</a>
-</div>
-</div>
-
-
-<div id="register" class="hide">
-<h2 class="page-title">Buat Akun</h2>
-
+<form id="register" class="hide" novalidate onsubmit="return doRegister(event)">
 <div class="field">
-<label>Email</label>
-<input id="reg-email" type="email" placeholder="email@gmail.com" autocomplete="email">
+<label for="reg-email">Email</label>
+<input id="reg-email" type="email" placeholder="email@gmail.com" autocomplete="email" inputmode="email">
 </div>
 
 <div class="field">
-<label>Password</label>
-<input id="reg-pass" type="password" placeholder="Password (min. 6 karakter)" autocomplete="new-password">
+<label for="reg-name">Username / Nama</label>
+<input id="reg-name" type="text" placeholder="Nama kamu" maxlength="40" autocomplete="nickname">
 </div>
 
-<button onclick="doRegister()">DAFTAR</button>
-
-<div class="link">
-Sudah punya akun?
-<a onclick="loginPage()">Login</a>
-</div>
+<div class="field">
+<label for="reg-pass">Password</label>
+<input id="reg-pass" type="password" placeholder="Min. 6 karakter" autocomplete="new-password">
 </div>
 
+<div class="field">
+<label for="reg-code">Kode Verifikasi</label>
+<div class="code-row">
+<input id="reg-code" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="6 digit" autocomplete="one-time-code">
+<button type="button" id="send-btn" class="send" onclick="doSendCode()">Kirim Kode</button>
+</div>
+<p class="hint">Kode dikirim ke email dan berlaku 10 menit.</p>
+</div>
 
+<p id="reg-msg" class="msg err" role="alert"></p>
+<button type="submit" id="reg-btn" class="btn">DAFTAR</button>
+</form>
 
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/supabase.js?v=8"></script>
-<script src="../js/auth.js?v=8"></script>
+<script src="../js/auth.js?v=9"></script>
 <script src="../js/password-toggle.js?v=1"></script>
 <script>
-const login=document.getElementById("login");
-const register=document.getElementById("register");
-
-function loginPage(){
-login.classList.remove("hide");
-register.classList.add("hide");
-}
-
-function registerPage(){
-login.classList.add("hide");
-register.classList.remove("hide");
-}
-
 const $ = (id) => document.getElementById(id);
-const say = (t) => { $("auth-msg").textContent = t || ""; };
+const EMAIL_RE = /^\S+@\S+\.\S+$/;
 // Mode debug: buka halaman ini dengan ?debug=1 untuk melihat error Supabase asli + diagnosa koneksi.
 const dbg = (o) => { if(!MalikAuth.debug) return; const el = $("auth-debug"); el.classList.remove("hide"); el.textContent = typeof o === "string" ? o : JSON.stringify(o, null, 2); };
-let busy = false;
 
-// Setelah login: lanjut ke order (paket yang tadi dipilih dibawa serta), atau ke dashboard.
+function note(id, text, type){ const el = $(id); el.textContent = text || ""; el.className = "msg " + (type || "err"); }
+function loading(btn, on, text){
+  if(on){ btn.dataset.label = btn.textContent; btn.textContent = text; }
+  else if(btn.dataset.label){ btn.textContent = btn.dataset.label; delete btn.dataset.label; }
+  btn.disabled = on; btn.classList.toggle("loading", on);
+}
+
+function showTab(t){
+  const reg = t === "register";
+  $("login").classList.toggle("hide", reg);
+  $("register").classList.toggle("hide", !reg);
+  $("tab-login").classList.toggle("on", !reg);
+  $("tab-register").classList.toggle("on", reg);
+  $("tab-login").setAttribute("aria-selected", String(!reg));
+  $("tab-register").setAttribute("aria-selected", String(reg));
+  note("login-msg", ""); note("reg-msg", "");
+}
+
+// Setelah login: lanjut ke order (paket yang tadi dipilih), ke halaman tujuan (mis. Chat Admin), atau dashboard.
 function afterLogin(){
   const pending = MalikAuth.takePending();
-  location.href = pending ? MalikAuth.orderUrl(pending) : "dashboard/index.html";
+  if(pending){ location.href = MalikAuth.orderUrl(pending); return; }
+  location.href = MalikAuth.takeNext() || "dashboard/index.html";
 }
 
-async function doLogin(){
-  if(busy) return; busy = true; say("");
-  const r = await MalikAuth.login($("login-email").value, $("login-pass").value);
-  busy = false;
-  if(r.ok){ afterLogin(); return; }
-  say(r.message);
-  if(MalikAuth.debug) dbg({ supabaseError: r.raw, diagnosa: await MalikAuth.diagnose() });
+let busy = false;
+async function doLogin(e){
+  e.preventDefault();
+  if(busy) return false;
+  const email = $("login-email").value.trim(), pass = $("login-pass").value;
+  if(!EMAIL_RE.test(email)) { note("login-msg", "Email tidak valid."); return false; }
+  if(!pass) { note("login-msg", "Password wajib diisi."); return false; }
+  busy = true; note("login-msg", ""); loading($("login-btn"), true, "MEMPROSES");
+  const r = await MalikAuth.login(email, pass);
+  if(r.ok){ afterLogin(); return false; }
+  busy = false; loading($("login-btn"), false);
+  note("login-msg", r.message);
+  if(MalikAuth.debug) dbg({ supabaseError: r.raw });
+  return false;
 }
 
-// Register: Supabase Auth -> profil dibuat otomatis di tabel profiles (trigger database).
-async function doRegister(){
-  if(busy) return;
-  const email = $("reg-email").value.trim(), pass = $("reg-pass").value;
-  if(!/^\S+@\S+\.\S+$/.test(email)) return alert("Email tidak valid.");
-  if(pass.length < 6) return alert("Password minimal 6 karakter.");
-  busy = true;
-  const r = await MalikAuth.register(email, pass);
-  busy = false;
-  if(!r.ok){ alert(r.message); if(MalikAuth.debug) dbg({ supabaseError: r.raw }); return; }
-  if(r.needsConfirm){
-    alert("Pendaftaran berhasil. Cek email kamu untuk konfirmasi, lalu login.");
-    $("login-email").value = email; loginPage(); return;
-  }
-  afterLogin();
+// ---- Kirim kode + countdown kirim ulang ----
+let cd = 0, cdTimer = null, sentTo = "";
+function sendLabel(){ return sentTo ? "Kirim Ulang" : "Kirim Kode"; }
+function stopCountdown(){ clearInterval(cdTimer); cdTimer = null; cd = 0; const b = $("send-btn"); b.disabled = false; b.textContent = sendLabel(); }
+function startCountdown(sec){
+  clearInterval(cdTimer); cd = sec;
+  const b = $("send-btn"); b.disabled = true; b.classList.remove("loading");
+  const tick = () => { if(cd <= 0){ stopCountdown(); return; } b.textContent = "Kirim ulang (" + cd + "s)"; cd--; };
+  tick(); cdTimer = setInterval(tick, 1000);
+}
+// Ganti email setelah kode terkirim (salah ketik): izinkan kirim ke email baru.
+$("reg-email").addEventListener("input", () => { if(sentTo && $("reg-email").value.trim().toLowerCase() !== sentTo){ sentTo = ""; stopCountdown(); } });
+
+async function doSendCode(){
+  if(cd > 0 || busy) return;
+  const email = $("reg-email").value.trim().toLowerCase();
+  if(!EMAIL_RE.test(email)) { note("reg-msg", "Isi email yang valid dulu."); $("reg-email").focus(); return; }
+  const b = $("send-btn"); busy = true; note("reg-msg", ""); loading(b, true, "Mengirim");
+  const r = await MalikAuth.sendCode(email);
+  busy = false; loading(b, false);
+  if(r.ok){ sentTo = email; note("reg-msg", r.message, "ok"); startCountdown(r.cooldown || 60); $("reg-code").focus(); return; }
+  note("reg-msg", r.message);
+  if(r.retryAfter) startCountdown(r.retryAfter); else b.textContent = sendLabel();
 }
 
-// Sudah punya sesi aktif? Jangan tampilkan form login, langsung ke dashboard (atau lanjut order).
+async function doRegister(e){
+  e.preventDefault();
+  if(busy) return false;
+  const email = $("reg-email").value.trim().toLowerCase(), name = $("reg-name").value.trim(), pass = $("reg-pass").value, code = $("reg-code").value.trim();
+  if(!EMAIL_RE.test(email)) { note("reg-msg", "Email tidak valid."); return false; }
+  if(name.length < 2) { note("reg-msg", "Username minimal 2 karakter."); return false; }
+  if(pass.length < 6) { note("reg-msg", "Password minimal 6 karakter."); return false; }
+  if(!/^\d{6}$/.test(code)) { note("reg-msg", "Masukkan kode verifikasi 6 digit dari email."); return false; }
+  busy = true; note("reg-msg", ""); loading($("reg-btn"), true, "MEMPROSES");
+  const r = await MalikAuth.register(email, pass, name, code);
+  if(r.ok && r.loggedIn){ afterLogin(); return false; }
+  busy = false; loading($("reg-btn"), false);
+  if(r.ok){ $("login-email").value = email; showTab("login"); note("login-msg", r.message, "ok"); return false; }
+  note("reg-msg", r.message);
+  return false;
+}
+
+// Sudah punya sesi aktif? Jangan tampilkan form, langsung ke dashboard / tujuan (atau lanjut order).
 // Form disembunyikan dulu selama pengecekan supaya tidak berkedip.
 (function(){
   const box = $("auth-box");

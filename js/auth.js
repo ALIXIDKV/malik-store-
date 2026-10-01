@@ -6,7 +6,9 @@
 (function (global) {
   "use strict";
   var BASE = new URL("../", document.currentScript.src).href;
-  var PAGES = { home: BASE + "index.html", account: BASE + "account/index.html", order: BASE + "order/index.html" };
+  var PAGES = { home: BASE + "index.html", account: BASE + "account/index.html", order: BASE + "order/index.html", chat: BASE + "account/dashboard/chat.html" };
+  var API = new URL("../api/", document.currentScript.src).href;
+  var NEXT_RE = /^\/account\/dashboard\/[a-z]+\.html$/;
   var profileCache = null;
 
   function sb() { return global.supabaseClient; }
@@ -82,6 +84,8 @@
           var q = new URLSearchParams(location.search), pr = q.get("product"), pc = Number(q.get("price")) || 0;
           if (pr && pc) MalikAuth.setPending({ product: pr.slice(0, 80), price: pc });
         } catch (e) {}
+        // Buka halaman dashboard (mis. chat) tanpa login: setelah login kembali ke halaman itu.
+        if (NEXT_RE.test(location.pathname)) MalikAuth.setNext(location.pathname);
         location.replace(PAGES.account); return null;
       }
       return u;
@@ -114,19 +118,23 @@
       return out;
     },
 
-    // Profil dibuat otomatis oleh trigger database (lihat supabase_setup.sql), jadi role tidak bisa dipalsukan dari browser.
-    register: async function (email, password, username) {
-      if (!sb()) return { ok: false, message: "Koneksi database belum siap." };
+    // Registrasi via kode verifikasi email. Akun dibuat SERVER-SIDE (/api/register, email langsung verified),
+    // lalu user login memakai sesi Supabase biasa. Gmail App Password & Service Role tidak ada di frontend.
+    api: async function (name, payload) {
+      try {
+        var res = await fetch(API + name, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+        var j = null; try { j = await res.json(); } catch (e) {}
+        if (!j) return { ok: false, message: "Server tidak merespons (" + res.status + "). Coba lagi." };
+        return j;
+      } catch (e) { return { ok: false, message: "Koneksi bermasalah. Periksa internet kamu." }; }
+    },
+    sendCode: function (email) { return MalikAuth.api("send-code", { email: String(email || "").trim().toLowerCase() }); },
+    register: async function (email, password, username, code) {
       email = String(email || "").trim().toLowerCase();
-      var meta = username ? { username: String(username).trim().slice(0, 40) } : {};
-      // emailRedirectTo: link konfirmasi email selalu kembali ke domain utama https://malik-store.aliz.web.id
-      // (bukan domain lama). Domain ini harus ada di Supabase > Authentication > URL Configuration >
-      // Redirect URLs (mis. https://malik-store.aliz.web.id/** ) dan Site URL.
-      var r = await sb().auth.signUp({ email: email, password: password, options: { data: meta, emailRedirectTo: (global.MALIK_SITE_URL || location.origin) + "/account/index.html" } });
-      if (r.error) { MalikAuth.lastError = logErr("register", r.error); return { ok: false, message: friendly(r.error), raw: MalikAuth.lastError }; }
-      if (r.data.user && Array.isArray(r.data.user.identities) && r.data.user.identities.length === 0)
-        return { ok: false, message: "Email sudah terdaftar. Silakan login." };
-      return { ok: true, needsConfirm: !r.data.session, message: "Register berhasil" };
+      var r = await MalikAuth.api("register", { email: email, password: password, username: String(username || "").trim(), code: String(code || "").trim() });
+      if (!r.ok) return r;
+      var l = await MalikAuth.login(email, password);
+      return { ok: true, loggedIn: !!l.ok, message: l.ok ? "Register berhasil" : "Akun berhasil dibuat. Silakan masuk." };
     },
 
     login: async function (email, password) {
@@ -164,13 +172,26 @@
     orderCode: function (id) { return "ORD-" + String(id || "").replace(/-/g, "").slice(0, 8).toUpperCase(); },
 
     orderUrl: function (o) { return PAGES.order + (o && o.product ? "?product=" + encodeURIComponent(o.product) + "&price=" + encodeURIComponent(o.price) : ""); },
-    setPending: function (o) { try { sessionStorage.setItem("malik_pending_order", JSON.stringify(o)); } catch (e) {} },
+    setPending: function (o) { try { sessionStorage.removeItem("malik_next"); sessionStorage.setItem("malik_pending_order", JSON.stringify(o)); } catch (e) {} },
+    // Tujuan setelah login (hanya path /account/dashboard/*.html yang diterima).
+    setNext: function (p) { try { sessionStorage.removeItem("malik_pending_order"); sessionStorage.setItem("malik_next", p); } catch (e) {} },
+    takeNext: function () {
+      try { var x = sessionStorage.getItem("malik_next"); sessionStorage.removeItem("malik_next"); return x && NEXT_RE.test(x) ? x : null; }
+      catch (e) { return null; }
+    },
     takePending: function () {
       try { var x = sessionStorage.getItem("malik_pending_order"); sessionStorage.removeItem("malik_pending_order"); return x ? JSON.parse(x) : null; }
       catch (e) { return null; }
     }
   };
   global.MalikAuth = MalikAuth;
+
+  // Floating button CHAT ADMIN: sudah login -> langsung chat; belum -> login dulu lalu otomatis ke chat.
+  global.startChat = async function () {
+    if (await MalikAuth.isLoggedIn()) location.href = PAGES.chat;
+    else { MalikAuth.setNext("/account/dashboard/chat.html"); location.href = PAGES.account; }
+    return false;
+  };
 
   global.startOrder = async function (product, price) {
     var o = { product: product || "", price: Number(price) || 0 };

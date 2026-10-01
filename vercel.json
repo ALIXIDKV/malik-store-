@@ -2,6 +2,7 @@
   "version": 2,
   "outputDirectory": ".",
   "cleanUrls": false,
+  "functions": { "api/*.js": { "maxDuration": 15 } },
   "redirects": [
     { "source": "/admin", "destination": "/admin/", "permanent": false },
     { "source": "/admin/login", "destination": "/admin/login.html", "permanent": false },
