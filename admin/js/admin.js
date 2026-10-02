@@ -177,7 +177,7 @@
     C.messages.forEach(function (m) { if (!m.hidden_for_admin) (by[m.user_id] = by[m.user_id] || []).push(m); });   // hidden_for_admin = "Hapus untuk saya"
     return Object.keys(by).map(function (uid) {
       var p = pm[uid] || {}, list = by[uid];
-      var msgs = list.map(function (m) { return { id: m.id, from: m.sender === "admin" ? "admin" : "user", text: m.message, at: ms(m.created_at) }; })
+      var msgs = list.map(function (m) { return { id: m.id, from: m.sender === "admin" ? "admin" : "user", text: m.message, at: ms(m.created_at), att: m.attachment_url ? { url: m.attachment_url, type: m.attachment_type } : null }; })
                      .sort(function (a, b) { return a.at - b.at; });
       return { email: p.email || uid, name: String(p.username || "").trim() || p.email || uid, avatar: p.avatar_url || "", userId: uid, msgs: msgs, last: msgs.length ? msgs[msgs.length - 1] : null, online: !!C.online[uid],
                unread: list.filter(function (m) { return m.sender === "user" && !m.is_read; }).length };
@@ -194,15 +194,20 @@
       runTicks();
     });
   }
-  function sendAdmin(email, text) {
+  // att (opsional) = { url, type } hasil upload Cloudinary (/api/upload-chat). Yang disimpan ke tabel messages hanya URL-nya.
+  function sendAdmin(email, text, att) {
     text = String(text || "").trim().slice(0, 1000);
     var p = profileByEmail(email);
+    if (att && !text) text = g.MalikAttach ? g.MalikAttach.placeholder(att.type) : "Lampiran";
     if (!text || !p) return false;
-    var tmp = { id: "tmp-" + (++C.tmp), user_id: p.id, sender: "admin", message: text, is_read: true, created_at: new Date().toISOString(), tmp: true };
+    var row = { user_id: p.id, sender: "admin", message: text };
+    if (att) { row.attachment_url = att.url; row.attachment_type = att.type; }
+    var tmp = { id: "tmp-" + (++C.tmp), user_id: p.id, sender: "admin", message: text, is_read: true, created_at: new Date().toISOString(), tmp: true,
+                attachment_url: row.attachment_url || null, attachment_type: row.attachment_type || null };
     C.messages.push(tmp);
-    sb().from("messages").insert({ user_id: p.id, sender: "admin", message: text }).select().single().then(function (r) {
+    sb().from("messages").insert(row).select().single().then(function (r) {
       C.messages = C.messages.filter(function (m) { return m !== tmp; });
-      if (r.error) alert("Pesan gagal terkirim: " + r.error.message);
+      if (r.error) alert("Pesan gagal terkirim: " + (g.MalikAttach ? g.MalikAttach.dbError(r.error) : r.error.message));
       else if (!C.messages.some(function (m) { return m.id === r.data.id; })) C.messages.push(r.data);
       runTicks();
     });

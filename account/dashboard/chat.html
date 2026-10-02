@@ -23,19 +23,21 @@ body{margin:0;height:100dvh;padding-bottom:var(--mk-nav-h,0px);display:flex;flex
 .s input:focus{border-color:#34d399}
 .s button{padding:0 20px;border:0;border-radius:12px;font-weight:bold;cursor:pointer;background:linear-gradient(90deg,#34d399,#38bdf8);color:#000}
 </style>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="../../css/shared.css?v=3">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="../../css/shared.css?v=3"><link rel="stylesheet" href="../../css/chat-attach.css?v=1">
 <meta name="description" content="Chat langsung dengan admin Malik Store.">
 <link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="/assets/image/favicon-32.png"><link rel="icon" type="image/png" sizes="192x192" href="/assets/image/favicon-192.png"><link rel="apple-touch-icon" href="/assets/image/apple-touch-icon.png">
 </head>
 <body>
 <div class="h"><a href="index.html#prof" aria-label="Kembali ke Profil">&larr;</a><div><b>Chat Admin</b><small id="who"></small></div></div>
 <div id="msgs"></div>
-<div class="s"><input id="mi" maxlength="500" placeholder="Tulis pesan..." autocomplete="off"><button id="sb">KIRIM</button></div>
+<div class="att-pv" id="apv" hidden></div><input type="file" id="af" hidden>
+<div class="s"><button type="button" class="att-btn" id="ab" aria-label="Lampirkan foto atau video" title="Foto / Video"></button><input id="mi" maxlength="500" placeholder="Tulis pesan..." autocomplete="off"><button id="sb">KIRIM</button></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../../js/supabase.js?v=9"></script>
 <script src="../../js/auth.js?v=13"></script>
 <script src="../../js/nav.js?v=2"></script>
 <script src="../../js/notify.js?v=5" defer></script>
+<script src="../../js/chat-attach.js?v=1"></script>
 <script>
 // Chat private per user: tabel messages (user_id = pemilik percakapan), realtime via Supabase.
 const $ = id => document.getElementById(id);
@@ -43,7 +45,7 @@ const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">"
 let me = null, msgs = [], last = "";
 
 function draw(force){
-  const html = msgs.length ? msgs.map(m => '<div class="m ' + (m.sender === "admin" ? "admin" : "user") + '">' + esc(m.message) +
+  const html = msgs.length ? msgs.map(m => '<div class="m ' + (m.sender === "admin" ? "admin" : "user") + '">' + MalikAttach.body(m.message, MalikAttach.fromRow(m)) +
     '<small>' + new Date(m.created_at).toLocaleTimeString("id-ID", {hour: "2-digit", minute: "2-digit"}) + '</small></div>').join("")
     : '<div class="e">Belum ada pesan.<br>Tulis pesan pertama ke admin.</div>';
   if(html === last && !force) return;
@@ -53,13 +55,23 @@ function add(m){
   if(msgs.some(x => x.id === m.id)) return;
   msgs.push(m); msgs.sort((a, b) => new Date(a.created_at) - new Date(b.created_at)); draw(true);
 }
+let sending = false;
+const att = MalikAttach.create({ button: $("ab"), input: $("af"), bar: $("apv"), onBusy: b => { $("sb").disabled = b; } });
 async function send(){
+  if(!me || sending || att.busy()) return;
   const text = $("mi").value.trim().slice(0, 500);
-  if(!text || !me) return;
-  $("mi").value = "";
-  const r = await supabaseClient.from("messages").insert({ user_id: me.id, sender: "user", message: text }).select().single();
-  if(r.error){ $("mi").value = text; alert("Pesan gagal terkirim: " + r.error.message); return; }
-  add(r.data);
+  if(!text && !att.hasFile()) return;
+  sending = true;
+  try{
+    let up = null;
+    if(att.hasFile()){ up = await att.upload(); if(!up) return; }   // gagal: file tetap di preview, pesan error tampil di bar
+    const row = { user_id: me.id, sender: "user", message: text || MalikAttach.placeholder(up.type) };
+    if(up){ row.attachment_url = up.url; row.attachment_type = up.type; }
+    $("mi").value = "";
+    const r = await supabaseClient.from("messages").insert(row).select().single();
+    if(r.error){ $("mi").value = text; alert("Pesan gagal terkirim: " + MalikAttach.dbError(r.error)); return; }   // URL hasil upload di-cache: kirim ulang tidak upload ulang
+    att.clear(); add(r.data);
+  } finally { sending = false; }
 }
 async function init(){
   me = await MalikAuth.requireCustomer("/admin/chat.html"); if(!me) return;
@@ -74,6 +86,7 @@ async function init(){
     })
     .subscribe();
 }
+MalikAttach.bindLightbox($("msgs"));
 $("sb").onclick = send;
 $("mi").addEventListener("keydown", e => { if(e.key === "Enter") send(); });
 init();

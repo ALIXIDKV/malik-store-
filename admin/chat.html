@@ -9,15 +9,16 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/supabase.js?v=9"></script>
 <script src="js/notify.js?v=5" data-role="admin" defer></script>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="../css/shared.css?v=3"><script>try{sessionStorage.setItem("malik_loaded","1")}catch(e){}</script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="../css/shared.css?v=3"><link rel="stylesheet" href="../css/chat-attach.css?v=1"><script>try{sessionStorage.setItem("malik_loaded","1")}catch(e){}</script>
 <meta name="description" content="Chat admin Malik Store.">
 <link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="/assets/image/favicon-32.png"><link rel="icon" type="image/png" sizes="192x192" href="/assets/image/favicon-192.png"><link rel="apple-touch-icon" href="/assets/image/apple-touch-icon.png">
 </head>
 <body>
-<script src="js/admin.js?v=13"></script>
+<script src="js/admin.js?v=14"></script>
+<script src="../js/chat-attach.js?v=1"></script>
 <script>
 Admin.mount("chat", "Chat User", function (v) {
-  var A = Admin, e = A.esc, cur = new URLSearchParams(location.search).get("u") || "", q = "", built = "", sel = {};
+  var A = Admin, e = A.esc, cur = new URLSearchParams(location.search).get("u") || "", q = "", built = "", sel = {}, att = null;
   var EMPTY = "<div class='ch-empty'>Pilih user untuk membuka chat.<br><small>Setiap chat bersifat private per user.</small></div>";
   v.innerHTML = "<div class='chat' id='chat'><section class='clist'><div class='ch-h'><div class='ch-t'><b>\uD83D\uDD14 Pesan Masuk</b><em id='ct' hidden></em></div><input id='cs' type='search' placeholder='Cari nama user...'></div><div id='cl'></div></section>" +
     "<section class='cth' id='cth'>" + EMPTY + "</section></div>";
@@ -70,7 +71,7 @@ Admin.mount("chat", "Chat User", function (v) {
     var near = box.scrollHeight - box.scrollTop - box.clientHeight < 80;
     var html = t.msgs.map(function (m) {
       var id = String(m.id);
-      return "<div class='m " + (m.from === "admin" ? "admin" : "user") + (sel[id] ? " sel" : "") + "' data-id='" + e(id) + "'>" + e(m.text) + "<small>" + e(new Date(m.at).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })) + "</small></div>";
+      return "<div class='m " + (m.from === "admin" ? "admin" : "user") + (sel[id] ? " sel" : "") + "' data-id='" + e(id) + "'>" + MalikAttach.body(m.text, m.att) + "<small>" + e(new Date(m.at).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })) + "</small></div>";
     }).join("") || "<div class='ch-empty'>Belum ada pesan.</div>";
     var changed = box.__h !== html;
     A.setHTML(box, html);
@@ -87,7 +88,7 @@ Admin.mount("chat", "Chat User", function (v) {
 
   function closeThread() {
     chat.classList.remove("open"); document.body.classList.remove("chat-open");
-    cur = ""; built = ""; sel = {}; cth.classList.remove("selmode"); cth.innerHTML = EMPTY; drawList();
+    if (att) { att.destroy(); att = null; } cur = ""; built = ""; sel = {}; cth.classList.remove("selmode"); cth.innerHTML = EMPTY; drawList();
   }
 
   async function delSelected() {
@@ -115,6 +116,7 @@ Admin.mount("chat", "Chat User", function (v) {
   }
 
   function openThread(em) {
+    if (att) { att.destroy(); att = null; }   // pindah chat = lampiran yang belum terkirim dibatalkan
     cur = em; built = em; sel = {}; chat.classList.add("open"); document.body.classList.add("chat-open");
     var t = find(em);
     cth.innerHTML = "<div class='th-h'>" +
@@ -123,9 +125,22 @@ Admin.mount("chat", "Chat User", function (v) {
       "<button class='btn ghost sm dz' id='dc'>" + A.icon("trash") + "<span>Hapus Chat</span></button></div>" +
       "<div class='th-s'><button class='btn ghost sm x' id='sx' aria-label='Batal pilih' title='Batal'>" + A.icon("close") + "</button><b id='sc'>0 dipilih</b>" +
       "<button class='btn ghost sm dz' id='sd' aria-label='Hapus pesan' title='Hapus'>" + A.icon("trash") + "</button></div></div>" +
-      "<div id='msgs'></div><div class='snd'><input id='mi' type='text' maxlength='1000' placeholder='Tulis balasan...' autocomplete='off'><button class='btn' id='sb'>" + A.icon("send") + "</button></div>";
+      "<div id='msgs'></div><div class='att-pv' id='apv' hidden></div><input type='file' id='af' hidden><div class='snd'><button type='button' class='att-btn' id='ab' aria-label='Lampirkan foto atau video' title='Foto / Video'></button><input id='mi' type='text' maxlength='1000' placeholder='Tulis balasan...' autocomplete='off'><button class='btn' id='sb'>" + A.icon("send") + "</button></div>";
     var mi = cth.querySelector("#mi"), box = cth.querySelector("#msgs");
-    function send() { if (A.sendAdmin(cur, mi.value)) { mi.value = ""; drawMsgs(true); drawList(); } }
+    att = MalikAttach.create({ button: cth.querySelector("#ab"), input: cth.querySelector("#af"), bar: cth.querySelector("#apv"), onBusy: function (b) { cth.querySelector("#sb").disabled = b; } });
+    var myAtt = att, sending = false, email = em;
+    async function send() {
+      if (sending || myAtt.busy()) return;
+      var text = mi.value.trim();
+      if (!text && !myAtt.hasFile()) return;
+      sending = true;
+      try {
+        var up = null;
+        if (myAtt.hasFile()) { up = await myAtt.upload(); if (!up) return; }   // gagal: file tetap di preview, error tampil di bar
+        if (A.sendAdmin(email, text, up)) { mi.value = ""; myAtt.clear(); if (cur === email) { drawMsgs(true); drawList(); } }
+      } finally { sending = false; }
+    }
+    MalikAttach.bindLightbox(box, function () { return !selIds().length; });   // saat mode pilih pesan, ketuk foto = pilih (bukan buka)
     cth.querySelector("#sb").onclick = send;
     mi.addEventListener("keydown", function (ev) { if (ev.key === "Enter") send(); });
     cth.querySelector("#bk").onclick = closeThread;
