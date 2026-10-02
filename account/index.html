@@ -93,7 +93,7 @@ input::placeholder{color:rgba(255,255,255,.4)}
 .hide{display:none}
 .auth-box.checking{visibility:hidden}
 </style>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="../css/shared.css?v=1"><script src="../js/role.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="../css/shared.css?v=2"><script src="../js/role.js"></script>
 </head>
 
 <body class="mk-login">
@@ -133,7 +133,7 @@ input::placeholder{color:rgba(255,255,255,.4)}
 </div>
 
 <div class="field">
-<label for="reg-name">Username / Nama</label>
+<label for="reg-name">Nama</label>
 <input id="reg-name" type="text" placeholder="Nama kamu" maxlength="40" autocomplete="nickname">
 </div>
 
@@ -242,7 +242,7 @@ async function doRegister(e){
   if(busy) return false;
   const email = $("reg-email").value.trim().toLowerCase(), name = $("reg-name").value.trim(), pass = $("reg-pass").value, code = $("reg-code").value.trim();
   if(!EMAIL_RE.test(email)) { note("reg-msg", "Email tidak valid."); return false; }
-  if(name.length < 2) { note("reg-msg", "Username minimal 2 karakter."); return false; }
+  if(name.length < 2) { note("reg-msg", "Nama minimal 2 karakter."); return false; }
   if(pass.length < 6) { note("reg-msg", "Password minimal 6 karakter."); return false; }
   if(!/^\d{6}$/.test(code)) { note("reg-msg", "Masukkan kode verifikasi 6 digit dari email."); return false; }
   busy = true; note("reg-msg", ""); loading($("reg-btn"), true, "MEMPROSES");

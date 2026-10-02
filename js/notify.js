@@ -130,12 +130,16 @@
   /* ---------- Supabase Realtime ---------- */
   function sb() { return g.supabaseClient; }
   function splitQty(p) { var m = String(p || "").match(/^(.*?)\s+x(\d+)$/i); return m ? { n: m[1], q: Number(m[2]) } : { n: String(p || ""), q: 1 }; }
-  var mails = {};
-  async function emailOf(uid) {
-    if (mails[uid]) return mails[uid];
-    try { var r = await sb().from("profiles").select("email").eq("id", uid).maybeSingle(); if (r.data && r.data.email) return (mails[uid] = r.data.email); } catch (e) {}
-    return "user";
+  var whoC = {};   // cache profil singkat per user (60 dtk, supaya nama baru ikut terbaca)
+  async function whoOf(uid) {
+    var c = whoC[uid]; if (c && Date.now() - c.t < 60000) return c;
+    try {
+      var r = await sb().from("profiles").select("email,username").eq("id", uid).maybeSingle();
+      if (r.data) { var em = r.data.email || "user", nm = String(r.data.username || "").trim(); return (whoC[uid] = { t: Date.now(), email: em, name: nm || em }); }
+    } catch (e) {}
+    return c || { t: 0, email: "user", name: "user" };
   }
+  async function emailOf(uid) { return (await whoOf(uid)).email; }
   function dashUrl() { return new URL("account/dashboard/", ROOT).href; }
   function fire(n) { deliver(n, CUR); }
 
@@ -184,15 +188,15 @@
     chans.push(sb().channel("mn-admin")
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "profiles" }, function (p) {
         if (p.new.role === "admin") return;
-        fire({ type: "general", tag: "usr-" + p.new.id, title: "🔔 User Baru", body: (p.new.email || "User") + " baru mendaftar.", url: new URL("users.html", location.href).href });
+        fire({ type: "general", tag: "usr-" + p.new.id, title: "🔔 User Baru", body: (String(p.new.username || "").trim() || p.new.email || "User") + " baru mendaftar.", url: new URL("users.html", location.href).href });
       })
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "orders" }, async function (p) {
-        var x = splitQty(p.new.product), e = await emailOf(p.new.user_id);
-        fire({ type: "general", tag: "ord-" + p.new.id, title: "🔔 Order Baru", body: "User:\n" + e + "\n\nProduk:\n" + x.n + (x.q > 1 ? " (x" + x.q + ")" : ""), url: new URL("orders.html", location.href).href });
+        var x = splitQty(p.new.product), w = await whoOf(p.new.user_id);
+        fire({ type: "general", tag: "ord-" + p.new.id, title: "🔔 Order Baru", body: "User:\n" + w.name + "\n\nProduk:\n" + x.n + (x.q > 1 ? " (x" + x.q + ")" : ""), url: new URL("orders.html", location.href).href });
       })
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: "sender=eq.user" }, async function (p) {
-        var e = await emailOf(p.new.user_id);
-        fire({ type: "chat", tag: "chat-" + p.new.user_id, title: "🔔 Pesan Masuk", body: e + ":\n" + clip(p.new.message, 80), url: new URL("chat.html?u=" + encodeURIComponent(e), location.href).href });
+        var w = await whoOf(p.new.user_id);
+        fire({ type: "chat", tag: "chat-" + p.new.user_id, title: "🔔 Pesan Masuk", body: w.name + ":\n" + clip(p.new.message, 80), url: new URL("chat.html?u=" + encodeURIComponent(w.email), location.href).href });
       })
       .subscribe());
   }

@@ -59,7 +59,7 @@ textarea:focus{border-color:var(--g)}
 .chips button{min-height:40px;padding:8px 14px;border:1px solid var(--line);border-radius:10px;background:#0a1424;color:#fff;font:inherit;font-size:13px;cursor:pointer}
 .chips button[aria-checked="true"]{background:linear-gradient(90deg,var(--g),var(--c));color:#000;border-color:transparent;font-weight:bold}
 </style>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="../css/shared.css?v=1">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="../css/shared.css?v=2">
 </head>
 <body>
 <div class="top"><a class="logo" href="../index.html">MALIK<span>STORE</span></a><span class="usr" id="user"></span></div>
@@ -130,7 +130,7 @@ textarea:focus{border-color:var(--g)}
 <script src="../js/auth.js?v=13"></script>
 <script src="../js/reviews.js?v=1"></script>
 <script src="../js/nav.js?v=1"></script>
-<script src="../js/notify.js?v=3" defer></script>
+<script src="../js/notify.js?v=4" defer></script>
 <script>
 // Halaman ini hanya untuk user yang sudah login (sesi Supabase). Produk, varian & harga SELALU dari js/products.js
 // (query ?p=&v=&q=). Link lama ?product=&price= tetap dikenali, tetapi harga dari link diabaikan.
@@ -141,7 +141,7 @@ const rp = P.rp;
 let key = params.get("p"), vid = params.get("v"), qty = P.clampQty(params.get("q"));
 if(!P.valid(key, vid)){ const m = P.fromName(params.get("product")); key = m ? m.key : null; vid = m ? m.vid : null; }
 
-MalikAuth.requireCustomer().then(u => { if(u) $("user").textContent = u.email || ""; });
+MalikAuth.requireCustomer().then(async u => { if(!u) return; $("user").textContent = u.email || ""; try { const p = await MalikAuth.profile(); if(p && p.username) $("user").textContent = p.username; } catch(e) {} });
 
 if(!P.valid(key, vid)){
   $("shop").style.display = "none"; $("bar").style.display = "none"; $("none").style.display = "block";

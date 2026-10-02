@@ -41,7 +41,7 @@ h3:first-child{margin-top:4px}
 .btn.o{color:var(--bad);background:rgba(255,92,108,.08);border:1px solid rgba(255,92,108,.45)}
 .rv{display:inline-block;margin-top:10px;padding:8px 14px;border:1px solid rgba(0,255,102,.45);border-radius:10px;background:rgba(0,255,102,.08);color:var(--g);font:inherit;font-weight:bold;font-size:12px;cursor:pointer}
 .rv.done{border-color:var(--line);background:none;color:var(--mut);cursor:default}
-</style><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="../../css/shared.css?v=1">
+</style><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="../../css/shared.css?v=2">
 </head>
 <body>
 <div class="top"><span class="logo">MALIK<span>STORE</span></span><span class="ttl" id="ttl">Riwayat</span></div>
@@ -52,7 +52,18 @@ h3:first-child{margin-top:4px}
     <div id="olist"><div class="empty">Memuat...</div></div>
   </section>
   <section class="tab" id="t-prof">
-    <div class="me"><div class="av" id="av">U</div><b id="pn">User</b><small id="pe"></small></div>
+    <div class="me"><div class="av-wrap"><div class="av" id="av">U</div><button type="button" class="av-edit" id="pf-cam" aria-label="Ganti foto profil"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></button></div><b id="pn">User</b><small id="pe"></small></div>
+    <form class="pf" id="pform" novalidate onsubmit="return saveProfile(event)">
+      <h3>Edit Profil</h3>
+      <label for="pname">Nama</label>
+      <input id="pname" type="text" maxlength="40" placeholder="Nama kamu" autocomplete="nickname">
+      <label>Foto Profil <em>(opsional)</em></label>
+      <input id="pfile" type="file" accept="image/*" hidden>
+      <div class="pf-row"><button type="button" class="btn n" id="pf-pick">Pilih Foto</button><button type="button" class="btn ghost" id="pf-del" hidden>Hapus Foto</button></div>
+      <p class="hint">Foto otomatis dipotong persegi &amp; dikecilkan.</p>
+      <div class="msg" id="pmsg" role="status"></div>
+      <button class="btn" id="pf-save" type="submit">Simpan Perubahan</button>
+    </form>
     <a class="btn n" id="chatBtn" href="chat.html?v=9"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Chat Admin</a>
     <a class="btn n" id="adminBtn" href="/admin/dashboard.html" style="display:none"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Panel Admin</a>
     <a class="btn o" href="../" onclick="return doLogout(event)"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Logout</a>
@@ -64,7 +75,7 @@ h3:first-child{margin-top:4px}
 <script src="../../js/auth.js?v=13"></script>
 <script src="../../js/reviews.js?v=1"></script>
 <script src="../../js/nav.js?v=1"></script>
-<script src="../../js/notify.js?v=3" defer></script>
+<script src="../../js/notify.js?v=4" defer></script>
 <script>
 // Halaman ini hanya untuk user yang sudah login (sesi Supabase).
 const $ = id => document.getElementById(id);
@@ -110,6 +121,51 @@ async function doLogout(e){
   e.preventDefault(); await MalikAuth.logout(); location.href = MalikAuth.pages.account; return false;
 }
 
+// ---------- Profil: nama + foto opsional (tabel profiles: username, avatar_url) ----------
+let avVal = "", avDirty = false, saving = false;
+const okAv = u => typeof u === "string" && (u.indexOf("data:image/") === 0 || u.indexOf("https://") === 0);
+function paintAv(name, url){
+  const a = $("av"); a.innerHTML = okAv(url) ? '<img alt="" src="' + esc(url) + '">' : esc((name || "U")[0] || "U");
+  $("pf-del").hidden = !okAv(url);
+}
+function pnote(t, type){ const el = $("pmsg"); el.textContent = t || ""; el.className = "msg " + (type || "err"); }
+function toAvatar(file){
+  return new Promise((ok, no) => {
+    if(!/^image\//.test(file.type)) return no(new Error("File harus berupa gambar."));
+    if(file.size > 8 * 1024 * 1024) return no(new Error("Ukuran foto maksimal 8 MB."));
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      const S = 256, c = document.createElement("canvas"), m = Math.min(img.width, img.height);
+      c.width = c.height = S;
+      c.getContext("2d").drawImage(img, (img.width - m) / 2, (img.height - m) / 2, m, m, 0, 0, S, S);
+      URL.revokeObjectURL(url); ok(c.toDataURL("image/jpeg", .82));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); no(new Error("Foto tidak bisa dibaca.")); };
+    img.src = url;
+  });
+}
+$("pf-pick").onclick = $("pf-cam").onclick = () => $("pfile").click();
+$("pfile").onchange = async e => {
+  const f = e.target.files && e.target.files[0]; e.target.value = ""; if(!f) return;
+  try { avVal = await toAvatar(f); avDirty = true; paintAv($("pname").value.trim() || $("pn").textContent, avVal); pnote("Foto dipilih. Tekan Simpan Perubahan.", "ok"); }
+  catch(err){ pnote(err.message); }
+};
+$("pf-del").onclick = () => { avVal = ""; avDirty = true; paintAv($("pname").value.trim() || $("pn").textContent, ""); pnote("Foto dihapus. Tekan Simpan Perubahan.", "ok"); };
+$("pname").addEventListener("input", () => { if(!okAv(avVal)) $("av").textContent = ($("pname").value.trim()[0] || "U"); });
+async function saveProfile(e){
+  e.preventDefault(); if(saving || !me) return false;
+  const name = $("pname").value.trim().replace(/\s+/g, " ");
+  if(name.length < 2 || name.length > 40){ pnote("Nama harus 2-40 karakter."); return false; }
+  const patch = { username: name }; if(avDirty) patch.avatar_url = okAv(avVal) ? avVal : null;
+  saving = true; pnote(""); const b = $("pf-save"); b.disabled = true; b.textContent = "Menyimpan...";
+  const r = await supabaseClient.from("profiles").update(patch).eq("id", me.id).select("username,avatar_url").maybeSingle();
+  saving = false; b.disabled = false; b.textContent = "Simpan Perubahan";
+  if(r.error || !r.data){ pnote("Gagal menyimpan" + (r.error ? ": " + r.error.message : ". Pastikan SQL profil sudah dijalankan di Supabase.")); return false; }
+  avDirty = false; await MalikAuth.profile(true);
+  $("pn").textContent = r.data.username; $("pname").value = r.data.username; avVal = r.data.avatar_url || ""; paintAv(r.data.username, avVal);
+  pnote("Profil berhasil disimpan.", "ok"); return false;
+}
+
 let me = null;
 (async function(){
   const u = await MalikAuth.requireLogin(); if(!u) return;
@@ -117,8 +173,8 @@ let me = null;
   const p = await MalikAuth.profile();
   // Admin memakai sesi yang sama: boleh melihat website user, dan mendapat tombol ke Panel Admin (tanpa login ulang).
   if (p && p.role === "admin") { $("chatBtn").style.display = "none"; $("adminBtn").style.display = "flex"; }
-  const name = (p && p.username) || (u.email || "").split("@")[0] || "User";
-  $("pn").textContent = name; $("pe").textContent = u.email || ""; $("av").textContent = name[0] || "U";
+  const name = String((p && p.username) || "").trim() || u.email || "User";
+  $("pn").textContent = name; $("pe").textContent = u.email || ""; $("pname").value = name; avVal = (p && p.avatar_url) || ""; paintAv(name, avVal);
   show(location.hash.slice(1));
   loadOrders(u.id);
   supabaseClient.channel("dash-orders-" + u.id)

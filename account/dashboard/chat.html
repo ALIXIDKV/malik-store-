@@ -23,7 +23,7 @@ body{margin:0;height:100dvh;padding-bottom:var(--mk-nav-h,0px);display:flex;flex
 .s input:focus{border-color:#00ff66}
 .s button{padding:0 20px;border:0;border-radius:12px;font-weight:bold;cursor:pointer;background:linear-gradient(90deg,#00ff66,#00d9ff);color:#000}
 </style>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="../../css/shared.css?v=1">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="../../css/shared.css?v=2">
 </head>
 <body>
 <div class="h"><a href="index.html#prof" aria-label="Kembali ke Profil">&larr;</a><div><b>Chat Admin</b><small id="who"></small></div></div>
@@ -33,7 +33,7 @@ body{margin:0;height:100dvh;padding-bottom:var(--mk-nav-h,0px);display:flex;flex
 <script src="../../js/supabase.js?v=9"></script>
 <script src="../../js/auth.js?v=13"></script>
 <script src="../../js/nav.js?v=1"></script>
-<script src="../../js/notify.js?v=3" defer></script>
+<script src="../../js/notify.js?v=4" defer></script>
 <script>
 // Chat private per user: tabel messages (user_id = pemilik percakapan), realtime via Supabase.
 const $ = id => document.getElementById(id);
@@ -61,7 +61,7 @@ async function send(){
 }
 async function init(){
   me = await MalikAuth.requireCustomer("/admin/chat.html"); if(!me) return;
-  $("who").textContent = me.email;
+  $("who").textContent = me.email; MalikAuth.profile().then(p => { if(p && p.username) $("who").textContent = p.username; }).catch(() => {});
   const r = await supabaseClient.from("messages").select("*").eq("user_id", me.id).order("created_at", { ascending: true }).limit(300);
   msgs = r.data || []; draw(true);
   supabaseClient.channel("chat-" + me.id)

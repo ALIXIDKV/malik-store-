@@ -157,7 +157,7 @@
     C.profiles.forEach(function (p) { pm[p.id] = p; });
     return C.orders.map(function (o) {
       var p = pm[o.user_id] || {}, em = p.email || "", m = String(o.product || "").match(/^(.*?)\s+x(\d+)$/i);
-      return { id: o.id, code: code(o.id), userId: o.user_id, email: em, username: p.username || em.split("@")[0] || "-",
+      return { id: o.id, code: code(o.id), userId: o.user_id, email: em, username: String(p.username || "").trim() || em || "-",
                product: m ? m[1] : String(o.product || ""), qty: m ? Number(m[2]) : 1, price: Number(o.price) || 0, note: o.note || "",
                createdAt: ms(o.created_at), status: STATUSES.indexOf(o.status) > -1 ? o.status : "Pending" };
     }).sort(function (a, b) { return b.createdAt - a.createdAt; });
@@ -178,7 +178,7 @@
       var p = pm[uid] || {}, list = by[uid];
       var msgs = list.map(function (m) { return { id: m.id, from: m.sender === "admin" ? "admin" : "user", text: m.message, at: ms(m.created_at) }; })
                      .sort(function (a, b) { return a.at - b.at; });
-      return { email: p.email || uid, userId: uid, msgs: msgs, last: msgs.length ? msgs[msgs.length - 1] : null, online: !!C.online[uid],
+      return { email: p.email || uid, name: String(p.username || "").trim() || p.email || uid, avatar: p.avatar_url || "", userId: uid, msgs: msgs, last: msgs.length ? msgs[msgs.length - 1] : null, online: !!C.online[uid],
                unread: list.filter(function (m) { return m.sender === "user" && !m.is_read; }).length };
     }).sort(function (a, b) { return ((b.last || {}).at || 0) - ((a.last || {}).at || 0); });
   }

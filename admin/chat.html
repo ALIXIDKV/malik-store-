@@ -8,29 +8,48 @@
 <link rel="stylesheet" href="assets/admin.css?v=2">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/supabase.js?v=9"></script>
-<script src="js/notify.js?v=3" data-role="admin" defer></script>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="../css/shared.css?v=1"><script>try{sessionStorage.setItem("malik_loaded","1")}catch(e){}</script>
+<script src="js/notify.js?v=4" data-role="admin" defer></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="../css/shared.css?v=2"><script>try{sessionStorage.setItem("malik_loaded","1")}catch(e){}</script>
 </head>
 <body>
-<script src="js/admin.js?v=11"></script>
+<script src="js/admin.js?v=12"></script>
 <script>
 Admin.mount("chat", "Chat User", function (v) {
   var A = Admin, e = A.esc, cur = new URLSearchParams(location.search).get("u") || "", q = "", built = "", sel = {};
   var EMPTY = "<div class='ch-empty'>Pilih user untuk membuka chat.<br><small>Setiap chat bersifat private per user.</small></div>";
-  v.innerHTML = "<div class='chat' id='chat'><section class='clist'><div class='ch-h'><input id='cs' type='search' placeholder='Cari user...'></div><div id='cl'></div></section>" +
+  v.innerHTML = "<div class='chat' id='chat'><section class='clist'><div class='ch-h'><div class='ch-t'><b>\uD83D\uDD14 Pesan Masuk</b><em id='ct' hidden></em></div><input id='cs' type='search' placeholder='Cari nama user...'></div><div id='cl'></div></section>" +
     "<section class='cth' id='cth'>" + EMPTY + "</section></div>";
   var chat = v.querySelector("#chat"), cl = v.querySelector("#cl"), cth = v.querySelector("#cth");
+
+  // avatar: foto (data:image / https) atau inisial nama
+  function okImg(u) { return typeof u === "string" && (u.indexOf("data:image/") === 0 || u.indexOf("https://") === 0); }
+  function avHtml(t, cls) {
+    var ini = e(String(t.name || "?").trim().charAt(0).toUpperCase() || "?");
+    return "<span class='av " + (cls || "") + "'>" + (okImg(t.avatar) ? "<img alt='' src='" + e(t.avatar) + "'>" : ini) + "</span>";
+  }
+  function clock(at) {
+    var d = new Date(at), n = new Date();
+    if (d.toDateString() === n.toDateString()) return d.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+    return d.toLocaleDateString("id-ID", { day: "2-digit", month: "short" });
+  }
+  function preview(t) {
+    if (!t.last) return "";
+    var line = String(t.last.text || "").split("\n").filter(function (x) { return x.trim(); })[0] || "";
+    return (t.last.from === "admin" ? "Kamu: " : "") + line;
+  }
 
   function find(em) { return A.threads().filter(function (t) { return t.email === em; })[0]; }
   function selIds() { return Object.keys(sel); }
 
   function drawList() {
-    var list = A.threads().filter(function (t) { return t.email.toLowerCase().indexOf(q) > -1; });
+    var all = A.threads(), un = all.reduce(function (n, t) { return n + t.unread; }, 0), ct = v.querySelector("#ct");
+    if (ct) { ct.textContent = un > 99 ? "99+" : un; ct.hidden = !un; }
+    var list = all.filter(function (t) { return (t.name + " " + t.email).toLowerCase().indexOf(q) > -1; });
     A.setHTML(cl, list.length ? list.map(function (t) {
-      return "<div class='li " + (t.email === cur ? "on" : "") + "' data-e='" + e(t.email) + "'><span class='av " + (t.online ? "on" : "") + "'>" + e(t.email[0]) + "</span>" +
-        "<span class='tx'><b>" + e(t.email) + "</b><small>" + e(t.last ? t.last.text : "") + "</small></span>" +
-        (t.unread ? "<span class='n'>" + t.unread + "</span>" : "") + "</div>";
-    }).join("") : "<div class='empty'>Belum ada chat.<br><small>User mengirim pesan lewat Dashboard User &gt; Chat Admin.</small></div>");
+      return "<div class='li " + (t.email === cur ? "on" : "") + (t.unread ? " unread" : "") + "' data-e='" + e(t.email) + "'>" + avHtml(t, t.online ? "on" : "") +
+        "<span class='tx'><b>" + e(t.name) + "</b><small>" + e(preview(t)) + "</small></span>" +
+        "<span class='mt'>" + (t.last ? "<time>" + e(clock(t.last.at)) + "</time>" : "") + (t.unread ? "<span class='n'>" + t.unread + "</span>" : "") + "</span></div>";
+    }).join("") : "<div class='empty'>" + (q ? "User tidak ditemukan." : "Belum ada chat.<br><small>User mengirim pesan lewat Dashboard User &gt; Chat Admin.</small>") + "</div>");
   }
 
   function updateBar() {
@@ -49,7 +68,7 @@ Admin.mount("chat", "Chat User", function (v) {
     var near = box.scrollHeight - box.scrollTop - box.clientHeight < 80;
     var html = t.msgs.map(function (m) {
       var id = String(m.id);
-      return "<div class='m " + (m.from === "admin" ? "admin" : "user") + (sel[id] ? " sel" : "") + "' data-id='" + e(id) + "'>" + e(m.text) + "<small>" + A.fmt(m.at) + "</small></div>";
+      return "<div class='m " + (m.from === "admin" ? "admin" : "user") + (sel[id] ? " sel" : "") + "' data-id='" + e(id) + "'>" + e(m.text) + "<small>" + e(new Date(m.at).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })) + "</small></div>";
     }).join("") || "<div class='ch-empty'>Belum ada pesan.</div>";
     var changed = box.__h !== html;
     A.setHTML(box, html);
@@ -87,7 +106,7 @@ Admin.mount("chat", "Chat User", function (v) {
   }
 
   async function delChat() {
-    if (!(await A.confirmBox("Hapus seluruh chat?", "Semua pesan dengan " + cur + " akan dihapus untuk semua orang. Akun user TIDAK ikut terhapus.", "Hapus Chat"))) return;
+    if (!(await A.confirmBox("Hapus seluruh chat?", "Semua pesan dengan " + ((find(cur) || {}).name || cur) + " akan dihapus untuk semua orang. Akun user TIDAK ikut terhapus.", "Hapus Chat"))) return;
     var r = await A.deleteChat(cur);
     if (!r.ok) { A.alertBox("Gagal menghapus chat", r.message); return; }
     sel = {}; drawMsgs(true); drawList();
@@ -98,7 +117,7 @@ Admin.mount("chat", "Chat User", function (v) {
     var t = find(em);
     cth.innerHTML = "<div class='th-h'>" +
       "<div class='th-n'><button class='btn ghost sm x' id='bk' aria-label='Tutup chat' title='Tutup'>" + A.icon("close") + "</button>" +
-      "<span class='av'>" + e(em[0]) + "</span><div class='th-t'><b>" + e(em) + "</b><small id='tst'>" + (t && t.online ? "Online" : "Offline") + "</small></div>" +
+      (t ? avHtml(t) : "<span class='av'>?</span>") + "<div class='th-t'><b>" + e(t ? t.name : em) + "</b><small id='tst'>" + (t && t.online ? "Online" : "Offline") + "</small></div>" +
       "<button class='btn ghost sm dz' id='dc'>" + A.icon("trash") + "<span>Hapus Chat</span></button></div>" +
       "<div class='th-s'><button class='btn ghost sm x' id='sx' aria-label='Batal pilih' title='Batal'>" + A.icon("close") + "</button><b id='sc'>0 dipilih</b>" +
       "<button class='btn ghost sm dz' id='sd' aria-label='Hapus pesan' title='Hapus'>" + A.icon("trash") + "</button></div></div>" +

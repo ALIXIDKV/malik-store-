@@ -41,6 +41,14 @@ module.exports = async function (req, res) {
       if (cd === "weak_password") return L.send(res, 400, { ok: false, message: "Password terlalu lemah." });
       return L.send(res, 500, { ok: false, message: "Gagal membuat akun. Kirim kode baru lalu coba lagi." });
     }
+    // Pastikan nama yang diketik user tersimpan di profiles (trigger bawaan bisa saja mengisinya dari email). Gagal di sini tidak membatalkan akun.
+    try {
+      const uid = c.data && c.data.user && c.data.user.id;
+      if (uid) {
+        const up = await sb.from("profiles").upsert({ id: uid, email: email, username: username }, { onConflict: "id" });
+        if (up.error) console.error("[register] profiles upsert:", up.error.message);
+      }
+    } catch (e) { console.error("[register] profiles:", e && (e.message || e)); }
     return L.send(res, 200, { ok: true, message: "Akun berhasil dibuat." });
   } catch (e) {
     console.error("[register]", e && (e.message || e));
