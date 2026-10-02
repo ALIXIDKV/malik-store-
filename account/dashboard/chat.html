@@ -9,21 +9,23 @@
 <style>
 @font-face{font-family:Malik;src:url("../../assets/font/font.ttf")}
 *{box-sizing:border-box}
-body{margin:0;height:100dvh;padding-bottom:var(--mk-nav-h,0px);display:flex;flex-direction:column;background:#050a14;color:#fff;font-family:Malik,Arial,sans-serif}
-.h{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid #1c2a44;background:#0a1324}
-.h a{color:#00d9ff;text-decoration:none;font-size:22px}.h b{display:block}.h small{color:#8b9ab4}
+body{margin:0;height:100dvh;padding-bottom:var(--mk-nav-h,0px);display:flex;flex-direction:column;background:#0b0f14;color:#fff;font-family:Malik,Arial,sans-serif}
+.h{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.04)}
+.h a{color:#38bdf8;text-decoration:none;font-size:22px}.h b{display:block}.h small{color:#8b9ab4}
 #msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
 .m{max-width:80%;padding:10px 14px;border-radius:14px;line-height:1.45;word-break:break-word;white-space:pre-wrap}
 .m small{display:block;margin-top:4px;font-size:10px;opacity:.65;text-align:right}
-.m.user{align-self:flex-end;background:linear-gradient(90deg,#00ff66,#00d9ff);color:#031008}
-.m.admin{align-self:flex-start;background:#111c32;border:1px solid #1c2a44}
+.m.user{align-self:flex-end;background:linear-gradient(90deg,#34d399,#38bdf8);color:#031008}
+.m.admin{align-self:flex-start;background:#18202b;border:1px solid rgba(255,255,255,.09)}
 .e{margin:auto;color:#8b9ab4;text-align:center}
-.s{display:flex;gap:10px;padding:12px;border-top:1px solid #1c2a44;background:#0a1324}
-.s input{flex:1;min-width:0;padding:13px;border-radius:12px;border:1px solid #1c2a44;background:#050a14;color:#fff;font:inherit;outline:none}
-.s input:focus{border-color:#00ff66}
-.s button{padding:0 20px;border:0;border-radius:12px;font-weight:bold;cursor:pointer;background:linear-gradient(90deg,#00ff66,#00d9ff);color:#000}
+.s{display:flex;gap:10px;padding:12px;border-top:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.04)}
+.s input{flex:1;min-width:0;padding:13px;border-radius:12px;border:1px solid rgba(255,255,255,.09);background:#0b0f14;color:#fff;font:inherit;outline:none}
+.s input:focus{border-color:#34d399}
+.s button{padding:0 20px;border:0;border-radius:12px;font-weight:bold;cursor:pointer;background:linear-gradient(90deg,#34d399,#38bdf8);color:#000}
 </style>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="../../css/shared.css?v=2">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="../../css/shared.css?v=3">
+<meta name="description" content="Chat langsung dengan admin Malik Store.">
+<link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="/assets/image/favicon-32.png"><link rel="icon" type="image/png" sizes="192x192" href="/assets/image/favicon-192.png"><link rel="apple-touch-icon" href="/assets/image/apple-touch-icon.png">
 </head>
 <body>
 <div class="h"><a href="index.html#prof" aria-label="Kembali ke Profil">&larr;</a><div><b>Chat Admin</b><small id="who"></small></div></div>
@@ -32,8 +34,8 @@ body{margin:0;height:100dvh;padding-bottom:var(--mk-nav-h,0px);display:flex;flex
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../../js/supabase.js?v=9"></script>
 <script src="../../js/auth.js?v=13"></script>
-<script src="../../js/nav.js?v=1"></script>
-<script src="../../js/notify.js?v=4" defer></script>
+<script src="../../js/nav.js?v=2"></script>
+<script src="../../js/notify.js?v=5" defer></script>
 <script>
 // Chat private per user: tabel messages (user_id = pemilik percakapan), realtime via Supabase.
 const $ = id => document.getElementById(id);

@@ -19,7 +19,7 @@
   var AUD = new URL("../assets/notif/", SRC).href;   // js/ -> assets/notif/ (admin/js/ -> admin/assets/notif/)
   var SW = new URL("../sw.js", SRC).href;
   var ROOT = new URL("../", SRC).href;
-  var ICON = ROLE === "admin" ? "" : new URL("assets/image/profile.jpg", ROOT).href;
+  var ICON = ROLE === "admin" ? location.origin + "/assets/image/favicon-192.png" : new URL("assets/image/profile.jpg", ROOT).href;
   var K = { log: "malik_notif_log", perm: "malik_notif_perm", annSeen: "malik_ann_seen" };
   var CUR = "_device";   // penerima saat ini: id user / "admin" / "_device"
 
@@ -70,14 +70,18 @@
     if (document.getElementById("mn-css")) return;
     var s = document.createElement("style"); s.id = "mn-css";
     s.textContent =
-      "#mn-host{position:fixed;top:12px;left:12px;right:12px;max-width:380px;margin-left:auto;z-index:2147483000;display:grid;gap:10px;pointer-events:none;font-family:Malik,Arial,sans-serif}" +
-      ".mn-t{pointer-events:auto;cursor:pointer;background:rgba(8,14,26,.97);color:#fff;border:1px solid rgba(0,255,150,.4);border-left:4px solid #00ff66;border-radius:14px;padding:12px 14px;box-shadow:0 8px 30px rgba(0,0,0,.5),0 0 18px rgba(0,217,255,.2);animation:mn-in .25s ease}" +
-      ".mn-t.chat{border-left-color:#00d9ff}.mn-t b{display:block;font-size:14px}.mn-t p{margin:4px 0 0;font-size:13px;color:#b8c4dc;white-space:pre-line;word-break:break-word}" +
-      "@keyframes mn-in{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}" +
-      "#mn-ask{position:fixed;left:12px;right:12px;bottom:calc(var(--mk-nav-h,0px) + 14px);max-width:420px;margin:0 auto;z-index:2147483000;background:rgba(8,14,26,.98);color:#fff;border:1px solid rgba(0,217,255,.45);border-radius:16px;padding:16px;box-shadow:0 10px 40px rgba(0,0,0,.6),0 0 24px rgba(0,217,255,.2);font-family:Malik,Arial,sans-serif;animation:mn-in .25s ease}" +
-      "#mn-ask b{display:block;font-size:15px}#mn-ask p{margin:6px 0 12px;font-size:13px;color:#b8c4dc}" +
-      "#mn-ask div{display:flex;gap:10px}#mn-ask button{flex:1;padding:12px;border:0;border-radius:11px;font:inherit;font-weight:bold;cursor:pointer;background:#1a2740;color:#fff}" +
-      "#mn-ask button.ok{background:linear-gradient(90deg,#00ff66,#00d9ff);color:#031008}";
+      "#mn-host{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:12px;right:12px;max-width:380px;margin-left:auto;z-index:2147483000;display:grid;gap:10px;pointer-events:none;font-family:'Plus Jakarta Sans',Arial,sans-serif}" +
+      ".mn-t{pointer-events:auto;cursor:pointer;background:rgba(11,15,20,.94);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);color:#e8edf5;border:1px solid rgba(52,211,153,.32);border-left:3px solid #34d399;border-radius:16px;padding:12px 14px;box-shadow:0 18px 40px -18px rgba(0,0,0,.85),inset 0 1px 0 rgba(255,255,255,.07);animation:mn-in .25s ease}" +
+      ".mn-t.chat{border-color:rgba(56,189,248,.32);border-left-color:#38bdf8}.mn-t b{display:block;font-size:14px}.mn-t p{margin:4px 0 0;font-size:13px;color:#aab5c6;white-space:pre-line;word-break:break-word}" +
+      ".mn-t.rich{display:flex;align-items:center;gap:11px;padding:11px 13px}.mn-av{flex:none;width:42px;height:42px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;color:#04120c;background:linear-gradient(145deg,#34d399,#38bdf8);box-shadow:0 8px 18px -10px #34d399}.mn-av img{width:100%;height:100%;object-fit:cover;display:block}" +
+      ".mn-bd{flex:1;min-width:0}.mn-r1{display:flex;align-items:baseline;justify-content:space-between;gap:8px}.mn-r1 b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mn-r1 time{flex:none;font-size:11px;color:#8b9ab4}" +
+      ".mn-t.rich p{margin:3px 0 0;white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.4}" +
+      ".mn-n{flex:none;min-width:22px;height:22px;padding:0 7px;border-radius:11px;font-style:normal;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;background:#34d399;color:#04120c}.mn-n[hidden]{display:none}" +
+      "@keyframes mn-in{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}@media(prefers-reduced-motion:reduce){.mn-t{animation:none}}" +
+      "#mn-ask{position:fixed;left:12px;right:12px;bottom:calc(var(--mk-nav-h,0px) + 14px);max-width:420px;margin:0 auto;z-index:2147483000;background:rgba(11,15,20,.96);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);color:#e8edf5;border:1px solid rgba(52,211,153,.35);border-radius:18px;padding:16px;box-shadow:0 24px 50px -20px rgba(0,0,0,.9);font-family:'Plus Jakarta Sans',Arial,sans-serif;animation:mn-in .25s ease}" +
+      "#mn-ask b{display:block;font-size:15px}#mn-ask p{margin:6px 0 12px;font-size:13px;color:#aab5c6}" +
+      "#mn-ask div{display:flex;gap:10px}#mn-ask button{flex:1;padding:12px;border:1px solid rgba(255,255,255,.09);border-radius:12px;font:inherit;font-weight:700;cursor:pointer;background:rgba(255,255,255,.06);color:#e8edf5}" +
+      "#mn-ask button.ok{background:#34d399;color:#04120c;border:0}";
     document.head.appendChild(s);
   }
   function host() {
@@ -85,15 +89,38 @@
     if (!h) { h = document.createElement("div"); h.id = "mn-host"; document.body.appendChild(h); }
     return h;
   }
+  function okAvatar(a) { return typeof a === "string" && (/^data:image\/(jpeg|png|webp);base64,/.test(a) || /^https:\/\//.test(a)); }
+  function fillRich(t, r) {   // kartu pesan: avatar/inisial, nama, jam, preview, badge unread (semua lewat textContent / DOM, bukan innerHTML)
+    t.textContent = "";
+    var av = document.createElement("span"); av.className = "mn-av";
+    var ini = Array.from(String(r.name || "?").trim())[0] || "?";
+    if (okAvatar(r.avatar)) {
+      var im = document.createElement("img"); im.alt = ""; im.src = r.avatar;
+      im.onerror = function () { av.textContent = ini.toUpperCase(); };
+      av.appendChild(im);
+    } else av.textContent = ini.toUpperCase();
+    var bd = document.createElement("div"); bd.className = "mn-bd";
+    var r1 = document.createElement("div"); r1.className = "mn-r1";
+    var nm = document.createElement("b"); nm.textContent = r.name || "User";
+    var tm = document.createElement("time"); tm.textContent = r.time || "";
+    r1.appendChild(nm); r1.appendChild(tm);
+    var pv = document.createElement("p"); pv.textContent = r.preview || "";
+    bd.appendChild(r1); bd.appendChild(pv);
+    var bg = document.createElement("em"); bg.className = "mn-n"; bg.textContent = r.unread > 99 ? "99+" : String(r.unread || 0); bg.hidden = !(r.unread > 0);
+    t.appendChild(av); t.appendChild(bd); t.appendChild(bg);
+  }
   function toast(n) {
-    var h = host(), t = document.createElement("div");
-    t.className = "mn-t " + (n.type === "chat" ? "chat" : "");
-    var b = document.createElement("b"), p = document.createElement("p");
-    b.textContent = n.title; p.textContent = n.body; t.appendChild(b); t.appendChild(p);
-    t.addEventListener("click", function () { t.remove(); if (n.url) location.href = n.url; });
-    h.appendChild(t);
+    var h = host(), t = null, i;
+    if (n.key) for (i = 0; i < h.children.length; i++) if (h.children[i].getAttribute("data-k") === n.key) { t = h.children[i]; break; }   // pesan beruntun dari user yang sama -> satu kartu, bukan menumpuk
+    var isNew = !t;
+    if (isNew) { t = document.createElement("div"); if (n.key) t.setAttribute("data-k", n.key); }
+    t.className = "mn-t " + (n.type === "chat" ? "chat" : "") + (n.rich ? " rich" : "");
+    if (n.rich) fillRich(t, n.rich);
+    else { t.textContent = ""; var b = document.createElement("b"), p = document.createElement("p"); b.textContent = n.title; p.textContent = n.body; t.appendChild(b); t.appendChild(p); }
+    t.onclick = function () { t.remove(); if (n.url) location.href = n.url; };
+    if (isNew) h.appendChild(t);
     while (h.children.length > 4) h.firstChild.remove();
-    setTimeout(function () { if (t.parentNode) t.remove(); }, 6500);
+    clearTimeout(t.__tm); t.__tm = setTimeout(function () { if (t.parentNode) t.remove(); }, 6500);
   }
 
   /* ---------- notifikasi sistem (browser / HP) ---------- */
@@ -130,14 +157,30 @@
   /* ---------- Supabase Realtime ---------- */
   function sb() { return g.supabaseClient; }
   function splitQty(p) { var m = String(p || "").match(/^(.*?)\s+x(\d+)$/i); return m ? { n: m[1], q: Number(m[2]) } : { n: String(p || ""), q: 1 }; }
-  var whoC = {};   // cache profil singkat per user (60 dtk, supaya nama baru ikut terbaca)
+  var whoC = {};   // cache profil singkat per user (60 dtk, supaya nama/foto baru ikut terbaca)
   async function whoOf(uid) {
     var c = whoC[uid]; if (c && Date.now() - c.t < 60000) return c;
     try {
-      var r = await sb().from("profiles").select("email,username").eq("id", uid).maybeSingle();
-      if (r.data) { var em = r.data.email || "user", nm = String(r.data.username || "").trim(); return (whoC[uid] = { t: Date.now(), email: em, name: nm || em }); }
+      var r = await sb().from("profiles").select("email,username,avatar_url").eq("id", uid).maybeSingle();
+      if (r.error) r = await sb().from("profiles").select("email,username").eq("id", uid).maybeSingle();   // kolom avatar_url belum ada -> tetap jalan
+      if (r.data) { var em = r.data.email || "user", nm = String(r.data.username || "").trim(); return (whoC[uid] = { t: Date.now(), email: em, name: nm || em.split("@")[0] || em, avatar: r.data.avatar_url || "" }); }
     } catch (e) {}
-    return c || { t: 0, email: "user", name: "user" };
+    return c || { t: 0, email: "user", name: "user", avatar: "" };
+  }
+  var sess = {};   // cadangan penghitung unread (jika query gagal)
+  async function unreadOf(uid) {
+    sess[uid] = (sess[uid] || 0) + 1;
+    try {
+      var r = await sb().from("messages").select("id", { count: "exact", head: true }).eq("user_id", uid).eq("sender", "user").or("is_read.is.null,is_read.eq.false");
+      if (!r.error && typeof r.count === "number") return Math.max(r.count, 1);
+    } catch (e) {}
+    return sess[uid];
+  }
+  function clockOf(t) { try { return new Date(t || Date.now()).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }); } catch (e) { return ""; } }
+  function previewOf(m) {   // pesan order otomatis -> ringkas; selain itu teks 1 baris
+    var s = String(m || ""), pr = s.match(/Pesanan Baru[\s\S]*?Produk:\s*\n([^\n]+)/);
+    if (pr) return "\uD83D\uDED2 Pesanan baru: " + pr[1].trim();
+    return clip(s.replace(/\s+/g, " ").trim(), 90);
   }
   async function emailOf(uid) { return (await whoOf(uid)).email; }
   function dashUrl() { return new URL("account/dashboard/", ROOT).href; }
@@ -195,8 +238,10 @@
         fire({ type: "general", tag: "ord-" + p.new.id, title: "🔔 Order Baru", body: "User:\n" + w.name + "\n\nProduk:\n" + x.n + (x.q > 1 ? " (x" + x.q + ")" : ""), url: new URL("orders.html", location.href).href });
       })
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: "sender=eq.user" }, async function (p) {
-        var w = await whoOf(p.new.user_id);
-        fire({ type: "chat", tag: "chat-" + p.new.user_id, title: "🔔 Pesan Masuk", body: w.name + ":\n" + clip(p.new.message, 80), url: new URL("chat.html?u=" + encodeURIComponent(w.email), location.href).href });
+        var res = await Promise.all([whoOf(p.new.user_id), unreadOf(p.new.user_id)]), w = res[0], un = res[1], pv = previewOf(p.new.message);
+        fire({ type: "chat", tag: "chat-" + p.new.user_id, key: "chat-" + p.new.user_id, title: "\uD83D\uDCAC " + w.name, body: pv,
+          rich: { name: w.name, avatar: w.avatar, preview: pv, time: clockOf(p.new.created_at), unread: un },
+          url: new URL("chat.html?u=" + encodeURIComponent(w.email), location.href).href });
       })
       .subscribe());
   }

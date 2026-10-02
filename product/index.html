@@ -6,6 +6,13 @@
 <title>Detail Produk - Malik Store</title>
 <meta name="description" content="Detail produk Malik Store: Open Panel Pterodactyl, Sewa Bot WhatsApp, Reseller & Admin Panel.">
 <meta name="theme-color" content="#0b0f14">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Malik Store"><meta property="og:locale" content="id_ID">
+<meta property="og:title" content="Produk Malik Store - Open Panel, Sewa Bot WhatsApp &amp; Reseller">
+<meta property="og:description" content="Pilih paket Open Panel Pterodactyl, Sewa Bot WhatsApp, atau Reseller &amp; Admin Panel. Harga jelas, order mudah lewat website.">
+<meta property="og:image" content="https://malik-store.aliz.web.id/assets/image/og-image.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://malik-store.aliz.web.id/assets/image/og-image.jpg">
+<link rel="stylesheet" href="../css/footer.css?v=1">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -81,6 +88,11 @@ body.a-blue{--ac:#38bdf8}body.a-yellow{--ac:#fbbf24}body.a-lime{--ac:#34d399}
   <section class="card"><h2>Ulasan Pembeli</h2><div id="revs"><div class="empty">Memuat ulasan...</div></div><button class="ghost" id="allrev" type="button">Lihat semua &amp; tulis ulasan</button></section>
 </div>
 <div class="nf" id="nf" style="display:none"><p>Produk tidak ditemukan.</p><a href="../index.html#harga-panel">Lihat semua produk</a></div>
+<footer class="mk-foot"><div class="mk-foot-in">
+  <a class="mk-foot-brand" href="/index.html">MALIK<span>STORE</span></a>
+  <nav aria-label="Footer"><a href="/index.html">Beranda</a><a href="/tentang/">Tentang</a><a href="/tentang/#cara-order">Cara Order</a><a href="/tentang/#faq">FAQ</a><a href="https://wa.me/6285782100757" target="_blank" rel="noopener">WhatsApp</a></nav>
+  <p>&copy; 2026 Malik Store</p>
+</div></footer>
 <div class="bar" id="bar"><div>
   <span class="t mk-hide-admin">Total<b id="total"></b></span>
   <button class="go mk-hide-admin" id="order" type="button">Order Sekarang</button>
@@ -89,10 +101,11 @@ body.a-blue{--ac:#38bdf8}body.a-yellow{--ac:#fbbf24}body.a-lime{--ac:#34d399}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/supabase.js?v=9"></script>
 <script src="../js/products.js?v=2"></script>
+<script src="../js/catalog-sync.js?v=1" data-reload></script>
 <script src="../js/auth.js?v=13"></script>
-<script src="../js/reviews.js?v=1"></script>
-<script src="../js/nav.js?v=1"></script>
-<script src="../js/notify.js?v=4" defer></script>
+<script src="../js/reviews.js?v=2"></script>
+<script src="../js/nav.js?v=2"></script>
+<script src="../js/notify.js?v=5" defer></script>
 <script>
 (function () {
   var P = MalikProducts, $ = function (i) { return document.getElementById(i); }, q = new URLSearchParams(location.search);
@@ -110,6 +123,7 @@ body.a-blue{--ac:#38bdf8}body.a-yellow{--ac:#fbbf24}body.a-lime{--ac:#34d399}
   document.title = prod.name + " - Malik Store"; $("crumb").textContent = prod.name; $("name").textContent = prod.name; $("desc").textContent = prod.desc;
   $("icon").className = "fa-solid " + prod.icon; $("vlabel").textContent = prod.variantLabel;
   var md = document.querySelector('meta[name="description"]'); if (md) md.content = prod.desc;
+  var SL = { panel: "open-panel", sewa_bot: "sewa-bot", reseller_admin: "reseller-admin" }, cl = document.createElement("link"); cl.rel = "canonical"; cl.href = "https://malik-store.aliz.web.id/produk/" + SL[key]; document.head.appendChild(cl);   // satu alamat kanonik per produk
   var low = Math.min.apply(null, prod.variants.map(function (v) { return v.price; })), high = Math.max.apply(null, prod.variants.map(function (v) { return v.price; }));
   var ld = document.createElement("script"); ld.type = "application/ld+json";
   ld.textContent = JSON.stringify({ "@context": "https://schema.org", "@type": "Product", name: prod.name, description: prod.desc, brand: { "@type": "Brand", name: "Malik Store" }, offers: { "@type": "AggregateOffer", priceCurrency: "IDR", lowPrice: low, highPrice: high, offerCount: prod.variants.length } });

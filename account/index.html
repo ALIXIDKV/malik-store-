@@ -34,12 +34,12 @@ body{
     border-radius:22px;
     background:rgba(255,255,255,.08);
     backdrop-filter:blur(15px);
-    border:1px solid rgba(0,255,255,.35);
-    box-shadow:0 0 40px rgba(0,200,255,.25);
+    border:1px solid rgba(52,211,153,.35);
+    box-shadow:0 0 40px rgba(52,211,153,.18);
 }
 .brand{text-align:center}
 .brand h1{margin:0;font-size:34px;letter-spacing:2px}
-.brand span{color:#00ff66}
+.brand span{color:#34d399}
 .brand p{color:#b8c1d1;letter-spacing:3px;font-size:13px;margin:6px 0 0}
 
 .tabs{display:flex;margin:24px 0 20px;border-bottom:1px solid rgba(255,255,255,.18)}
@@ -48,7 +48,7 @@ body{
     color:#b8c1d1;font:inherit;font-weight:bold;letter-spacing:2px;font-size:14px;cursor:pointer;
     border-bottom:2px solid transparent;margin-bottom:-1px;
 }
-.tabs button.on{color:#fff;border-bottom-color:#00ff66}
+.tabs button.on{color:#fff;border-bottom-color:#34d399}
 
 .field{margin-bottom:16px}
 .field label{display:block;margin-bottom:8px;color:#d8d8d8;font-size:14px}
@@ -63,20 +63,20 @@ input{
     font:inherit;
     font-size:16px;
 }
-input:focus{border-color:#00ff66}
+input:focus{border-color:#34d399}
 input::placeholder{color:rgba(255,255,255,.4)}
 
 .code-row{display:flex;gap:10px}
 .code-row input{flex:1;min-width:0;letter-spacing:4px}
 .code-row .send{
-    flex:none;width:auto;min-width:118px;margin:0;padding:0 12px;border:1px solid #00ff66;border-radius:12px;
-    background:transparent;color:#00ff66;font:inherit;font-weight:bold;font-size:13px;cursor:pointer;
+    flex:none;width:auto;min-width:118px;margin:0;padding:0 12px;border:1px solid #34d399;border-radius:12px;
+    background:transparent;color:#34d399;font:inherit;font-weight:bold;font-size:13px;cursor:pointer;
 }
 .code-row .send:disabled{opacity:.55;cursor:not-allowed}
 
 .btn{
     display:block;width:100%;padding:15px;margin-top:6px;border:0;border-radius:12px;
-    background:linear-gradient(90deg,#00ff66,#00d9ff);color:#000;
+    background:linear-gradient(90deg,#34d399,#38bdf8);color:#000;
     font:inherit;font-weight:bold;font-size:15px;cursor:pointer;
 }
 .btn:disabled{opacity:.7;cursor:wait}
@@ -88,12 +88,18 @@ input::placeholder{color:rgba(255,255,255,.4)}
 
 .msg{min-height:18px;margin:2px 0 10px;font-size:13px;text-align:center;line-height:1.4}
 .msg.err{color:#ff6b6b}
-.msg.ok{color:#00ff66}
+.msg.ok{color:#34d399}
 .hint{margin:6px 0 0;font-size:12px;color:#9aa7bd}
 .hide{display:none}
 .auth-box.checking{visibility:hidden}
 </style>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="../css/shared.css?v=2"><script src="../js/role.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="../css/shared.css?v=3"><script src="../js/role.js"></script>
+<meta name="description" content="Masuk atau daftar akun Malik Store untuk order layanan, memantau pesanan, dan chat dengan admin.">
+<link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="/assets/image/favicon-32.png"><link rel="icon" type="image/png" sizes="192x192" href="/assets/image/favicon-192.png"><link rel="apple-touch-icon" href="/assets/image/apple-touch-icon.png">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Malik Store"><meta property="og:locale" content="id_ID"><meta property="og:url" content="https://malik-store.aliz.web.id/account/">
+<meta property="og:title" content="Masuk atau Daftar - Malik Store"><meta property="og:description" content="Masuk atau buat akun Malik Store untuk order layanan, memantau pesanan, dan chat dengan admin.">
+<meta property="og:image" content="https://malik-store.aliz.web.id/assets/image/og-image.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="../css/footer.css?v=1">
 </head>
 
 <body class="mk-login">
@@ -155,6 +161,7 @@ input::placeholder{color:rgba(255,255,255,.4)}
 <button type="submit" id="reg-btn" class="btn">DAFTAR</button>
 </form>
 
+<p class="mk-foot-mini"><a href="/tentang/">Tentang Malik Store</a> &middot; <a href="/tentang/#faq">FAQ</a> &middot; <a href="/index.html">Beranda</a></p>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

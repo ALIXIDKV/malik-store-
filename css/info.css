@@ -1,0 +1,60 @@
+/* MALIK STORE - halaman informasi (/tentang/). Design system sama dengan homepage: ink navy + emerald/cyan, glass card. */
+:root{--g:#34d399;--c:#38bdf8;--bg:#0b0f14;--line:rgba(255,255,255,.09);--mut:#93a0b4;--tx:#e8edf5;--soft:#b7c2d3;
+  --glass:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.02));--sh:0 18px 44px -28px rgba(0,0,0,.85),inset 0 1px 0 rgba(255,255,255,.07)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth;scroll-padding-top:76px}
+body{margin:0;min-height:100vh;color:var(--tx);font-family:'Plus Jakarta Sans',Arial,sans-serif;line-height:1.65;
+  background:radial-gradient(900px 480px at 85% -8%,rgba(52,211,153,.10),transparent 60%),radial-gradient(700px 420px at 0 0,rgba(56,189,248,.07),transparent 60%),var(--bg);background-attachment:fixed}
+a{color:var(--c)}
+.ix-top{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 18px;padding-top:calc(12px + env(safe-area-inset-top,0px));background:rgba(11,15,20,.74);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);border-bottom:1px solid var(--line)}
+.ix-logo{font-weight:800;letter-spacing:.14em;font-size:15px;color:var(--tx);text-decoration:none}.ix-logo span{color:var(--g)}
+.ix-top nav{display:flex;gap:6px;align-items:center}
+.ix-top nav a{padding:8px 12px;border-radius:10px;font-size:13px;font-weight:600;color:var(--soft);text-decoration:none}
+.ix-top nav a:hover{color:var(--g)}
+.ix-top nav a.cta{background:var(--g);color:#04120c;font-weight:700}
+.ix-wrap{max-width:860px;margin:0 auto;padding:22px 16px 8px}
+.ix-hero{padding:34px 0 18px}
+.ix-eye{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border:1px solid rgba(52,211,153,.35);border-radius:999px;background:rgba(52,211,153,.08);color:var(--g);font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.ix-hero h1{margin:16px 0 12px;font-size:clamp(30px,6vw,46px);line-height:1.12;letter-spacing:-.025em;font-weight:800}
+.ix-hero h1 em{font-style:normal;background:linear-gradient(90deg,var(--g),var(--c));-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.ix-lead{margin:0;color:var(--soft);font-size:16px;max-width:62ch}
+.ix-cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.ix-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 20px;border-radius:14px;border:1px solid var(--line);font:inherit;font-size:14px;font-weight:700;color:var(--tx);background:rgba(255,255,255,.05);text-decoration:none;transition:transform .2s,box-shadow .2s}
+.ix-btn.p{background:var(--g);color:#04120c;border:0;box-shadow:0 14px 28px -14px var(--g)}
+.ix-btn:hover{transform:translateY(-2px)}
+.ix-toc{display:flex;gap:8px;overflow-x:auto;padding:14px 0 6px;margin:6px 0 4px;scrollbar-width:none}.ix-toc::-webkit-scrollbar{display:none}
+.ix-toc a{flex:none;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--soft);font-size:13px;font-weight:600;text-decoration:none}
+.ix-toc a:hover{color:var(--g);border-color:rgba(52,211,153,.4)}
+.ix-sec{margin:18px 0}
+.ix-card{padding:22px 20px;border:1px solid var(--line);border-radius:22px;background:var(--glass),rgba(11,15,20,.55);box-shadow:var(--sh)}
+.ix-card h2{margin:0 0 6px;font-size:clamp(21px,4vw,26px);letter-spacing:-.02em;line-height:1.25}
+.ix-sub{margin:0 0 16px;color:var(--mut);font-size:14px}
+.ix-card p{margin:0 0 12px;color:var(--soft)}.ix-card p:last-child{margin-bottom:0}
+.ix-grid{display:grid;gap:12px}@media(min-width:720px){.ix-grid.c3{grid-template-columns:repeat(3,1fr)}.ix-grid.c2{grid-template-columns:repeat(2,1fr)}}
+.ix-mini{padding:16px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.03)}
+.ix-mini i{display:flex;align-items:center;justify-content:center;width:40px;height:40px;margin-bottom:10px;border-radius:12px;font-style:normal;font-size:18px;color:#04120c;background:linear-gradient(145deg,rgba(255,255,255,.55),var(--g))}
+.ix-mini h3{margin:0 0 6px;font-size:16px;color:var(--tx)}.ix-mini p{margin:0;font-size:14px;color:var(--soft)}
+.ix-mini a.more{display:inline-block;margin-top:10px;font-size:13px;font-weight:700;color:var(--g);text-decoration:none}
+.ix-steps{list-style:none;margin:0;padding:0;counter-reset:s;display:grid;gap:12px}
+.ix-steps li{counter-increment:s;position:relative;padding:0 0 0 52px;min-height:40px}
+.ix-steps li:before{content:counter(s);position:absolute;left:0;top:0;width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#04120c;background:linear-gradient(145deg,rgba(255,255,255,.55),var(--g));box-shadow:0 10px 22px -12px var(--g)}
+.ix-steps li:not(:last-child):after{content:"";position:absolute;left:18px;top:42px;bottom:-10px;width:2px;background:linear-gradient(var(--line),transparent)}
+.ix-steps b{display:block;color:var(--tx);font-size:15px}.ix-steps span{color:var(--soft);font-size:14px}
+.ix-note{margin-top:14px;padding:12px 14px;border-radius:14px;border:1px solid rgba(56,189,248,.3);background:rgba(56,189,248,.07);color:#cfe9f7;font-size:14px}
+.ix-note.warn{border-color:rgba(251,191,36,.35);background:rgba(251,191,36,.07);color:#f6e2ad}
+.ix-list{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+.ix-list li{position:relative;padding-left:30px;color:var(--soft);font-size:15px}
+.ix-list li:before{content:"\2713";position:absolute;left:0;top:1px;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--g);background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.5)}
+.ix-list b{color:var(--tx)}
+.ix-faq details{border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.03);margin-bottom:10px;overflow:hidden}
+.ix-faq summary{cursor:pointer;list-style:none;padding:15px 16px;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.ix-faq summary::-webkit-details-marker{display:none}
+.ix-faq summary:after{content:"+";flex:none;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--g);background:rgba(52,211,153,.12);transition:transform .2s}
+.ix-faq details[open] summary:after{transform:rotate(45deg)}
+.ix-faq details[open]{border-color:rgba(52,211,153,.35)}
+.ix-faq details p{margin:0;padding:0 16px 16px;color:var(--soft);font-size:14.5px}
+.ix-faq summary:focus-visible,.ix-btn:focus-visible,.ix-toc a:focus-visible{outline:2px solid var(--g);outline-offset:2px}
+.ix-end{margin:22px 0 0;padding:26px 20px;text-align:center;border:1px solid rgba(52,211,153,.3);border-radius:22px;background:radial-gradient(circle at 25% 0,rgba(52,211,153,.18),transparent 60%),radial-gradient(circle at 85% 100%,rgba(56,189,248,.14),transparent 60%),#0d141c}
+.ix-end h2{margin:0 0 6px;font-size:22px}.ix-end p{margin:0 0 16px;color:var(--soft)}.ix-end .ix-cta{justify-content:center;margin:0}
+@media(max-width:520px){.ix-top nav a:not(.cta){display:none}.ix-card{padding:18px 16px;border-radius:20px}.ix-btn{flex:1 1 100%}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}

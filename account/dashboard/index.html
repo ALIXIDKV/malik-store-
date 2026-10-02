@@ -5,12 +5,12 @@
 <script src="../../js/role.js"></script>
 <style>
 @font-face{font-family:Malik;src:url("../../assets/font/font.ttf")}
-:root{--g:#00ff66;--c:#00d9ff;--bg:#050a14;--card:#0d1627;--card2:#111c32;--line:#1c2a44;--mut:#8b9ab4;--warn:#ffb020;--bad:#ff5c6c}
+:root{--g:#34d399;--c:#38bdf8;--bg:#0b0f14;--card:#121820;--card2:#18202b;--line:rgba(255,255,255,.09);--mut:#8b9ab4;--warn:#ffb020;--bad:#ff5c6c}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;min-height:100dvh;color:#fff;font-family:Malik,Arial,sans-serif;padding-bottom:calc(24px + var(--mk-nav-h,0px));
-background:radial-gradient(700px 420px at 0 -10%,rgba(0,255,102,.10),transparent 60%),radial-gradient(700px 420px at 100% 0,rgba(0,217,255,.10),transparent 60%),var(--bg);background-attachment:fixed}
+background:radial-gradient(700px 420px at 0 -10%,rgba(52,211,153,.10),transparent 60%),radial-gradient(700px 420px at 100% 0,rgba(56,189,248,.10),transparent 60%),var(--bg);background-attachment:fixed}
 svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
-.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:calc(12px + env(safe-area-inset-top,0px)) 18px 12px;background:rgba(5,10,20,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:calc(12px + env(safe-area-inset-top,0px)) 18px 12px;background:rgba(11,15,20,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
 .logo{font-size:18px;font-weight:bold;letter-spacing:2px}.logo span{color:var(--g)}
 .ttl{font-size:13px;color:var(--mut)}
 .wrap{max-width:520px;margin:0 auto;padding:16px 16px 8px}
@@ -18,10 +18,10 @@ svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-l
 h3{margin:22px 0 10px;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--c)}
 h3:first-child{margin-top:4px}
 .sum{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.st{padding:16px;border-radius:16px;background:linear-gradient(135deg,rgba(0,255,102,.12),rgba(0,217,255,.10));border:1px solid rgba(0,255,200,.28)}
+.st{padding:16px;border-radius:16px;background:linear-gradient(135deg,rgba(52,211,153,.12),rgba(56,189,248,.10));border:1px solid rgba(52,211,153,.28)}
 .st small{display:block;color:var(--mut);font-size:12px}.st b{display:block;margin-top:4px;font-size:26px;color:var(--g)}
 .row{display:flex;align-items:center;gap:12px;padding:13px;margin-bottom:8px;border-radius:14px;background:var(--card);border:1px solid var(--line)}
-.chipx{width:46px;height:46px;flex:none;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:12px;color:var(--g);background:rgba(0,255,102,.10);border:1px solid rgba(0,255,102,.35)}
+.chipx{width:46px;height:46px;flex:none;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:12px;color:var(--g);background:rgba(52,211,153,.10);border:1px solid rgba(52,211,153,.35)}
 .row .tx{flex:1;min-width:0}.row .tx b{display:block;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .row .tx small{display:block;margin-top:3px;color:var(--mut);font-size:12px}.row .tx small i{font-style:normal;color:var(--g)}
 .go{flex:none;padding:9px 16px;border:0;border-radius:10px;font:inherit;font-weight:bold;font-size:13px;cursor:pointer;color:#031008;background:linear-gradient(90deg,var(--g),var(--c))}
@@ -30,18 +30,21 @@ h3:first-child{margin-top:4px}
 .oc .b{display:flex;justify-content:space-between;gap:10px;margin-top:8px;font-size:12px;color:var(--mut)}.oc .b i{font-style:normal;color:var(--g);font-weight:bold;font-size:14px}
 .pill{flex:none;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:bold;border:1px solid}
 .p-pending{color:var(--warn);border-color:rgba(255,176,32,.4);background:rgba(255,176,32,.08)}
-.p-diproses{color:var(--c);border-color:rgba(0,217,255,.4);background:rgba(0,217,255,.08)}
-.p-selesai{color:var(--g);border-color:rgba(0,255,102,.4);background:rgba(0,255,102,.08)}
+.p-diproses{color:var(--c);border-color:rgba(56,189,248,.4);background:rgba(56,189,248,.08)}
+.p-selesai{color:var(--g);border-color:rgba(52,211,153,.4);background:rgba(52,211,153,.08)}
 .empty{text-align:center;color:var(--mut);padding:40px 10px}.empty .go{margin-top:14px}
 .me{text-align:center;padding:26px 16px;border-radius:18px;background:var(--card);border:1px solid var(--line)}
-.av{width:78px;height:78px;margin:0 auto 12px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:bold;text-transform:uppercase;color:#031008;background:linear-gradient(135deg,var(--g),var(--c));box-shadow:0 0 26px rgba(0,255,150,.3)}
+.av{width:78px;height:78px;margin:0 auto 12px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:bold;text-transform:uppercase;color:#031008;background:linear-gradient(135deg,var(--g),var(--c));box-shadow:0 0 26px rgba(52,211,153,.3)}
 .me b{display:block;font-size:18px}.me small{display:block;margin-top:4px;color:var(--mut);word-break:break-all}
 .btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:12px;padding:14px;border-radius:14px;font:inherit;font-weight:bold;font-size:14px;text-decoration:none;cursor:pointer}
-.btn.n{color:var(--g);background:rgba(0,255,102,.08);border:1px solid rgba(0,255,102,.45)}
+.btn.n{color:var(--g);background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.45)}
 .btn.o{color:var(--bad);background:rgba(255,92,108,.08);border:1px solid rgba(255,92,108,.45)}
-.rv{display:inline-block;margin-top:10px;padding:8px 14px;border:1px solid rgba(0,255,102,.45);border-radius:10px;background:rgba(0,255,102,.08);color:var(--g);font:inherit;font-weight:bold;font-size:12px;cursor:pointer}
+.rv{display:inline-block;margin-top:10px;padding:8px 14px;border:1px solid rgba(52,211,153,.45);border-radius:10px;background:rgba(52,211,153,.08);color:var(--g);font:inherit;font-weight:bold;font-size:12px;cursor:pointer}
 .rv.done{border-color:var(--line);background:none;color:var(--mut);cursor:default}
-</style><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="../../css/shared.css?v=2">
+</style><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="../../css/shared.css?v=3">
+<meta name="description" content="Riwayat order dan profil akun Malik Store kamu.">
+<link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="/assets/image/favicon-32.png"><link rel="icon" type="image/png" sizes="192x192" href="/assets/image/favicon-192.png"><link rel="apple-touch-icon" href="/assets/image/apple-touch-icon.png">
+<link rel="stylesheet" href="../../css/footer.css?v=1">
 </head>
 <body>
 <div class="top"><span class="logo">MALIK<span>STORE</span></span><span class="ttl" id="ttl">Riwayat</span></div>
@@ -69,13 +72,18 @@ h3:first-child{margin-top:4px}
     <a class="btn o" href="../" onclick="return doLogout(event)"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Logout</a>
   </section>
 </div>
+<footer class="mk-foot"><div class="mk-foot-in">
+  <a class="mk-foot-brand" href="/index.html">MALIK<span>STORE</span></a>
+  <nav aria-label="Footer"><a href="/index.html">Beranda</a><a href="/tentang/">Tentang</a><a href="/tentang/#cara-order">Cara Order</a><a href="/tentang/#faq">FAQ</a><a href="https://wa.me/6285782100757" target="_blank" rel="noopener">WhatsApp</a></nav>
+  <p>&copy; 2026 Malik Store</p>
+</div></footer>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../../js/supabase.js?v=9"></script>
 <script src="../../js/products.js?v=2"></script>
 <script src="../../js/auth.js?v=13"></script>
-<script src="../../js/reviews.js?v=1"></script>
-<script src="../../js/nav.js?v=1"></script>
-<script src="../../js/notify.js?v=4" defer></script>
+<script src="../../js/reviews.js?v=2"></script>
+<script src="../../js/nav.js?v=2"></script>
+<script src="../../js/notify.js?v=5" defer></script>
 <script>
 // Halaman ini hanya untuk user yang sudah login (sesi Supabase).
 const $ = id => document.getElementById(id);

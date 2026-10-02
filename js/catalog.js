@@ -27,10 +27,14 @@
     if (!s || !s.total) return '<span class="mk-nr">Belum ada ulasan</span>';
     return '<span class="mk-stars" style="--p:' + Math.round(s.avg / 5 * 100) + '%" aria-hidden="true">★★★★★</span> <b>' + s.avg.toFixed(1) + '</b> <em>(' + s.total + ' ulasan)</em>';
   }
-  root.innerHTML = P.list.map(card).join("");
-  if (window.MalikReviews) MalikReviews.stats().then(function (all) {
+  var rates = null;
+  function paintRates(all) {
     P.list.forEach(function (p) { var b = root.querySelector('[data-key="' + p.key + '"] .mk-rate'); if (b) b.innerHTML = starsHtml(all[p.key]); });
-  });
+  }
+  function render() { root.innerHTML = P.list.map(card).join(""); if (rates) paintRates(rates); }
+  render();
+  window.addEventListener("malik:catalog", render);   // harga/nama/deskripsi diubah admin (js/catalog-sync.js)
+  if (window.MalikReviews) MalikReviews.stats().then(function (all) { rates = all; paintRates(all); });
 
   if (window.matchMedia && matchMedia("(hover:hover)").matches) {   // efek 3D halus (desktop)
     root.addEventListener("pointermove", function (e) {

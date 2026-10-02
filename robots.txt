@@ -1,8 +1,9 @@
 User-agent: *
 Allow: /
 Disallow: /admin/
-Disallow: /account/
-Disallow: /order/
 Disallow: /api/
+
+# /account/ dan /order/ sengaja TIDAK diblokir di sini: halaman itu memakai noindex (meta + header X-Robots-Tag).
+# Jika diblokir robots.txt, crawler tidak pernah membaca noindex dan URL-nya masih bisa muncul di hasil pencarian.
 
 Sitemap: https://malik-store.aliz.web.id/sitemap.xml

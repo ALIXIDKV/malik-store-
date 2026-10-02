@@ -9,11 +9,13 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/supabase.js?v=9"></script>
 <script>try{sessionStorage.setItem("malik_loaded","1")}catch(e){}</script>
+<meta name="description" content="Panel admin Malik Store.">
+<link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="/assets/image/favicon-32.png"><link rel="icon" type="image/png" sizes="192x192" href="/assets/image/favicon-192.png"><link rel="apple-touch-icon" href="/assets/image/apple-touch-icon.png">
 </head>
 <body>
 <p>Memuat panel admin...</p>
 <noscript><a href="/admin/login.html">Masuk admin</a></noscript>
-<script src="js/admin.js?v=12"></script>
+<script src="js/admin.js?v=13"></script>
 <script>
 // /admin -> admin: dashboard, user biasa: website user, belum login: halaman login.
 Admin.route().then(function (to) { location.replace(to); }, function () { location.replace("/admin/login.html"); });

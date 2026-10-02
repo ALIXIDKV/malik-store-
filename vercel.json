@@ -37,6 +37,21 @@
       "source": "/admin/chat",
       "destination": "/admin/chat.html",
       "permanent": false
+    },
+    {
+      "source": "/about",
+      "destination": "/tentang/",
+      "permanent": true
+    },
+    {
+      "source": "/about/",
+      "destination": "/tentang/",
+      "permanent": true
+    },
+    {
+      "source": "/admin/products",
+      "destination": "/admin/products.html",
+      "permanent": false
     }
   ],
   "headers": [

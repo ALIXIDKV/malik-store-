@@ -31,12 +31,12 @@
   var css = document.createElement("style");
   css.textContent =
     ":root{--mk-nav-h:calc(62px + env(safe-area-inset-bottom,0px))}" +
-    ".mk-nav{position:fixed;left:0;right:0;bottom:0;z-index:8000;display:flex;justify-content:center;padding:0 8px env(safe-area-inset-bottom,0px);background:rgba(5,10,20,.96);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid #1c2a44;font-family:Malik,Arial,sans-serif}" +
+    ".mk-nav{position:fixed;left:0;right:0;bottom:0;z-index:8000;display:flex;justify-content:center;padding:0 8px env(safe-area-inset-bottom,0px);background:rgba(11,15,20,.96);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid rgba(255,255,255,.09);font-family:Malik,Arial,sans-serif}" +
     ".mk-nav-in{width:100%;max-width:520px;display:flex}" +
     ".mk-nav a{flex:1;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;height:62px;color:#8b9ab4;text-decoration:none;font-size:11px;-webkit-tap-highlight-color:transparent}" +
     ".mk-nav svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}" +
-    ".mk-nav a.on{color:#00ff66}.mk-nav a.on svg{filter:drop-shadow(0 0 6px rgba(0,255,102,.7))}" +
-    ".mk-nav a.on:before{content:\"\";position:absolute;top:-1px;left:30%;right:30%;height:2px;border-radius:2px;background:linear-gradient(90deg,#00ff66,#00d9ff)}";
+    ".mk-nav a.on{color:#34d399}.mk-nav a.on svg{filter:drop-shadow(0 0 6px rgba(52,211,153,.7))}" +
+    ".mk-nav a.on:before{content:\"\";position:absolute;top:-1px;left:30%;right:30%;height:2px;border-radius:2px;background:linear-gradient(90deg,#34d399,#38bdf8)}";
   document.head.appendChild(css);
 
   var nav = document.createElement("nav");

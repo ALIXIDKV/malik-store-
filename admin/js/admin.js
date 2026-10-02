@@ -53,6 +53,7 @@
     send: '<line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>',
     back: '<line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>',
     close: '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+    box: '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>',
     trash: '<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>'
   };
   function icon(n) { return '<svg class="i" viewBox="0 0 24 24" aria-hidden="true">' + (ICONS[n] || "") + "</svg>"; }
@@ -271,7 +272,7 @@
   }
 
   /* ---------- layout ---------- */
-  var NAV = [["dashboard", "Dashboard", "grid"], ["chat", "Chat", "msg"], ["users", "Users", "users"], ["orders", "Orders", "bag"]];
+  var NAV = [["dashboard", "Dashboard", "grid"], ["chat", "Chat", "msg"], ["users", "Users", "users"], ["orders", "Orders", "bag"], ["products", "Produk", "box"]];
   var ticks = [];
   function onTick(fn) { ticks.push(fn); }
   function badges() {

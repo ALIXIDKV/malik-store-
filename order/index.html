@@ -8,18 +8,18 @@
 <script src="../js/role.js"></script>
 <style>
 @font-face{font-family:Malik;src:url("../assets/font/font.ttf")}
-:root{--g:#00ff66;--c:#00d9ff;--bg:#050a14;--card:#0d1627;--line:#1f2d45;--mut:#9aa7bd}
+:root{--g:#34d399;--c:#38bdf8;--bg:#0b0f14;--card:#121820;--line:rgba(255,255,255,.09);--mut:#9aa7bd}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;min-height:100vh;color:#fff;font-family:Malik,Arial,sans-serif;padding-bottom:calc(110px + var(--mk-nav-h,0px));
 background:linear-gradient(rgba(3,8,20,.82),rgba(3,8,20,.96)),url("../assets/image/login-bg.jpg") center/cover fixed}
-.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(5,10,20,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(11,15,20,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
 .logo{font-size:18px;font-weight:bold;letter-spacing:2px;text-decoration:none;color:#fff}.logo span{color:var(--g)}
 .usr{font-size:11px;color:var(--mut);max-width:48%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .wrap{max-width:520px;margin:0 auto;padding:16px}
 .crumb{font-size:12px;color:var(--mut);margin:2px 0 12px}.crumb a{color:var(--c);text-decoration:none}
-.hero{position:relative;height:190px;border-radius:20px;overflow:hidden;border:1px solid rgba(0,255,200,.3);
-background:radial-gradient(circle at 25% 20%,rgba(0,255,102,.35),transparent 55%),radial-gradient(circle at 80% 80%,rgba(0,217,255,.35),transparent 55%),#08111f;
-display:flex;align-items:center;justify-content:center;box-shadow:0 0 34px rgba(0,217,255,.18)}
+.hero{position:relative;height:190px;border-radius:20px;overflow:hidden;border:1px solid rgba(52,211,153,.3);
+background:radial-gradient(circle at 25% 20%,rgba(52,211,153,.35),transparent 55%),radial-gradient(circle at 80% 80%,rgba(56,189,248,.35),transparent 55%),#08111f;
+display:flex;align-items:center;justify-content:center;box-shadow:0 0 34px rgba(56,189,248,.18)}
 .hero:before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:26px 26px}
 .chip{position:relative;text-align:center}
 .chip .ram{font-size:54px;font-weight:bold;line-height:1;background:linear-gradient(90deg,var(--g),var(--c));-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -32,7 +32,7 @@ h2{margin:18px 0 4px;font-size:24px;line-height:1.2}
 .card h3{margin:0 0 12px;font-size:14px;letter-spacing:1px;color:var(--c);text-transform:uppercase}
 .feat{list-style:none;margin:0;padding:0;display:grid;gap:10px}
 .feat li{display:flex;gap:10px;align-items:center;font-size:14px}
-.feat li:before{content:"✓";flex:none;width:22px;height:22px;border-radius:50%;background:rgba(0,255,102,.15);border:1px solid var(--g);color:var(--g);font-size:12px;display:flex;align-items:center;justify-content:center}
+.feat li:before{content:"✓";flex:none;width:22px;height:22px;border-radius:50%;background:rgba(52,211,153,.15);border:1px solid var(--g);color:var(--g);font-size:12px;display:flex;align-items:center;justify-content:center}
 .qty{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .qty label{font-size:14px}.qty small{display:block;color:var(--mut);font-size:11px;margin-top:2px}
 .step{display:flex;align-items:center;gap:6px}
@@ -46,12 +46,12 @@ textarea:focus{border-color:var(--g)}
 .tabs{display:flex;gap:18px;border-bottom:1px solid var(--line);margin-top:18px}
 .tabs span{padding:10px 0;font-size:14px;color:var(--mut)}.tabs span.on{color:#fff;border-bottom:2px solid var(--g)}
 .empty{font-size:13px;color:var(--mut);padding:14px 0}
-.bar{position:fixed;left:0;right:0;bottom:var(--mk-nav-h,0px);z-index:6;background:rgba(5,10,20,.96);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px))}
+.bar{position:fixed;left:0;right:0;bottom:var(--mk-nav-h,0px);z-index:6;background:rgba(11,15,20,.96);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px))}
 .bar div{max-width:520px;margin:0 auto;display:flex;align-items:center;gap:14px}
 .bar .t{flex:none;font-size:11px;color:var(--mut)}.bar .t b{display:block;font-size:18px;color:var(--g)}
-.go{flex:1;padding:15px;border:0;border-radius:12px;font:inherit;font-weight:bold;font-size:14px;cursor:pointer;background:linear-gradient(90deg,var(--g),var(--c));color:#000;box-shadow:0 0 20px rgba(0,255,150,.35)}
+.go{flex:1;padding:15px;border:0;border-radius:12px;font:inherit;font-weight:bold;font-size:14px;cursor:pointer;background:linear-gradient(90deg,var(--g),var(--c));color:#000;box-shadow:0 0 20px rgba(52,211,153,.35)}
 .link,.out{display:block;width:100%;padding:14px;margin-top:10px;border:0;border-radius:12px;text-align:center;text-decoration:none;font:inherit;font-weight:bold;font-size:14px;cursor:pointer;background:rgba(255,255,255,.1);color:#fff}
-.ok{display:none;text-align:center;padding:30px 20px}.ok .tick{width:70px;height:70px;margin:0 auto 14px;border-radius:50%;background:rgba(0,255,102,.15);border:2px solid var(--g);color:var(--g);font-size:34px;display:flex;align-items:center;justify-content:center}
+.ok{display:none;text-align:center;padding:30px 20px}.ok .tick{width:70px;height:70px;margin:0 auto 14px;border-radius:50%;background:rgba(52,211,153,.15);border:2px solid var(--g);color:var(--g);font-size:34px;display:flex;align-items:center;justify-content:center}
 .ok b{color:var(--g)}
 .empty-state{display:none;text-align:center;padding:50px 20px}
 .rate{display:block;margin:6px 0 0;padding:0;border:0;background:none;color:var(--c);font:inherit;font-size:13px;cursor:pointer;text-align:left}
@@ -59,7 +59,10 @@ textarea:focus{border-color:var(--g)}
 .chips button{min-height:40px;padding:8px 14px;border:1px solid var(--line);border-radius:10px;background:#0a1424;color:#fff;font:inherit;font-size:13px;cursor:pointer}
 .chips button[aria-checked="true"]{background:linear-gradient(90deg,var(--g),var(--c));color:#000;border-color:transparent;font-weight:bold}
 </style>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="../css/shared.css?v=2">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="../css/shared.css?v=3">
+<meta name="description" content="Konfirmasi order layanan Malik Store: cek paket, harga, dan total sebelum pesanan dikirim ke admin.">
+<link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="/assets/image/favicon-32.png"><link rel="icon" type="image/png" sizes="192x192" href="/assets/image/favicon-192.png"><link rel="apple-touch-icon" href="/assets/image/apple-touch-icon.png">
+<link rel="stylesheet" href="../css/footer.css?v=1">
 </head>
 <body>
 <div class="top"><a class="logo" href="../index.html">MALIK<span>STORE</span></a><span class="usr" id="user"></span></div>
@@ -119,6 +122,11 @@ textarea:focus{border-color:var(--g)}
   </div>
 </div>
 
+<footer class="mk-foot"><div class="mk-foot-in">
+  <a class="mk-foot-brand" href="/index.html">MALIK<span>STORE</span></a>
+  <nav aria-label="Footer"><a href="/index.html">Beranda</a><a href="/tentang/">Tentang</a><a href="/tentang/#cara-order">Cara Order</a><a href="/tentang/#faq">FAQ</a><a href="https://wa.me/6285782100757" target="_blank" rel="noopener">WhatsApp</a></nav>
+  <p>&copy; 2026 Malik Store</p>
+</div></footer>
 <div class="bar" id="bar"><div>
   <span class="t">Total<b id="b-total"></b></span>
   <button class="go" id="confirm" type="button" onclick="confirmOrder()">KONFIRMASI ORDER</button>
@@ -127,10 +135,11 @@ textarea:focus{border-color:var(--g)}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/supabase.js?v=9"></script>
 <script src="../js/products.js?v=2"></script>
+<script src="../js/catalog-sync.js?v=1" data-reload></script>
 <script src="../js/auth.js?v=13"></script>
-<script src="../js/reviews.js?v=1"></script>
-<script src="../js/nav.js?v=1"></script>
-<script src="../js/notify.js?v=4" defer></script>
+<script src="../js/reviews.js?v=2"></script>
+<script src="../js/nav.js?v=2"></script>
+<script src="../js/notify.js?v=5" defer></script>
 <script>
 // Halaman ini hanya untuk user yang sudah login (sesi Supabase). Produk, varian & harga SELALU dari js/products.js
 // (query ?p=&v=&q=). Link lama ?product=&price= tetap dikenali, tetapi harga dari link diabaikan.
