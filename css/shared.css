@@ -1,0 +1,125 @@
+/* MALIK STORE - Shared Design System (Premium Digital Marketplace)
+   Dimuat PALING AKHIR di: login, dashboard, order, chat user, dan semua halaman admin.
+   Hanya tampilan (warna, glass, radius, bayangan). Tidak mengubah class/id/logika. */
+
+/* ---------- token (menimpa --g/--c lama neon -> emerald/sky ala homepage) ---------- */
+:root{
+  --g:#34d399;--c:#38bdf8;--bg:#0b0f14;--ink:#0b0f14;
+  --card:rgba(255,255,255,.045);--card2:rgba(255,255,255,.07);
+  --panel:rgba(255,255,255,.045);--panel2:rgba(255,255,255,.07);
+  --line:rgba(255,255,255,.09);--mut:#93a0b4;--txt:#e8edf5;
+  --warn:#fbbf24;--bad:#f87171;
+  --mk-glass:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
+  --mk-shadow:0 18px 44px -28px rgba(0,0,0,.85),inset 0 1px 0 rgba(255,255,255,.07);
+}
+body{
+  font-family:'Plus Jakarta Sans',Arial,sans-serif!important;color:var(--txt);
+  background:radial-gradient(900px 480px at 85% -8%,rgba(52,211,153,.10),transparent 60%),radial-gradient(700px 420px at 0 0,rgba(56,189,248,.07),transparent 60%),var(--bg)!important;
+  background-attachment:fixed!important;
+}
+/* login user: tetap pakai foto latar, dibuat gelap */
+body.mk-login{background:linear-gradient(rgba(11,15,20,.80),rgba(11,15,20,.94)),url("../assets/image/login-bg.jpg") center/cover fixed!important}
+body.login-body{background:radial-gradient(900px 480px at 85% -8%,rgba(52,211,153,.14),transparent 60%),radial-gradient(700px 420px at 0 0,rgba(56,189,248,.10),transparent 60%),var(--bg)!important}
+
+/* ---------- brand ---------- */
+.logo,.brand h1,.brand{font-weight:800}
+.brand span,.logo span{color:var(--g)}
+.logo,.brand h1{letter-spacing:.04em}
+
+/* ---------- top bar & bar bawah (glass) ---------- */
+body>.top,body>.bar,body>.h,body>.s{-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4)}
+body>.top,body>.h{background:rgba(11,15,20,.72);border-bottom:1px solid var(--line)}
+body>.bar,body>.s{background:rgba(11,15,20,.82);border-top:1px solid var(--line)}
+.h a{color:var(--c)}
+html .mk-nav{background:rgba(11,15,20,.82);border-top:1px solid var(--line);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);font-family:inherit}
+html .mk-nav a{color:var(--mut)}
+html .mk-nav a.on{color:var(--g)}
+html .mk-nav a.on svg{filter:drop-shadow(0 0 6px rgba(52,211,153,.55))}
+html .mk-nav a.on:before{background:var(--g)}
+
+/* ---------- card / glass ---------- */
+.card,.row,.oc,.me,.stat,.chat,.dlg-b,.auth-box,.lbox{border:1px solid var(--line);background:var(--mk-glass),rgba(11,15,20,.55);box-shadow:var(--mk-shadow)}
+.card,.oc,.stat,.chat{border-radius:18px}
+.row{border-radius:16px}
+.me{border-radius:20px}
+.auth-box,.lbox{border-radius:24px;box-shadow:0 30px 70px -30px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.1);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+.dlg-b{border-radius:20px;-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+.dlg{background:rgba(5,8,12,.78)}
+.card h3,h3{color:var(--c)}
+.sum .st{border-radius:18px;background:linear-gradient(135deg,rgba(52,211,153,.14),rgba(56,189,248,.08));border:1px solid rgba(52,211,153,.28);box-shadow:var(--mk-shadow)}
+.hero{border-radius:24px;border:1px solid rgba(52,211,153,.3);background:radial-gradient(circle at 25% 20%,rgba(52,211,153,.30),transparent 55%),radial-gradient(circle at 80% 80%,rgba(56,189,248,.28),transparent 55%),#0d141c;box-shadow:0 24px 60px -30px rgba(52,211,153,.35)}
+.badge{background:var(--g);color:#04120c}
+.chip small{color:#c8f3e2}
+.chipx,.stat .ic{color:var(--g);background:rgba(52,211,153,.10);border:1px solid rgba(52,211,153,.35)}
+.stat:nth-child(even) .ic{color:var(--c);background:rgba(56,189,248,.10);border-color:rgba(56,189,248,.35)}
+.av{color:#04120c;box-shadow:0 12px 28px -12px var(--g)}
+.feat li:before{background:rgba(52,211,153,.15);border:1px solid var(--g);color:var(--g)}
+.ok .tick{background:rgba(52,211,153,.15)}
+
+/* ---------- tombol ---------- */
+.auth-box .btn,.lbox .btn,.go,.s button,.btn:not(.n):not(.o):not(.ghost):not(.danger):not(.dz){background:var(--g);color:#04120c;border:0;box-shadow:0 12px 26px -14px var(--g);transition:transform .2s,box-shadow .2s}
+.btn.n{color:var(--g);background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.4)}
+.btn.o{color:var(--bad);background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.4)}
+.btn.ghost,.link,.out{background:rgba(255,255,255,.06);color:var(--txt);border:1px solid var(--line)}
+.btn.danger{background:var(--bad);color:#1a0505;box-shadow:none}
+.btn.dz{color:var(--bad);border-color:rgba(248,113,113,.4)}
+.btn.loading:after,.send.loading:after{border-color:currentColor;border-right-color:transparent}
+.code-row .send{color:var(--g);border:1px solid var(--g);border-radius:12px}
+.rv{color:var(--g);border-color:rgba(52,211,153,.45);background:rgba(52,211,153,.08)}
+.rv.done{color:var(--mut);border-color:var(--line);background:none}
+.step button,.chips button{background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--txt)}
+.step button:active{background:var(--g);color:#04120c}
+.chips button[aria-checked="true"]{background:var(--g);color:#04120c;border-color:transparent}
+@media(hover:hover){.go:hover,.auth-box .btn:hover,.lbox .btn:hover,.btn:not(.n):not(.o):not(.ghost):not(.danger):not(.dz):hover{transform:translateY(-2px)}}
+.chip.on{background:var(--g);border-color:var(--g);color:#04120c}
+.rate{color:var(--c)}
+
+/* ---------- form ---------- */
+input:not([type=checkbox]):not([type=radio]),select,textarea{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:12px;color:var(--txt);font-family:inherit}
+input:not([type=checkbox]):not([type=radio]):focus,select:focus,textarea:focus{border-color:var(--g);box-shadow:0 0 0 3px rgba(52,211,153,.15);outline:none}
+input::placeholder,textarea::placeholder{color:rgba(255,255,255,.38)}
+.field label,.fld label{color:#c3cddd}
+.msg.err,.err{color:var(--bad)}
+.msg.ok{color:var(--g)}
+.hint{color:var(--mut)}
+.tabs button{color:var(--mut)}
+.tabs button.on{color:#fff;border-bottom-color:var(--g)}
+.tabs span.on{border-bottom-color:var(--g)}
+.crumb a{color:var(--c)}
+
+/* ---------- status pill ---------- */
+.p-pending{color:var(--warn);border-color:rgba(251,191,36,.4);background:rgba(251,191,36,.08)}
+.p-diproses{color:var(--c);border-color:rgba(56,189,248,.4);background:rgba(56,189,248,.08)}
+.p-selesai,.p-on{color:var(--g);border-color:rgba(52,211,153,.4);background:rgba(52,211,153,.08)}
+
+/* ---------- chat user (#msgs anak langsung body) ---------- */
+body>#msgs .m.user{background:var(--g);color:#04120c}
+body>#msgs .m.admin{background:var(--card2);border:1px solid var(--line);color:var(--txt)}
+/* ---------- chat admin ---------- */
+.cth .m.admin{background:var(--g);color:#04120c}
+.cth .m.user{background:var(--card2);border:1px solid var(--line)}
+.m.sel{outline-color:var(--c);box-shadow:0 0 16px rgba(56,189,248,.35)}
+#cl .li.on{background:rgba(52,211,153,.08)}
+.chat.open .cth{background:var(--bg)}
+
+/* ---------- admin shell ---------- */
+.side,.tabbar{background:rgba(11,15,20,.78);border-color:var(--line);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+.side nav a{border-radius:12px}
+.side nav a.on{background:rgba(52,211,153,.14);color:var(--g);box-shadow:inset 0 0 0 1px rgba(52,211,153,.35)}
+.tabbar a.on{color:var(--g)}
+th{background:rgba(255,255,255,.04)}
+.tw{border-color:var(--line)}
+.tw tr{border-color:var(--line)}
+
+/* ---------- komponen JS (toast notifikasi & ulasan) ---------- */
+html .mn-t,html #mn-ask{background:rgba(11,15,20,.94);border-color:rgba(52,211,153,.4);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+html .mn-t{border-left-color:var(--g)}html .mn-t.chat{border-left-color:var(--c)}
+html #mn-ask button.ok,html .mkr-btn{background:var(--g);color:#04120c}
+html .mkr-btn.g{background:rgba(255,255,255,.06);color:var(--txt);border:1px solid var(--line)}
+html .mkr-box{background:#0e141b;border-color:var(--line)}
+html .mkr-top small,html .mkr-form h4,html .mkr-act button{color:var(--c)}
+html .mkr-act button.d{color:var(--bad)}
+html .mkr-v{color:var(--g);border-color:rgba(52,211,153,.4);background:rgba(52,211,153,.08)}
+html .mkr-form textarea:focus,html .mkr-form select:focus{border-color:var(--g)}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
