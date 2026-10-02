@@ -117,6 +117,7 @@ textarea:focus{border-color:var(--g)}
     <div class="tick">✓</div>
     <p>Order tercatat 🎉<br>ID: <b id="oid"></b></p>
     <p style="color:var(--mut);font-size:13px" id="osum"></p>
+    <p style="color:var(--mut);font-size:13px">Instruksi pembayaran sudah dikirim ke chat. Silakan bayar lalu kirim bukti pembayaran.</p>
     <a class="link" href="/account/dashboard/chat.html">Chat Admin</a>
     <a class="link" href="/account/dashboard/index.html#hist">Lihat Riwayat</a>
   </div>
@@ -137,6 +138,7 @@ textarea:focus{border-color:var(--g)}
 <script src="../js/products.js?v=2"></script>
 <script src="../js/catalog-sync.js?v=1" data-reload></script>
 <script src="../js/auth.js?v=13"></script>
+<script src="../js/payment-message.js?v=1"></script>
 <script src="../js/reviews.js?v=2"></script>
 <script src="../js/nav.js?v=2"></script>
 <script src="../js/notify.js?v=5" defer></script>
@@ -199,6 +201,7 @@ async function confirmOrder(){
     sending = false; btn.disabled = false; btn.textContent = "KONFIRMASI ORDER";
     alert("Order gagal: " + r.message); return;
   }
+  try { await MalikPayment.send(r.order); } catch(e) {}   // kirim instruksi pembayaran manual ke chat (user & admin); gagal tidak membatalkan order
   const v = P.variant(key, vid);
   $("oid").textContent = MalikAuth.orderCode(r.order.id);
   $("osum").textContent = P.product(key).name + " • " + v.label + " • " + qty + " × " + rp(v.price) + " = " + rp(r.order.price);

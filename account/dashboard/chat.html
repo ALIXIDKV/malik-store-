@@ -38,6 +38,7 @@ body{margin:0;height:100dvh;padding-bottom:var(--mk-nav-h,0px);display:flex;flex
 <script src="../../js/nav.js?v=2"></script>
 <script src="../../js/notify.js?v=5" defer></script>
 <script src="../../js/chat-attach.js?v=1"></script>
+<script src="../../js/payment-message.js?v=1"></script>
 <script>
 // Chat private per user: tabel messages (user_id = pemilik percakapan), realtime via Supabase.
 const $ = id => document.getElementById(id);
@@ -45,8 +46,8 @@ const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">"
 let me = null, msgs = [], last = "";
 
 function draw(force){
-  const html = msgs.length ? msgs.map(m => '<div class="m ' + (m.sender === "admin" ? "admin" : "user") + '">' + MalikAttach.body(m.message, MalikAttach.fromRow(m)) +
-    '<small>' + new Date(m.created_at).toLocaleTimeString("id-ID", {hour: "2-digit", minute: "2-digit"}) + '</small></div>').join("")
+  const html = msgs.length ? msgs.map(m => { const pay = MalikPayment.html(m.message, m.sender === "admin"); return '<div class="m ' + (m.sender === "admin" ? "admin" : "user") + (pay ? " pm" : "") + '">' + (pay || MalikAttach.body(m.message, MalikAttach.fromRow(m))) +
+    '<small>' + new Date(m.created_at).toLocaleTimeString("id-ID", {hour: "2-digit", minute: "2-digit"}) + '</small></div>'; }).join("")
     : '<div class="e">Belum ada pesan.<br>Tulis pesan pertama ke admin.</div>';
   if(html === last && !force) return;
   last = html; $("msgs").innerHTML = html; $("msgs").scrollTop = $("msgs").scrollHeight;

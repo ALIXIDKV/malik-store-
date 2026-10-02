@@ -16,6 +16,7 @@
 <body>
 <script src="js/admin.js?v=14"></script>
 <script src="../js/chat-attach.js?v=1"></script>
+<script src="../js/payment-message.js?v=1"></script>
 <script>
 Admin.mount("chat", "Chat User", function (v) {
   var A = Admin, e = A.esc, cur = new URLSearchParams(location.search).get("u") || "", q = "", built = "", sel = {}, att = null;
@@ -70,8 +71,8 @@ Admin.mount("chat", "Chat User", function (v) {
     selIds().forEach(function (id) { if (!t.msgs.some(function (m) { return String(m.id) === id; })) delete sel[id]; });
     var near = box.scrollHeight - box.scrollTop - box.clientHeight < 80;
     var html = t.msgs.map(function (m) {
-      var id = String(m.id);
-      return "<div class='m " + (m.from === "admin" ? "admin" : "user") + (sel[id] ? " sel" : "") + "' data-id='" + e(id) + "'>" + MalikAttach.body(m.text, m.att) + "<small>" + e(new Date(m.at).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })) + "</small></div>";
+      var id = String(m.id), pay = MalikPayment.html(m.text, m.from === "admin");
+      return "<div class='m " + (m.from === "admin" ? "admin" : "user") + (pay ? " pm" : "") + (sel[id] ? " sel" : "") + "' data-id='" + e(id) + "'>" + (pay || MalikAttach.body(m.text, m.att)) + "<small>" + e(new Date(m.at).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })) + "</small></div>";
     }).join("") || "<div class='ch-empty'>Belum ada pesan.</div>";
     var changed = box.__h !== html;
     A.setHTML(box, html);
