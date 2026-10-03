@@ -131,6 +131,7 @@
     var err = res.map(function (x) { return x.error; }).filter(Boolean)[0];
     if (err) throw new Error(err.message);
     C.profiles = res[0].data || []; C.orders = res[1].data || []; C.messages = (res[2].data || []).slice().reverse();
+    fillMissingProfiles();
   }
   function apply(list, p) {
     if (p.eventType === "DELETE") {
@@ -148,7 +149,7 @@
       .on("postgres_changes", { event: "*", schema: "public", table: "messages" }, function (p) {
         if (p.eventType === "INSERT" && p.new.sender === "admin")   // buang pesan sementara (optimistic) yang sudah tersimpan
           C.messages = C.messages.filter(function (m) { return !(m.tmp && m.user_id === p.new.user_id && m.message === p.new.message); });
-        apply(C.messages, p); runTicks();
+        apply(C.messages, p); fillMissingProfiles(); runTicks();
       }).subscribe();
     var pc = sb().channel(ONLINE_LABEL);   // presence: admin hanya mendengarkan, tidak ikut tercatat online
     pc.on("presence", { event: "sync" }, function () { C.online = pc.presenceState() || {}; runTicks(); }).subscribe();
@@ -180,9 +181,27 @@
       var p = pm[uid] || {}, list = by[uid];
       var msgs = list.map(function (m) { return { id: m.id, from: m.sender === "admin" ? "admin" : "user", text: m.message, at: ms(m.created_at), att: m.attachment_url ? { url: m.attachment_url, type: m.attachment_type } : null }; })
                      .sort(function (a, b) { return a.at - b.at; });
-      return { email: p.email || uid, name: String(p.username || "").trim() || p.email || uid, avatar: p.avatar_url || "", userId: uid, msgs: msgs, last: msgs.length ? msgs[msgs.length - 1] : null, online: !!C.online[uid],
+      return { email: p.email || uid, name: String(p.username || "").trim() || "Customer", avatar: p.avatar_url || "", userId: uid, msgs: msgs, last: msgs.length ? msgs[msgs.length - 1] : null, online: !!C.online[uid],
                unread: list.filter(function (m) { return m.sender === "user" && !m.is_read; }).length };
     }).sort(function (a, b) { return ((b.last || {}).at || 0) - ((a.last || {}).at || 0); });
+  }
+  // Profil user yang punya pesan tapi belum ada di cache (mis. baru mendaftar / belum ter-load) diambil dari profiles by id.
+  var fetchingProf = {};
+  function fillMissingProfiles() {
+    var have = {}, miss = [];
+    C.profiles.forEach(function (p) { have[p.id] = 1; });
+    C.messages.forEach(function (m) { if (m.user_id && !have[m.user_id] && !fetchingProf[m.user_id] && miss.indexOf(m.user_id) < 0) miss.push(m.user_id); });
+    if (!miss.length) return;
+    miss.forEach(function (id) { fetchingProf[id] = 1; });
+    sb().from("profiles").select("*").in("id", miss).then(function (r) {
+      miss.forEach(function (id) { delete fetchingProf[id]; });
+      if (r.error || !r.data || !r.data.length) return;
+      r.data.forEach(function (p) { if (!C.profiles.some(function (x) { return x.id === p.id; })) C.profiles.push(p); });
+      runTicks();
+    }, function () { miss.forEach(function (id) { delete fetchingProf[id]; }); });
+  }
+  function threadByKey(key) {   // key = email atau user_id (link lama / notifikasi bisa membawa salah satunya)
+    return threads().filter(function (t) { return t.email === key || t.userId === key; })[0];
   }
   function profileByEmail(email) { return C.profiles.filter(function (p) { return p.email === email; })[0]; }
 
@@ -198,7 +217,7 @@
   // att (opsional) = { url, type } hasil upload Cloudinary (/api/upload-chat). Yang disimpan ke tabel messages hanya URL-nya.
   function sendAdmin(email, text, att) {
     text = String(text || "").trim().slice(0, 1000);
-    var p = profileByEmail(email);
+    var p = profileByEmail(email) || C.profiles.filter(function (x) { return x.id === email; })[0];
     if (att && !text) text = g.MalikAttach ? g.MalikAttach.placeholder(att.type) : "Lampiran";
     if (!text || !p) return false;
     var row = { user_id: p.id, sender: "admin", message: text };
@@ -334,7 +353,7 @@
   }
 
   g.Admin = { mount: mount, onTick: onTick, isLoggedIn: isLoggedIn, route: route, access: access, login: login, logout: logout,
-    users: users, orders: orders, threads: threads, stats: stats, setStatus: setStatus, sendAdmin: sendAdmin, markSeen: markSeen, deleteChat: deleteChat,
+    users: users, orders: orders, threads: threads, threadByKey: threadByKey, stats: stats, setStatus: setStatus, sendAdmin: sendAdmin, markSeen: markSeen, deleteChat: deleteChat,
     deleteMessages: deleteMessages, deleteOrder: deleteOrder, deleteUser: deleteUser, dialog: dialog, confirmBox: confirmBox, alertBox: alertBox,
     STATUSES: STATUSES, esc: esc, rp: rp, fmt: fmt, ago: ago, icon: icon, pill: pill, setHTML: setHTML };
 })(window);

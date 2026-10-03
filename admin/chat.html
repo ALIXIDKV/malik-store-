@@ -14,7 +14,7 @@
 <link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="/assets/image/favicon-32.png"><link rel="icon" type="image/png" sizes="192x192" href="/assets/image/favicon-192.png"><link rel="apple-touch-icon" href="/assets/image/apple-touch-icon.png">
 </head>
 <body>
-<script src="js/admin.js?v=15"></script>
+<script src="js/admin.js?v=16"></script>
 <script src="../js/chat-attach.js?v=1"></script>
 <script src="../js/payment-message.js?v=2"></script>
 <script>
@@ -42,7 +42,7 @@ Admin.mount("chat", "Chat User", function (v) {
     return (t.last.from === "admin" ? "Kamu: " : "") + line;
   }
 
-  function find(em) { return A.threads().filter(function (t) { return t.email === em; })[0]; }
+  function find(em) { return A.threadByKey(em); }
   function selIds() { return Object.keys(sel); }
 
   function drawList() {
@@ -77,6 +77,7 @@ Admin.mount("chat", "Chat User", function (v) {
     var changed = box.__h !== html;
     A.setHTML(box, html);
     var st = cth.querySelector("#tst"); if (st) st.textContent = t.online ? "Online" : "Offline";
+    var hn = cth.querySelector("#thn"); if (hn && hn.textContent !== t.name) hn.textContent = t.name;
     if (!keep && (forceScroll || (changed && near))) box.scrollTop = box.scrollHeight;
     updateBar();
   }
@@ -126,11 +127,12 @@ Admin.mount("chat", "Chat User", function (v) {
 
   function openThread(em) {
     if (att) { att.destroy(); att = null; }   // pindah chat = lampiran yang belum terkirim dibatalkan
+    var t0 = find(em); if (t0) em = t0.email;
     cur = em; built = em; sel = {}; chat.classList.add("open"); document.body.classList.add("chat-open");
     var t = find(em);
     cth.innerHTML = "<div class='th-h'>" +
       "<div class='th-n'><button class='btn ghost sm x' id='bk' aria-label='Tutup chat' title='Tutup'>" + A.icon("close") + "</button>" +
-      (t ? avHtml(t) : "<span class='av'>?</span>") + "<div class='th-t'><b>" + e(t ? t.name : em) + "</b><small id='tst'>" + (t && t.online ? "Online" : "Offline") + "</small></div>" +
+      (t ? avHtml(t) : "<span class='av'>C</span>") + "<div class='th-t'><b id='thn'>" + e(t ? t.name : "Customer") + "</b><small id='tst'>" + (t && t.online ? "Online" : "Offline") + "</small></div>" +
       "<button class='btn ghost sm dz' id='dc'>" + A.icon("trash") + "<span>Hapus Chat</span></button></div>" +
       "<div class='th-s'><button class='btn ghost sm x' id='sx' aria-label='Batal pilih' title='Batal'>" + A.icon("close") + "</button><b id='sc'>0 dipilih</b>" +
       "<button class='btn ghost sm dz' id='sd' aria-label='Hapus pesan' title='Hapus'>" + A.icon("trash") + "</button></div></div>" +
