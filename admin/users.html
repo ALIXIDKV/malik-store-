@@ -14,7 +14,7 @@
 <link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="/assets/image/favicon-32.png"><link rel="icon" type="image/png" sizes="192x192" href="/assets/image/favicon-192.png"><link rel="apple-touch-icon" href="/assets/image/apple-touch-icon.png">
 </head>
 <body>
-<script src="js/admin.js?v=13"></script>
+<script src="js/admin.js?v=15"></script>
 <script>
 Admin.mount("users", "Users", function (v) {
   var A = Admin, e = A.esc, q = "", open = "";
@@ -44,7 +44,7 @@ Admin.mount("users", "Users", function (v) {
   v.querySelector("#q").addEventListener("input", function (ev) { q = ev.target.value.trim().toLowerCase(); draw(); });
   async function delUser(id, btn) {
     var u = A.users().filter(function (x) { return x.id === id; })[0]; if (!u) return;
-    if (!(await A.confirmBox("Hapus user permanen?", u.email + " akan dihapus permanen beserta akun login, order, dan chat-nya. Tindakan ini tidak bisa dibatalkan.", "Hapus Permanen"))) return;
+    if (!(await A.confirmBox("Hapus user permanen?", u.email + " akan dihapus permanen beserta akun login, chat, dan ulasannya. Riwayat order dipertahankan, kecuali order tersebut menghalangi penghapusan akun. Tindakan ini tidak bisa dibatalkan.", "Hapus Permanen"))) return;
     btn.disabled = true;
     var r = await A.deleteUser(id);
     btn.disabled = false;

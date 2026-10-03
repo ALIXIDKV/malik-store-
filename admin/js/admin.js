@@ -11,6 +11,7 @@
   "use strict";
 
   var ONLINE_LABEL = "malik-online";
+  var UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   var STATUSES = ["Pending", "Diproses", "Selesai"];
   var ME = null;
   var C = { profiles: [], orders: [], messages: [], online: {}, tmp: 0 };
@@ -213,15 +214,18 @@
     });
     return true;
   }
-  // Hapus seluruh percakapan (tabel messages saja). Akun user TIDAK disentuh.
-  async function deleteChat(email) {
-    var p = profileByEmail(email);
-    if (!p) return { ok: false, message: "User tidak ditemukan." };
-    var r = await sb().from("messages").delete().eq("user_id", p.id).select("id");
+  // Hapus seluruh percakapan SATU user (tabel messages saja, berdasarkan messages.user_id = thread). Akun & profil user TIDAK disentuh.
+  // Tidak lagi mencari user lewat email/profil: thread tanpa profil (mis. sisa hapus user gagal) tetap bisa dibersihkan.
+  async function deleteChat(userId) {
+    userId = String(userId == null ? "" : userId).trim();
+    if (!UUID_RE.test(userId)) return { ok: false, message: "ID chat tidak valid. Muat ulang halaman lalu coba lagi." };
+    var r = await sb().from("messages").delete().eq("user_id", userId).select("id");
     if (r.error) return { ok: false, message: dbMsg(r.error) };
-    if (!(r.data || []).length && C.messages.some(function (m) { return m.user_id === p.id; })) return { ok: false, message: "Chat tidak terhapus." + MIGRATE_HINT };
-    C.messages = C.messages.filter(function (m) { return m.user_id !== p.id; });
-    runTicks(); return { ok: true };
+    var gone = (r.data || []).length;
+    // 0 baris terhapus padahal cache punya pesannya = ditolak RLS/GRANT (bukan error), jangan pura-pura sukses
+    if (!gone && C.messages.some(function (m) { return m.user_id === userId; })) return { ok: false, message: "Chat tidak terhapus." + MIGRATE_HINT };
+    C.messages = C.messages.filter(function (m) { return m.user_id !== userId; });   // hanya thread ini; chat user lain tidak tersentuh
+    runTicks(); return { ok: true, count: gone };
   }
   // scope "me" = sembunyikan dari admin saja (hidden_for_admin), "all" = hapus pesan dari database (user juga tidak melihatnya).
   async function deleteMessages(ids, scope) {
@@ -256,9 +260,12 @@
     } catch (e) { return { ok: false, message: "Koneksi bermasalah. Coba lagi." }; }
     if (!j.ok) return { ok: false, message: j.message || "Gagal menghapus user." };
     C.profiles = C.profiles.filter(function (p) { return p.id !== id; });
-    C.orders = C.orders.filter(function (o) { return o.user_id !== id; });
     C.messages = C.messages.filter(function (m) { return m.user_id !== id; });
-    runTicks(); return { ok: true };
+    try {   // order bisa ikut terhapus (menghalangi / cascade database): muat ulang dari database supaya cache pasti akurat
+      var ro = await sb().from("orders").select("*").order("created_at", { ascending: false });
+      if (!ro.error && ro.data) C.orders = ro.data; else C.orders = C.orders.filter(function (o) { return o.user_id !== id; });
+    } catch (x) { C.orders = C.orders.filter(function (o) { return o.user_id !== id; }); }
+    runTicks(); return { ok: true, ordersDeleted: !!j.ordersDeleted, warnings: j.warnings || [] };
   }
   function markSeen(email) {
     var p = profileByEmail(email), any = false; if (!p) return;

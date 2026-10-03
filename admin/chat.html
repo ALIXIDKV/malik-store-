@@ -14,7 +14,7 @@
 <link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="/assets/image/favicon-32.png"><link rel="icon" type="image/png" sizes="192x192" href="/assets/image/favicon-192.png"><link rel="apple-touch-icon" href="/assets/image/apple-touch-icon.png">
 </head>
 <body>
-<script src="js/admin.js?v=14"></script>
+<script src="js/admin.js?v=15"></script>
 <script src="../js/chat-attach.js?v=1"></script>
 <script src="../js/payment-message.js?v=1"></script>
 <script>
@@ -109,11 +109,19 @@ Admin.mount("chat", "Chat User", function (v) {
     sel = {}; drawMsgs(false, true); drawList();
   }
 
+  var deleting = false;
   async function delChat() {
-    if (!(await A.confirmBox("Hapus seluruh chat?", "Semua pesan dengan " + ((find(cur) || {}).name || cur) + " akan dihapus untuk semua orang. Akun user TIDAK ikut terhapus.", "Hapus Chat"))) return;
-    var r = await A.deleteChat(cur);
-    if (!r.ok) { A.alertBox("Gagal menghapus chat", r.message); return; }
-    sel = {}; drawMsgs(true); drawList();
+    if (deleting) return;
+    var t = find(cur);   // hapus berdasarkan user_id thread (bukan email/profil)
+    if (!t || !t.userId) { A.alertBox("Gagal menghapus chat", "Chat tidak ditemukan. Muat ulang halaman lalu coba lagi."); return; }
+    if (!(await A.confirmBox("Hapus seluruh chat?", "Semua pesan dengan " + t.name + " akan dihapus untuk semua orang. Akun user TIDAK ikut terhapus.", "Hapus Chat"))) return;
+    var btn = cth.querySelector("#dc"); deleting = true; if (btn) btn.disabled = true;
+    var r;
+    try { r = await A.deleteChat(t.userId); }
+    catch (x) { r = { ok: false, message: (x && x.message) || "Koneksi bermasalah. Coba lagi." }; }
+    deleting = false;
+    if (!r.ok) { if (btn) btn.disabled = false; A.alertBox("Gagal menghapus chat", r.message); return; }
+    closeThread();   // thread sudah kosong: tutup & segarkan daftar chat
   }
 
   function openThread(em) {
