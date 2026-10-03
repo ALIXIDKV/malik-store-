@@ -1,11 +1,11 @@
 /* MALIK STORE - footer ringkas (dipakai halaman non-homepage: product, tentang, login, order, dashboard) */
 .mk-foot{margin:34px auto 0;padding:22px 16px 26px;border-top:1px solid rgba(255,255,255,.09);font-family:'Plus Jakarta Sans',Arial,sans-serif;color:#93a0b4;font-size:13px;text-align:center}
 .mk-foot-in{max-width:1040px;margin:0 auto;display:grid;gap:12px;justify-items:center}
-.mk-foot-brand{font-weight:800;letter-spacing:.14em;font-size:14px;color:#e8edf5;text-decoration:none}.mk-foot-brand span{color:#34d399}
+.mk-foot-brand{font-weight:800;letter-spacing:.14em;font-size:14px;color:#e8edf5;text-decoration:none}.mk-foot-brand span{color:#7ba7ea}
 .mk-foot nav{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px}
 .mk-foot nav a{color:#c3cddd;text-decoration:none;font-weight:600;padding:6px 2px}
-.mk-foot nav a:hover,.mk-foot nav a:focus-visible{color:#34d399}
+.mk-foot nav a:hover,.mk-foot nav a:focus-visible{color:#7ba7ea}
 .mk-foot p{margin:0;font-size:12px;color:#7d8aa0}
 /* versi mini di dalam kartu login */
 .mk-foot-mini{margin:18px 0 0;text-align:center;font-size:12.5px;color:#7d8aa0;font-family:'Plus Jakarta Sans',Arial,sans-serif}
-.mk-foot-mini a{color:#c3cddd;text-decoration:none;font-weight:600;padding:4px 2px}.mk-foot-mini a:hover{color:#34d399}
+.mk-foot-mini a{color:#c3cddd;text-decoration:none;font-weight:600;padding:4px 2px}.mk-foot-mini a:hover{color:#7ba7ea}

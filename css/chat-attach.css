@@ -1,7 +1,7 @@
 /* MALIK STORE - tampilan attachment chat (dipakai chat user & admin). Ringan, tanpa library. */
 /* selector diperkuat agar tidak tertimpa ".s button" (chat user) / ".snd .btn" (admin) */
 button.att-btn,.s button.att-btn,.snd button.att-btn{flex:none;width:44px;min-width:44px;padding:0;border:1px solid rgba(255,255,255,.09);border-radius:12px;background:transparent;color:#8b9ab4;font:inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
-button.att-btn:hover:not(:disabled){color:#38bdf8;border-color:rgba(56,189,248,.45)}
+button.att-btn:hover:not(:disabled){color:#8ecae6;border-color:rgba(142,202,230,.45)}
 button.att-btn:disabled{opacity:.4;cursor:not-allowed}
 .att-btn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .att-pv{padding:8px 12px;border-top:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.04);color:#fff}
@@ -15,7 +15,7 @@ button.att-btn:disabled{opacity:.4;cursor:not-allowed}
 .att-s{display:block;margin-top:2px;color:#8b9ab4;font-size:12px}
 .att-prog{height:4px;margin-top:6px;border-radius:3px;background:rgba(255,255,255,.12);overflow:hidden}
 .att-prog[hidden]{display:none}
-.att-prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,#34d399,#38bdf8);transition:width .15s}
+.att-prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,#7ba7ea,#8ecae6);transition:width .15s}
 .att-prog.ind i{width:35%;animation:att-ind 1s linear infinite}
 @keyframes att-ind{from{transform:translateX(-100%)}to{transform:translateX(300%)}}
 .att-x{flex:none;width:34px;height:34px;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.1);color:#fff;font-size:14px;cursor:pointer}

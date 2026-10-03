@@ -19,8 +19,8 @@
       ".pw-eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:38px;height:38px;margin:0!important;padding:0!important;" +
       "display:flex;align-items:center;justify-content:center;border:0;border-radius:10px;background:transparent!important;" +
       "color:rgba(255,255,255,.6);cursor:pointer;line-height:0;-webkit-tap-highlight-color:transparent}" +
-      ".pw-eye:hover{color:#fff}.pw-eye.on{color:#00ff66}" +
-      ".pw-eye:focus-visible{outline:2px solid #00ff66;outline-offset:1px}";
+      ".pw-eye:hover{color:#fff}.pw-eye.on{color:#7ba7ea}" +
+      ".pw-eye:focus-visible{outline:2px solid #7ba7ea;outline-offset:1px}";
     document.head.appendChild(s);
   }
 

@@ -49,13 +49,13 @@
   if (!document.getElementById("mk-pay-css")) {
     var st = document.createElement("style"); st.id = "mk-pay-css";
     st.textContent =
-      ".m.pm,.m.pm.admin,.m.pm.user{flex:none;height:auto;min-height:auto;max-height:none;padding:0;overflow:visible;white-space:normal;width:min(86%,310px);max-width:310px;background:#0f1a2b;color:#e8f0fb;border:1px solid rgba(52,211,153,.4);border-radius:16px;box-shadow:0 0 22px rgba(52,211,153,.12)}" +
+      ".m.pm,.m.pm.admin,.m.pm.user{flex:none;height:auto;min-height:auto;max-height:none;padding:0;overflow:visible;white-space:normal;width:min(86%,310px);max-width:310px;background:#0f1a2b;color:#e8f0fb;border:1px solid rgba(123,167,234,.4);border-radius:16px;box-shadow:0 0 22px rgba(123,167,234,.12)}" +
       ".m.pm>small{padding:0 14px 9px;margin:0;color:#9aa7bd;opacity:1}" +
-      ".pay-h{border-radius:15px 15px 0 0;display:flex;align-items:center;gap:10px;padding:12px 14px;background:linear-gradient(90deg,rgba(52,211,153,.22),rgba(56,189,248,.18));border-bottom:1px solid rgba(255,255,255,.08)}" +
+      ".pay-h{border-radius:15px 15px 0 0;display:flex;align-items:center;gap:10px;padding:12px 14px;background:linear-gradient(90deg,rgba(123,167,234,.22),rgba(142,202,230,.18));border-bottom:1px solid rgba(255,255,255,.08)}" +
       ".pay-h b{display:block;font-size:14px;line-height:1.3;color:#fff}.pay-h small{display:block;padding:0;margin:2px 0 0;font-size:11px;text-align:left;color:#7ee7c0;letter-spacing:.5px;opacity:1}" +
       ".pay-ic{flex:none;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:17px}" +
       ".pay-b{padding:12px 14px 8px;font-size:13px;line-height:1.5}.pay-b p{margin:0 0 6px}.pay-l{color:#9aa7bd}" +
-      ".pay-s{margin-top:12px}.pay-t{display:block;margin-bottom:7px;font-size:11px;font-weight:bold;letter-spacing:1.5px;text-transform:uppercase;color:#38bdf8}" +
+      ".pay-s{margin-top:12px}.pay-t{display:block;margin-bottom:7px;font-size:11px;font-weight:bold;letter-spacing:1.5px;text-transform:uppercase;color:#8ecae6}" +
       ".pay-qb{background:#fff;border-radius:12px;padding:8px;text-align:center}" +
       ".pay .pay-qr{display:block;width:100%;height:auto;max-width:230px;margin:0 auto;object-fit:contain;cursor:zoom-in}" +
       ".pay-qb.err{background:rgba(255,255,255,.06);color:#9aa7bd;font-size:12px;padding:14px}" +
@@ -63,10 +63,10 @@
       ".pay-w{display:flex;align-items:center;gap:10px;padding:9px 10px;margin-bottom:8px;border:1px solid rgba(255,255,255,.1);border-radius:12px;background:rgba(255,255,255,.04)}" +
       ".pay-wi{flex:none;width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:bold;color:#fff}.pay-wi.d{background:#118eea}.pay-wi.g{background:#00aed6}" +
       ".pay-wt{flex:1;min-width:0}.pay-wt small{display:block;padding:0;margin:0 0 1px;font-size:11px;text-align:left;color:#9aa7bd;opacity:1}.pay-wt b{display:block;font-size:15px;letter-spacing:.5px;color:#fff;word-break:break-all}" +
-      ".pay-cp{flex:none;min-height:34px;padding:0 12px;border:1px solid rgba(52,211,153,.5);border-radius:9px;background:rgba(52,211,153,.12);color:#34d399;font:inherit;font-size:12px;font-weight:bold;cursor:pointer}" +
-      ".pay-cp:active{background:#34d399;color:#000}" +
+      ".pay-cp{flex:none;min-height:34px;padding:0 12px;border:1px solid rgba(123,167,234,.5);border-radius:9px;background:rgba(123,167,234,.12);color:#7ba7ea;font:inherit;font-size:12px;font-weight:bold;cursor:pointer}" +
+      ".pay-cp:active{background:#7ba7ea;color:#000}" +
       "#msgs{padding-bottom:28px}.m.pm:last-of-type{margin-bottom:8px}" +
-      ".pay-n{margin:4px 0 8px;padding:10px 12px;border-radius:10px;background:rgba(56,189,248,.1);border:1px dashed rgba(56,189,248,.45);color:#cfe9ff;font-size:12.5px}";
+      ".pay-n{margin:4px 0 8px;padding:10px 12px;border-radius:10px;background:rgba(142,202,230,.1);border:1px dashed rgba(142,202,230,.45);color:#cfe9ff;font-size:12.5px}";
     document.head.appendChild(st);
   }
 
