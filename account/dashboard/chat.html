@@ -38,7 +38,7 @@ body{margin:0;height:100dvh;padding-bottom:var(--mk-nav-h,0px);display:flex;flex
 <script src="../../js/nav.js?v=2"></script>
 <script src="../../js/notify.js?v=5" defer></script>
 <script src="../../js/chat-attach.js?v=1"></script>
-<script src="../../js/payment-message.js?v=1"></script>
+<script src="../../js/payment-message.js?v=2"></script>
 <script>
 // Chat private per user: tabel messages (user_id = pemilik percakapan), realtime via Supabase.
 const $ = id => document.getElementById(id);
@@ -76,7 +76,7 @@ async function send(){
 }
 async function init(){
   me = await MalikAuth.requireCustomer("/admin/chat.html"); if(!me) return;
-  $("who").textContent = me.email; MalikAuth.profile().then(p => { if(p && p.username) $("who").textContent = p.username; }).catch(() => {});
+  $("who").textContent = "Malik Store";   // subtitle = identitas admin/store (bukan username user yang login)
   const r = await supabaseClient.from("messages").select("*").eq("user_id", me.id).order("created_at", { ascending: true }).limit(300);
   msgs = r.data || []; draw(true);
   supabaseClient.channel("chat-" + me.id)
