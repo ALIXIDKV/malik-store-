@@ -264,3 +264,20 @@ button.att-btn,.s button.att-btn{width:40px!important;min-width:40px!important;h
 /* chat admin & payment card: bubble compact */
 .cth .m{max-width:78%;padding:8px 12px;font-size:14px;border-radius:16px}
 .cth .m small{font-size:10px}
+
+/* ===== FINAL POLISH ===== */
+.logo,.brand,.brand h1,.mk-foot-brand,.mk-logo,.ix-logo{font-family:'Plus Jakarta Sans',Arial,sans-serif!important;font-weight:800!important;letter-spacing:.12em!important}
+.logo,.brand{font-size:16px}
+/* admin dashboard */
+.stat{padding:10px 12px!important;gap:6px!important}
+.stat b{font-size:clamp(15px,4.6vw,19px)!important}
+.hint.sub{font-size:10.5px;color:var(--mut);opacity:.75}
+.bar:has(.hint.sub){margin:-4px 2px 0}
+.btn.util,.btn.ghost.util{background:none!important;border:0!important;box-shadow:none!important;color:var(--mut)!important;font-weight:500!important;padding:7px 8px!important;font-size:12px!important;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(148,178,230,.3)}
+.btn.util:hover{color:var(--txt)!important}
+/* chat: bubble, attachment, payment card */
+body>#msgs .m.pm,.cth .m.pm{padding:0!important;width:min(88%,320px)!important;max-width:min(88%,320px)!important;border-radius:16px!important}
+.m .att-box{width:210px;max-width:100%}
+.m .att-cap{font-size:13px}
+body>#msgs{padding-bottom:20px;scroll-padding-bottom:20px}
+.m.pm{box-shadow:none!important}

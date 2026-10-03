@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="robots" content="noindex,nofollow">
 <title>Dashboard - Malik Admin</title>
-<link rel="stylesheet" href="assets/admin.css?v=4c">
+<link rel="stylesheet" href="assets/admin.css?v=4d">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/supabase.js?v=9"></script>
 <script src="js/notify.js?v=5" data-role="admin" defer></script>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="../css/shared.css?v=3c"><script>try{sessionStorage.setItem("malik_loaded","1")}catch(e){}</script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="../css/shared.css?v=3d"><script>try{sessionStorage.setItem("malik_loaded","1")}catch(e){}</script>
 <meta name="description" content="Ringkasan panel admin Malik Store.">
 <link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="/assets/image/favicon-32.png"><link rel="icon" type="image/png" sizes="192x192" href="/assets/image/favicon-192.png"><link rel="apple-touch-icon" href="/assets/image/apple-touch-icon.png">
 </head>
@@ -28,7 +28,7 @@ Admin.mount("dashboard", "Dashboard", function (v) {
   }
   nc.innerHTML = "<h3>Notifikasi</h3>" +
     "<div class='bar'><span>Notifikasi browser: <b id='np'></b></span><div class='chips'>" +
-    "<button class='btn sm' id='nen'>Aktifkan</button><button class='btn ghost sm' id='nt1'>Tes notif.mp3</button><button class='btn ghost sm' id='nt2'>Tes chet.mp3</button></div></div>" +
+    "<button class='btn sm' id='nen'>Aktifkan</button><button class='btn ghost sm util' id='nt1'>Tes notifikasi</button><button class='btn ghost sm util' id='nt2'>Tes suara chat</button></div></div>" +
     "<p class='hint'>Admin mendapat notifikasi saat ada user baru, order baru, dan pesan masuk (suara chat untuk pesan). Buka halaman admin dulu, baru lakukan tes dari sisi user.</p>" +
     "<h3 style='margin-top:18px'>Riwayat Notifikasi Admin</h3><div class='list' id='nlog'></div>";
   function drawNotif() {
@@ -61,7 +61,7 @@ Admin.mount("dashboard", "Dashboard", function (v) {
       "<div class='stat'><span class='ic'>" + A.icon("bag") + "</span><div><small>Total Order</small><b>" + s.orders + "</b></div></div>" +
       "<div class='stat'><span class='ic'>" + A.icon("cash") + "</span><div><small>Pendapatan</small><b>" + A.rp(s.revenue) + "</b></div></div>" +
       "<div class='stat'><span class='ic'>" + A.icon("pulse") + "</span><div><small>User Online</small><b>" + s.online + "</b></div></div></div>" +
-      "<div class='bar'><span class='hint'>Pendapatan = order berstatus Selesai. Data langsung dari database (realtime).</span></div>" +
+      "<div class='bar'><span class='hint sub'>Pendapatan dihitung dari order berstatus Selesai.</span></div>" +
       "<div class='cols'><div class='card'><h3>Order Terbaru</h3><div>" + rows + "</div></div>" +
       "<div class='card'><h3>Chat Terbaru</h3><div class='list'>" + chats + "</div></div></div>");
   }

@@ -146,3 +146,15 @@ nav.sticky button[onclick="toggleMobileNav()"]{border:1px solid var(--mk-line)!i
 @media(min-width:900px){.mk-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}.hero-section{padding-top:72px!important;padding-bottom:72px!important}}
 /* floating WA & footer lebih tenang */
 .malik-float-wa{font-weight:600!important;padding:10px 14px!important}
+
+/* ===== FINAL POLISH: brand clean, subtitle solid, announcement tipis ===== */
+.loader-title,.hero-title-mark,h2.font-heading,.font-malik{font-family:'Plus Jakarta Sans',Arial,sans-serif!important;-webkit-text-stroke:0!important}
+.loader-title{font-weight:800;letter-spacing:.14em}
+nav.sticky .font-heading,.mk-foot-brand,.ix-logo{font-family:'Plus Jakarta Sans',Arial,sans-serif!important;font-weight:800!important;font-size:16px!important;letter-spacing:.12em!important;-webkit-text-stroke:0!important}
+nav.sticky .font-heading{color:#eef3fb!important}
+nav.sticky .font-heading span,.mk-foot-brand span,.ix-logo span{color:#8fb4ec!important;font-weight:700}
+.hero-title-mark{font-weight:500!important;font-size:.56em!important;color:#8c9bb5!important;letter-spacing:0!important;margin-top:8px!important;-webkit-text-fill-color:#8c9bb5!important;background:none!important}
+.hero-btn-view{border:1px solid rgba(148,178,230,.35)!important;border-radius:12px!important;padding:.75rem 1.3rem!important;color:#e6ecf7!important;background:rgba(148,178,230,.06)!important}
+.hero-cta-row .hero-btn-view{padding:.75rem 1.3rem!important}
+.mk-ann{padding:6px 14px!important;font-size:11px!important;line-height:1.3;letter-spacing:.01em;font-weight:500!important;background:rgba(123,167,234,.07)!important;color:#a9bddb!important;border-bottom:1px solid var(--mk-line)!important}
+.mk-ann span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
