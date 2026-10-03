@@ -160,47 +160,53 @@ nav.sticky .font-heading span,.mk-foot-brand span,.ix-logo span{color:#8fb4ec!im
 .mk-ann span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 
 /* =====================================================================
-   HERO CINEMATIC v6 — video anime biru-putih 16:9, FULL-BLEED di seluruh hero
-   Layer: poster fallback -> video -> overlay navy + gradient -> konten
-   Fokus video: mata kanan di ~72% lebar frame (--hero-pos mengatur crop)
-   Mobile  : hero tinggi, video di-crop ke area mata, teks di zona gelap bawah
-   Desktop : video penuh, mata di kanan, teks di kiri (gradient dari kiri)
+   HERO CINEMATIC v7 — komposisi seimbang: video = visual pendukung, MALIK STORE = fokus
+   Layer: latar navy -> poster fallback -> video -> mask/gradient halus -> konten
+   Mobile  : video di bagian atas (cover, TIDAK di-zoom ekstra, ~70% frame asli terlihat),
+             memudar ke navy di bawah; headline + CTA naik ke area negative space
+   Desktop : video di sisi kanan (±62% lebar), teks di kiri, fade halus ke navy
    ===================================================================== */
 .hero-cine{
-  --hero-pos:79% 50%;                         /* mobile: geser crop ke mata (kanan frame) */
-  --hero-filter:brightness(.55) saturate(.9);/* frame asli sangat terang (putih) -> diturunkan */
+  --hero-pt:clamp(272px,81vw,350px);             /* posisi awal konten (mobile) */
+  --hero-media-h:calc(var(--hero-pt) - 14px);    /* tinggi area video (mobile): lebih pendek = lebih sedikit zoom */
+  --hero-pos:84% 50%;                            /* fokus ke mata (±72% lebar frame), sedikit ke kanan */
+  --hero-filter:brightness(.55) saturate(.9);    /* frame asli sangat terang -> diturunkan */
   position:relative;isolation:isolate;overflow:hidden;
-  display:flex;align-items:flex-end;
-  min-height:clamp(660px,182vw,760px);
-  padding:0 16px 30px!important;
-  background:#0a1220!important;               /* fallback navy bila video gagal */
+  display:flex;align-items:flex-start;
+  min-height:0;
+  padding:var(--hero-pt) 16px 30px!important;
+  background:#0a1220!important;                  /* latar navy: fallback & pengisi ruang di luar video */
   border-bottom:0!important;
 }
 .hero-cine .hero-glow{display:none!important}
 
-/* media: poster statis (fallback) di bawah, video di atasnya */
-.hero-cine .hero-media{position:absolute;inset:0;z-index:0;overflow:hidden;background:#0a1220}
-.hero-cine .hero-media::before{
+/* media: kotak video di atas, memudar halus ke navy (tanpa tepi/kotak terlihat) */
+.hero-cine .hero-media{
+  position:absolute;top:0;left:0;right:0;height:var(--hero-media-h);z-index:0;overflow:hidden;background:transparent;
+  -webkit-mask-image:linear-gradient(to bottom,#000 0,#000 64%,rgba(0,0,0,.5) 86%,transparent 100%);
+          mask-image:linear-gradient(to bottom,#000 0,#000 64%,rgba(0,0,0,.5) 86%,transparent 100%);
+}
+.hero-cine .hero-media::before{                  /* poster statis: fallback bila video gagal / reduced motion */
   content:"";position:absolute;inset:0;
   background:url(assets/video/hero-poster.jpg?v=anime1) var(--hero-pos)/cover no-repeat;
   filter:var(--hero-filter);
 }
 .hero-cine .hero-video{
   position:absolute;inset:0;display:block;width:100%;height:100%;
-  object-fit:cover;object-position:var(--hero-pos);
+  object-fit:cover;object-position:var(--hero-pos);   /* tidak di-stretch, hanya crop ringan */
   filter:var(--hero-filter);
   pointer-events:none;background:transparent;
 }
 .hero-cine .hero-video::-webkit-media-controls,
 .hero-cine .hero-video::-webkit-media-controls-start-playback-button{display:none!important;-webkit-appearance:none}
 
-/* overlay: tint navy + gradient arah (gelap di bawah tempat teks, atas tipis agar menyatu dengan navbar) */
+/* overlay: tint navy tipis + penyatuan dengan navbar + glow biru lembut */
 .hero-cine .hero-shade{
   position:absolute;inset:0;z-index:1;pointer-events:none;
   background:
-    linear-gradient(to bottom,rgba(10,18,32,.62) 0%,rgba(10,18,32,0) 18%),
-    linear-gradient(to top,rgba(10,18,32,1) 0%,rgba(10,18,32,.92) 24%,rgba(10,18,32,.70) 40%,rgba(10,18,32,.26) 58%,rgba(10,18,32,.04) 74%,rgba(10,18,32,0) 100%),
-    radial-gradient(110% 60% at 82% 26%,rgba(123,167,234,.12),transparent 62%),
+    linear-gradient(to bottom,rgba(10,18,32,.55) 0%,rgba(10,18,32,0) 16%),
+    linear-gradient(to top,#0a1220 0%,rgba(10,18,32,0) 24%),
+    radial-gradient(90% 40% at 78% 16%,rgba(123,167,234,.12),transparent 65%),
     rgba(10,24,52,.18);
 }
 
@@ -250,17 +256,27 @@ nav.sticky .font-heading span,.mk-foot-brand span,.ix-logo span{color:#8fb4ec!im
   .hero-cine .hero-btn{padding:.74rem 1rem!important}
 }
 
-/* TABLET / DESKTOP: video tetap full-bleed; mata di kanan, teks di kiri */
+/* TABLET / DESKTOP: video di sisi kanan (±62%), teks kiri; fade kiri + bawah ke navy */
 @media(min-width:768px){
-  .hero-cine{--hero-pos:78% 44%;align-items:center;min-height:clamp(540px,42vw,680px);padding:56px 32px!important}
+  .hero-cine{
+    --hero-pos:92% 45%;
+    align-items:center;min-height:clamp(480px,37vw,560px);padding:56px 32px!important;
+  }
+  .hero-cine .hero-media{
+    top:0;bottom:0;left:auto;right:0;height:auto;width:62%;max-width:980px;
+    -webkit-mask-image:linear-gradient(to right,transparent 0,rgba(0,0,0,.6) 18%,#000 42%),linear-gradient(to bottom,#000 0,#000 74%,transparent 100%);
+    -webkit-mask-composite:source-in;
+            mask-image:linear-gradient(to right,transparent 0,rgba(0,0,0,.6) 18%,#000 42%),linear-gradient(to bottom,#000 0,#000 74%,transparent 100%);
+            mask-composite:intersect;
+  }
   .hero-cine .hero-shade{
     background:
-      linear-gradient(to bottom,rgba(10,18,32,.58) 0%,rgba(10,18,32,0) 18%),
-      linear-gradient(to top,rgba(10,18,32,1) 0%,rgba(10,18,32,0) 20%),
-      linear-gradient(90deg,rgba(10,18,32,.96) 0%,rgba(10,18,32,.86) 30%,rgba(10,18,32,.52) 52%,rgba(10,18,32,.14) 78%,rgba(10,18,32,.06) 100%),
-      rgba(10,24,52,.18);
+      linear-gradient(to bottom,rgba(10,18,32,.55) 0%,rgba(10,18,32,0) 16%),
+      linear-gradient(90deg,#0a1220 0%,rgba(10,18,32,.72) 34%,rgba(10,18,32,0) 62%),
+      linear-gradient(to top,#0a1220 0%,rgba(10,18,32,0) 18%),
+      rgba(10,24,52,.14);
   }
-  .hero-cine>.max-w-7xl>div{max-width:540px}
+  .hero-cine>.max-w-7xl>div{max-width:min(540px,46vw)}
   .hero-cine .hero-title{font-size:clamp(40px,4.4vw,60px)!important}
   .hero-cine .hero-title .hero-title-mark{font-size:clamp(18px,1.7vw,22px)!important;margin-top:12px!important}
   .hero-cine .hero-sub{font-size:16px!important;max-width:42ch}
