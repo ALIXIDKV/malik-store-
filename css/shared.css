@@ -201,7 +201,8 @@ html .mkr-form textarea:focus,html .mkr-form select:focus{border-color:var(--g)}
 body{background:radial-gradient(900px 480px at 85% -8%,rgba(123,167,234,.08),transparent 60%),var(--bg)!important;letter-spacing:.005em;line-height:1.55}
 body.mk-login{background:linear-gradient(rgba(10,18,32,.84),rgba(10,18,32,.95)),url("../assets/image/login-bg.jpg") center/cover fixed!important}
 body.login-body{background:radial-gradient(900px 480px at 85% -8%,rgba(123,167,234,.10),transparent 60%),var(--bg)!important}
-.logo,.brand,.brand h1,.mk-foot-brand,.mk-logo,h1,h2{font-family:"MalikFont","Plus Jakarta Sans",Arial,sans-serif!important;letter-spacing:.05em}
+.logo,.brand,.brand h1,.mk-foot-brand,.mk-logo{font-family:"MalikFont","Plus Jakarta Sans",Arial,sans-serif!important;letter-spacing:.06em;font-weight:400}
+h1,h2,h3{font-family:'Plus Jakarta Sans',Arial,sans-serif!important;letter-spacing:-.01em}
 h3,h4,button,input,select,textarea{font-family:'Plus Jakarta Sans',Arial,sans-serif}
 .card,.row,.oc,.me,.stat,.chat,.auth-box,.lbox,.mk-card,.panel{border-radius:var(--mk-radius);border:1px solid var(--line);box-shadow:var(--mk-shadow)}
 /* glow/neon dibuat halus */
@@ -210,3 +211,56 @@ h3,h4,button,input,select,textarea{font-family:'Plus Jakarta Sans',Arial,sans-se
 html .mk-nav a.on svg,.mk-nav a.on svg{filter:none!important}
 .msg.ok{color:#9cc1f2}
 ::selection{background:rgba(123,167,234,.35);color:#fff}
+
+/* ===== LAYOUT v2: admin, chat, bottom nav ===== */
+/* admin: judul pakai font terbaca, statistik 2x2 compact */
+.top h1{font-family:'Plus Jakarta Sans',Arial,sans-serif!important;font-size:20px;font-weight:800;letter-spacing:-.01em}
+.stats{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+@media(min-width:900px){.stats{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
+.stat{display:flex;flex-direction:column;align-items:flex-start!important;gap:8px!important;padding:12px 14px!important;border-radius:14px!important;min-width:0}
+.stat .ic{width:28px!important;height:28px!important;border-radius:9px!important}
+.stat .ic svg{width:15px;height:15px}
+.stat small{font-size:11px!important;letter-spacing:.02em;color:var(--mut)}
+.stat b{font-size:clamp(16px,5vw,21px)!important;font-weight:800;margin-top:1px!important;white-space:nowrap;letter-spacing:-.01em}
+.card{padding:14px 16px}
+.card h3{font-size:12px!important;letter-spacing:.1em!important;color:var(--mut)!important;margin-bottom:10px!important;font-family:'Plus Jakarta Sans',Arial,sans-serif!important}
+.empty{padding:16px 10px!important;font-size:12.5px;color:var(--mut)}
+.cols{gap:12px!important}
+#view{gap:12px!important}
+/* baris order compact (dashboard admin) */
+.orw{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.orw:first-child{border-top:0;padding-top:2px}
+.orw .tx{flex:1;min-width:0}.orw .tx b{display:block;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.orw .tx small{display:block;font-size:11px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.orw .rt{text-align:right;display:grid;gap:4px;justify-items:end;font-size:12.5px;font-weight:700}
+.orw .pill{font-size:10px;padding:2px 8px}
+/* sidebar & tabbar: sederhana */
+.side nav a.on{background:rgba(123,167,234,.12)!important;color:var(--g)!important;font-weight:600!important}
+.side nav a{border-radius:10px;padding:10px 12px;font-size:13.5px}
+.brand{font-size:18px}
+.tabbar{border-top:1px solid var(--line)!important;background:rgba(10,18,32,.94)!important}
+.tabbar a{font-size:10.5px;font-weight:600;color:var(--mut)}
+.tabbar a.on{color:var(--g)!important;background:none!important}
+.tabbar a.on svg{filter:none!important}
+html .mk-nav a{font-size:10.5px;font-weight:600}
+html .mk-nav a.on:before{left:36%;right:36%;height:2px;opacity:.9}
+/* chat user */
+body>.h{padding:10px 14px;gap:10px;align-items:center}
+body>.h a{font-size:20px;width:30px}
+body>.h .av{flex:none;width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#07101f;background:linear-gradient(135deg,#8ab4f0,#6c97dc)}
+body>.h b{font-size:15px;font-weight:700;line-height:1.2}
+body>.h small{font-size:11.5px;color:var(--mut)}
+body>#msgs{padding:14px 14px;gap:6px}
+body>#msgs .m{max-width:78%;padding:8px 12px;font-size:14px;line-height:1.45;border-radius:16px}
+body>#msgs .m.user{border-bottom-right-radius:5px}
+body>#msgs .m.admin{border-bottom-left-radius:5px}
+body>#msgs .m small{font-size:10px;margin-top:3px;opacity:.6}
+body>#msgs .e{font-size:13px;line-height:1.6;color:var(--mut);max-width:240px}
+body>#msgs .e:before{content:"";display:block;width:52px;height:52px;margin:0 auto 14px;border-radius:16px;border:1px solid var(--line);background:rgba(148,178,230,.07) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238fb4ec' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 12a8 8 0 01-11.7 7L4 20l1.2-4.6A8 8 0 1121 12z'/%3E%3C/svg%3E") center/24px no-repeat}
+body>.s{padding:10px 12px;gap:8px;align-items:center}
+body>.s input{padding:10px 14px;border-radius:999px;font-size:14px}
+body>.s button#sb{height:40px;padding:0 16px;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:.04em}
+button.att-btn,.s button.att-btn{width:40px!important;min-width:40px!important;height:40px;border-radius:50%!important}
+/* chat admin & payment card: bubble compact */
+.cth .m{max-width:78%;padding:8px 12px;font-size:14px;border-radius:16px}
+.cth .m small{font-size:10px}

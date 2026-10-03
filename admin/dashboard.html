@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="robots" content="noindex,nofollow">
 <title>Dashboard - Malik Admin</title>
-<link rel="stylesheet" href="assets/admin.css?v=4b">
+<link rel="stylesheet" href="assets/admin.css?v=4c">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/supabase.js?v=9"></script>
 <script src="js/notify.js?v=5" data-role="admin" defer></script>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="../css/shared.css?v=3b"><script>try{sessionStorage.setItem("malik_loaded","1")}catch(e){}</script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="../css/shared.css?v=3c"><script>try{sessionStorage.setItem("malik_loaded","1")}catch(e){}</script>
 <meta name="description" content="Ringkasan panel admin Malik Store.">
 <link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="/assets/image/favicon-32.png"><link rel="icon" type="image/png" sizes="192x192" href="/assets/image/favicon-192.png"><link rel="apple-touch-icon" href="/assets/image/apple-touch-icon.png">
 </head>
@@ -48,8 +48,8 @@ Admin.mount("dashboard", "Dashboard", function (v) {
   function draw() {
     var s = A.stats(), o = A.orders().slice(0, 5), t = A.threads().slice(0, 5);
     var rows = o.length ? o.map(function (x) {
-      return "<tr><td>" + e(x.code) + "</td><td>" + e(x.username) + "</td><td>" + e(x.product) + " <span class='mut'>x" + x.qty + "</span></td><td>" + A.rp(x.price) + "</td><td>" + A.pill(x.status) + "</td></tr>";
-    }).join("") : "<tr><td colspan='5' class='empty'>Belum ada order.</td></tr>";
+      return "<div class='orw'><span class='tx'><b>" + e(x.product) + " <span class='mut'>x" + x.qty + "</span></b><small>" + e(x.code) + " · " + e(x.username) + "</small></span><span class='rt'>" + A.rp(x.price) + A.pill(x.status) + "</span></div>";
+    }).join("") : "<div class='empty'>Belum ada order.</div>";
     var chats = t.length ? t.map(function (c) {
       return "<a class='li' href='chat.html?u=" + encodeURIComponent(c.email) + "'><span class='av " + (c.online ? "on" : "") + "'>" + e(c.email[0]) + "</span>" +
         "<span class='tx'><b>" + e(c.email) + "</b><small>" + e(c.last ? c.last.text : "") + "</small></span>" +
@@ -59,10 +59,10 @@ Admin.mount("dashboard", "Dashboard", function (v) {
       "<div class='stats'>" +
       "<div class='stat'><span class='ic'>" + A.icon("users") + "</span><div><small>Total User</small><b>" + s.users + "</b></div></div>" +
       "<div class='stat'><span class='ic'>" + A.icon("bag") + "</span><div><small>Total Order</small><b>" + s.orders + "</b></div></div>" +
-      "<div class='stat'><span class='ic'>" + A.icon("cash") + "</span><div><small>Total Pendapatan</small><b>" + A.rp(s.revenue) + "</b></div></div>" +
+      "<div class='stat'><span class='ic'>" + A.icon("cash") + "</span><div><small>Pendapatan</small><b>" + A.rp(s.revenue) + "</b></div></div>" +
       "<div class='stat'><span class='ic'>" + A.icon("pulse") + "</span><div><small>User Online</small><b>" + s.online + "</b></div></div></div>" +
       "<div class='bar'><span class='hint'>Pendapatan = order berstatus Selesai. Data langsung dari database (realtime).</span></div>" +
-      "<div class='cols'><div class='card'><h3>Order Terbaru</h3><div class='tw'><table><thead><tr><th>ID</th><th>User</th><th>Produk</th><th>Harga</th><th>Status</th></tr></thead><tbody>" + rows + "</tbody></table></div></div>" +
+      "<div class='cols'><div class='card'><h3>Order Terbaru</h3><div>" + rows + "</div></div>" +
       "<div class='card'><h3>Chat Terbaru</h3><div class='list'>" + chats + "</div></div></div>");
   }
   draw(); drawNotif(); A.onTick(function () { draw(); drawNotif(); });

@@ -9,7 +9,7 @@
 <style>
 @font-face{font-family:Malik;src:url("../../assets/font/font.ttf")}
 *{box-sizing:border-box}
-body{margin:0;height:100dvh;padding-bottom:var(--mk-nav-h,0px);display:flex;flex-direction:column;background:#0a1220;color:#fff;font-family:Malik,Arial,sans-serif}
+body{margin:0;height:100dvh;padding-bottom:var(--mk-nav-h,0px);display:flex;flex-direction:column;background:#0a1220;color:#fff;font-family:'Plus Jakarta Sans',Arial,sans-serif}
 .h{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.04)}
 .h a{color:#8ecae6;text-decoration:none;font-size:22px}.h b{display:block}.h small{color:#8b9ab4}
 #msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
@@ -23,12 +23,12 @@ body{margin:0;height:100dvh;padding-bottom:var(--mk-nav-h,0px);display:flex;flex
 .s input:focus{border-color:#7ba7ea}
 .s button{padding:0 20px;border:0;border-radius:12px;font-weight:bold;cursor:pointer;background:linear-gradient(90deg,#7ba7ea,#8ecae6);color:#000}
 </style>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="../../css/shared.css?v=3b"><link rel="stylesheet" href="../../css/chat-attach.css?v=1b">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="../../css/shared.css?v=3c"><link rel="stylesheet" href="../../css/chat-attach.css?v=1b">
 <meta name="description" content="Chat langsung dengan admin Malik Store.">
 <link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="/assets/image/favicon-32.png"><link rel="icon" type="image/png" sizes="192x192" href="/assets/image/favicon-192.png"><link rel="apple-touch-icon" href="/assets/image/apple-touch-icon.png">
 </head>
 <body>
-<div class="h"><a href="index.html#prof" aria-label="Kembali ke Profil">&larr;</a><div><b>Chat Admin</b><small id="who"></small></div></div>
+<div class="h"><a href="index.html#prof" aria-label="Kembali ke Profil">&larr;</a><span class="av" aria-hidden="true">M</span><div><b>Chat Admin</b><small id="who"></small></div></div>
 <div id="msgs"></div>
 <div class="att-pv" id="apv" hidden></div><input type="file" id="af" hidden>
 <div class="s"><button type="button" class="att-btn" id="ab" aria-label="Lampirkan foto atau video" title="Foto / Video"></button><input id="mi" maxlength="500" placeholder="Tulis pesan..." autocomplete="off"><button id="sb">KIRIM</button></div>

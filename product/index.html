@@ -66,6 +66,28 @@ h1{margin:0 0 6px;font-size:clamp(26px,5vw,36px);line-height:1.15;letter-spacing
 .nf{text-align:center;padding:70px 10px;color:var(--mut)}.nf a{color:var(--g)}
 body.a-blue{--ac:#8ecae6}body.a-yellow{--ac:#a9bfe0}body.a-lime{--ac:#7ba7ea}
 @media(prefers-reduced-motion:reduce){.orb{animation:none}}
+
+/* ===== LAYOUT v2: detail produk compact ===== */
+.wrap{max-width:680px;padding:12px 16px}
+.crumb{margin-bottom:10px}
+.grid{display:block}
+.phead{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.orb{flex:none;width:54px;height:54px;border-radius:16px;font-size:22px;transform:none;animation:none;box-shadow:none;background:rgba(148,178,230,.14);color:var(--ac,var(--g));border:1px solid var(--line)}
+.pinfo{min-width:0}
+.tag{position:static;display:inline-block;margin-bottom:4px;padding:2px 9px;font-size:10px;letter-spacing:.1em;background:rgba(148,178,230,.08)}
+h1{font-size:clamp(20px,5.6vw,26px);margin:0 0 2px;letter-spacing:-.01em;line-height:1.2}
+.rate{font-size:12.5px}
+.price{margin:0 0 14px;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:var(--card)}
+.price b{font-size:28px;font-weight:800;color:var(--tx)}
+.lbl{margin-bottom:8px;letter-spacing:.1em}
+.chips{gap:8px;margin-bottom:12px}
+.chips button{min-height:44px;padding:8px 16px;border-radius:12px}
+.chips button[aria-checked=true]{box-shadow:none;background:rgba(123,167,234,.18);color:var(--tx);border-color:var(--ac,var(--g))}
+.qty{margin:0 0 14px;padding:8px 12px}
+.desc{font-size:13.5px;line-height:1.6;margin:0 0 4px;color:#9fb0c9}
+.card{margin-top:14px;padding:16px;border-radius:16px;background:var(--card)}
+.card h2{font-size:14px;margin-bottom:12px}
+.go{box-shadow:none;background:linear-gradient(135deg,#8ab4f0,#6c97dc);min-height:46px}
 </style>
 </head>
 <body>
@@ -73,14 +95,12 @@ body.a-blue{--ac:#8ecae6}body.a-yellow{--ac:#a9bfe0}body.a-lime{--ac:#7ba7ea}
 <div class="wrap" id="app">
   <div class="crumb"><a href="../index.html">Beranda</a> / <a href="../index.html#harga-panel">Produk</a> / <span id="crumb"></span></div>
   <section class="grid">
-    <div class="media"><span class="tag" id="tag"></span><div class="orb"><i id="icon" class="fa-solid"></i></div></div>
-    <div>
-      <h1 id="name"></h1>
-      <button class="rate" id="rate" type="button">Memuat ulasan...</button>
-      <p class="desc" id="desc"></p>
-      <div class="lbl" id="vlabel"></div><div class="chips" id="chips" role="radiogroup"></div>
+    <div class="phead"><div class="orb"><i id="icon" class="fa-solid"></i></div><div class="pinfo"><span class="tag" id="tag"></span><h1 id="name"></h1><button class="rate" id="rate" type="button">Memuat ulasan...</button></div></div>
+    <div class="pbuy">
       <div class="price"><b id="price"></b><small id="unit"></small></div>
+      <div class="lbl" id="vlabel"></div><div class="chips" id="chips" role="radiogroup"></div>
       <div class="qty mk-hide-admin"><span>Jumlah</span><div class="step"><button type="button" id="minus" aria-label="Kurangi">−</button><input id="qty" type="number" inputmode="numeric" min="1" max="99" value="1"><button type="button" id="plus" aria-label="Tambah">+</button></div></div>
+      <p class="desc" id="desc"></p>
     </div>
   </section>
   <section class="card"><h2>Keunggulan</h2><div class="ben" id="ben"></div></section>
