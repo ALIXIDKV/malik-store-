@@ -12,7 +12,7 @@ Vercel > Project > Settings > Environment Variables (Production + Preview), lalu
 `SUPABASE_URL` dan `SUPABASE_SERVICE_ROLE_KEY` sudah ada (dipakai fitur OTP/hapus user) dan dipakai juga untuk memverifikasi login.
 
 ## 2. Database
-Jalankan `supabase_attachment_migration.sql` di Supabase > SQL Editor (sekali, aman diulang).
+Jalankan `supabase/migrations-archive/09_attachment_migration.sql` di Supabase > SQL Editor (sekali, aman diulang).
 Hanya menambah 2 kolom nullable `attachment_url`, `attachment_type` + constraint agar hanya URL Cloudinary yang bisa tersimpan. Policy RLS tidak berubah.
 
 ## 3. Deploy
@@ -29,6 +29,6 @@ Pilih file -> validasi -> foto dikompres di browser (maks sisi 1600px) -> previe
 - Tampilan ringan: foto dimuat `loading="lazy"` dengan transformasi Cloudinary (480px, auto format/kualitas); video `preload="none"` dengan poster.
 
 ## File
-Baru: `api/upload-chat.js`, `js/chat-attach.js`, `css/chat-attach.css`, `supabase_attachment_migration.sql`
+Baru: `api/upload-chat.js`, `js/chat-attach.js`, `css/chat-attach.css`, `supabase/migrations-archive/09_attachment_migration.sql`
 Diubah: `account/dashboard/chat.html`, `admin/chat.html`, `admin/js/admin.js`
 Tidak diubah: `auth.js`, `supabase.js`, `products.js`, `vercel.json`, `package.json`
