@@ -158,3 +158,119 @@ nav.sticky .font-heading span,.mk-foot-brand span,.ix-logo span{color:#8fb4ec!im
 .hero-cta-row .hero-btn-view{padding:.75rem 1.3rem!important}
 .mk-ann{padding:6px 14px!important;font-size:11px!important;line-height:1.3;letter-spacing:.01em;font-weight:500!important;background:rgba(123,167,234,.07)!important;color:#a9bddb!important;border-bottom:1px solid var(--mk-line)!important}
 .mk-ann span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+
+/* =====================================================================
+   HERO CINEMATIC v5 — video 9:16 dirancang menyatu dengan layout hero
+   Layer: video -> tint navy -> gradient arah -> konten
+   Mobile  : video penuh lebar, fokus mata di atas, teks di zona gelap bawah
+   Desktop : video di sisi kanan, teks di kiri, fade ke navy (tidak di-stretch)
+   ===================================================================== */
+.hero-cine{
+  position:relative;isolation:isolate;overflow:hidden;
+  display:flex;align-items:flex-end;
+  min-height:clamp(540px,148vw,640px);
+  padding:0 16px 30px!important;
+  background:#0a1220!important;            /* fallback navy bila video gagal */
+  border-bottom:0!important;
+}
+.hero-cine .hero-glow{display:none!important}
+
+/* video */
+.hero-cine .hero-media{position:absolute;inset:0;z-index:0;overflow:hidden;background:#0a1220}
+.hero-cine .hero-video{
+  position:absolute;inset:0;display:block;width:100%;height:100%;
+  object-fit:cover;object-position:50% 80%;      /* mobile: mata atas tetap di atas teks */
+  filter:brightness(.52) saturate(.88);
+  pointer-events:none;background:#0a1220;
+}
+.hero-cine .hero-video::-webkit-media-controls,
+.hero-cine .hero-video::-webkit-media-controls-start-playback-button{display:none!important;-webkit-appearance:none}
+
+/* overlay: tint navy + gradient arah (gelap di bawah tempat teks, atas tipis agar menyatu dengan navbar) */
+.hero-cine .hero-shade{
+  position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:
+    linear-gradient(to bottom,rgba(10,18,32,.60) 0%,rgba(10,18,32,0) 20%),
+    linear-gradient(to top,rgba(10,18,32,1) 0%,rgba(10,18,32,.92) 30%,rgba(10,18,32,.62) 52%,rgba(10,18,32,.12) 74%,rgba(10,18,32,0) 100%),
+    radial-gradient(120% 70% at 85% 28%,rgba(123,167,234,.14),transparent 60%),
+    rgba(10,22,46,.22);
+}
+
+/* konten */
+.hero-cine>.max-w-7xl{position:relative;z-index:2;display:block;width:100%}
+.hero-cine>.max-w-7xl>div{max-width:440px}
+.hero-cine .hero-title{
+  margin:0!important;font-family:'Plus Jakarta Sans',Arial,sans-serif!important;font-weight:800!important;
+  font-size:clamp(30px,8.4vw,46px)!important;line-height:1.1!important;letter-spacing:-.025em!important;
+  text-transform:none!important;-webkit-text-stroke:0!important;color:#f1f5fb;text-shadow:0 2px 24px rgba(7,13,26,.55);
+}
+.hero-cine .hero-title-top{display:block;max-width:8.8em;color:#f1f5fb;text-wrap:balance}
+.hero-cine .hero-title .hero-title-mark{
+  display:block!important;margin:10px 0 0!important;padding:0!important;
+  font-family:'Plus Jakarta Sans',Arial,sans-serif!important;font-weight:600!important;
+  font-size:clamp(16px,4.6vw,20px)!important;line-height:1.35!important;letter-spacing:0!important;
+  color:#8fa9cf!important;-webkit-text-fill-color:#8fa9cf!important;background:none!important;
+  -webkit-text-stroke:0!important;text-shadow:none;
+}
+.hero-cine .hero-sub{
+  margin:14px 0 0!important;max-width:38ch;
+  font-size:14.5px!important;line-height:1.65!important;color:#b3bdcc!important;
+}
+
+/* CTA: primary biru soft, secondary kaca tipis — satu baris di mobile */
+.hero-cine .hero-cta{margin:22px 0 0!important;padding:0;display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;gap:10px}
+.hero-cine .hero-cta-row{display:contents}
+.hero-cine .hero-btn{
+  padding:.78rem 1.15rem!important;font-size:.9rem!important;font-weight:700;gap:.5rem;
+  border-radius:12px!important;width:auto!important;
+}
+.hero-cine .hero-btn-primary{
+  background:#86aee8!important;background-image:linear-gradient(180deg,#94b9ee,#7ea6e2)!important;
+  color:#08111f!important;border:0!important;box-shadow:0 10px 26px -14px rgba(134,174,232,.7)!important;
+}
+.hero-cine .hero-btn-primary>svg:first-child{display:none}
+.hero-cine .hero-cta-row .hero-btn-view{
+  padding:.78rem 1.15rem!important;color:#e8eef9!important;
+  border:1px solid rgba(190,208,240,.32)!important;background:rgba(10,18,32,.38)!important;
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+}
+.hero-cine .hero-cta-row .hero-btn-view:hover{background:rgba(148,178,230,.14)!important;border-color:rgba(190,208,240,.5)!important}
+.hero-cine .hero-btn:focus-visible{outline:2px solid #bcd3f5;outline-offset:3px}
+
+/* HP kecil (360): geser fokus agar mata tetap di atas teks */
+@media(max-width:374px){
+  .hero-cine .hero-video{object-position:50% 100%}
+  .hero-cine .hero-btn{padding:.74rem 1rem!important}
+}
+/* HP besar / tablet kecil: video lebih tinggi dari hero, fokus ke area mata */
+@media(min-width:481px) and (max-width:767px){
+  .hero-cine .hero-video{object-position:50% 45%}
+}
+
+/* DESKTOP / TABLET: video vertikal di sisi kanan, teks tetap kiri */
+@media(min-width:768px){
+  .hero-cine{align-items:center;min-height:clamp(520px,42vw,660px);padding:56px 32px!important}
+  .hero-cine .hero-media{
+    left:auto;right:0;width:50%;max-width:760px;
+    -webkit-mask-image:linear-gradient(to right,transparent 0,#000 42%);
+    mask-image:linear-gradient(to right,transparent 0,#000 42%);
+  }
+  .hero-cine .hero-video{object-position:50% 40%}
+  .hero-cine .hero-shade{
+    background:
+      linear-gradient(to bottom,rgba(10,18,32,.55) 0%,rgba(10,18,32,0) 18%),
+      linear-gradient(to top,rgba(10,18,32,1) 0%,rgba(10,18,32,0) 22%),
+      linear-gradient(90deg,#0a1220 0%,rgba(10,18,32,.94) 34%,rgba(10,18,32,.60) 56%,rgba(10,18,32,.18) 100%),
+      rgba(10,22,46,.18);
+  }
+  .hero-cine>.max-w-7xl>div{max-width:540px}
+  .hero-cine .hero-title{font-size:clamp(40px,4.4vw,60px)!important}
+  .hero-cine .hero-title .hero-title-mark{font-size:clamp(18px,1.7vw,22px)!important;margin-top:12px!important}
+  .hero-cine .hero-sub{font-size:16px!important;max-width:42ch}
+  .hero-cine .hero-cta{margin-top:28px!important;gap:12px}
+}
+
+/* hormati reduced motion: video dimatikan (JS ringan di index.html), poster statis tampil */
+@media(prefers-reduced-motion:reduce){
+  .hero-cine .hero-video{animation:none}
+}

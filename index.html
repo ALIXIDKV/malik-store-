@@ -45,7 +45,7 @@
 <link rel="apple-touch-icon" href="/assets/image/apple-touch-icon.png"/>
 <!-- Schema.org JSON-LD -->
 <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Organization", "@id": "https://malik-store.aliz.web.id/#org", "name": "Malik Store", "url": "https://malik-store.aliz.web.id/", "logo": "https://malik-store.aliz.web.id/assets/image/favicon-512.png", "image": "https://malik-store.aliz.web.id/assets/image/og-image.jpg", "sameAs": ["https://whatsapp.com/channel/0029Vb8xDuZDeON4wmxV6O1P"], "contactPoint": {"@type": "ContactPoint", "contactType": "customer support", "url": "https://wa.me/6285782100757", "availableLanguage": "id"}}, {"@type": "WebSite", "@id": "https://malik-store.aliz.web.id/#website", "url": "https://malik-store.aliz.web.id/", "name": "Malik Store", "inLanguage": "id-ID", "publisher": {"@id": "https://malik-store.aliz.web.id/#org"}}, {"@type": "ProfessionalService", "@id": "https://malik-store.aliz.web.id/#business", "name": "Malik Store", "url": "https://malik-store.aliz.web.id/", "image": "https://malik-store.aliz.web.id/assets/image/og-image.jpg", "description": "Malik Store menyediakan Open Panel Pterodactyl legal dengan RAM dedicated, Sewa Bot WhatsApp permanen, serta paket Reseller & Admin Panel. Harga terjangkau, aktivasi cepat, support responsif.", "priceRange": "Rp1.000 - Rp30.000", "areaServed": "ID", "parentOrganization": {"@id": "https://malik-store.aliz.web.id/#org"}, "hasOfferCatalog": {"@type": "OfferCatalog", "name": "Layanan Malik Store", "itemListElement": [{"@type": "Offer", "priceCurrency": "IDR", "price": "1000", "itemOffered": {"@type": "Service", "name": "Open Panel Pterodactyl", "description": "Panel Pterodactyl legal dengan pilihan RAM 1GB sampai Unlimited."}}, {"@type": "Offer", "priceCurrency": "IDR", "price": "15000", "itemOffered": {"@type": "Service", "name": "Sewa Bot WhatsApp", "description": "Bot WhatsApp aktif permanen untuk 1 sampai 3 group."}}, {"@type": "Offer", "priceCurrency": "IDR", "price": "15000", "itemOffered": {"@type": "Service", "name": "Reseller & Admin Panel", "description": "Reseller Panel, Admin Panel, dan Reseller Bot untuk mulai berjualan layanan digital."}}]}}]}</script>
-<link href="css/style.css?v=4b" rel="stylesheet"/><link href="css/catalog.css?v=2b" rel="stylesheet"/><link href="css/premium.css?v=4d" rel="stylesheet"/>
+<link href="css/style.css?v=4b" rel="stylesheet"/><link href="css/catalog.css?v=2b" rel="stylesheet"/><link href="css/premium.css?v=5a" rel="stylesheet"/>
 <script src="js/role.js"></script>
 </head>
 <body class="min-h-screen flex flex-col selection:bg-neo-lime selection:text-black">
@@ -130,14 +130,21 @@ Mulai Order
 <!-- ================================================================= -->
 <div class="view-content" id="view-landing">
 <!-- HERO SECTION -->
-<section class="hero-section relative pt-12 pb-20 px-4 lg:px-8 border-b-4 border-black bg-[radial-gradient(#1f2937_1px,transparent_1px)] [background-size:24px_24px]">
+<section class="hero-section hero-cine relative pt-12 pb-20 px-4 lg:px-8 border-b-4 border-black bg-[radial-gradient(#1f2937_1px,transparent_1px)] [background-size:24px_24px]">
+<!-- Video hero: video -> overlay navy -> gradient arah -> konten -->
+<div class="hero-media" aria-hidden="true">
+<video class="hero-video" id="hero-video" autoplay muted loop playsinline preload="metadata" poster="assets/video/hero-poster.jpg" tabindex="-1">
+<source src="assets/video/hero-bg.mp4" type="video/mp4">
+</video>
+</div>
+<div class="hero-shade" aria-hidden="true"></div>
 <div class="hero-glow g1"></div><div class="hero-glow g2"></div>
 <div class="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 items-center">
 <!-- LEFT COLUMN -->
 <div class="lg:col-span-12 max-w-4xl space-y-6">
 <!-- HEADLINE -->
 <h1 class="hero-title font-heading font-black text-white">
-<span class="hero-title-top">Open Panel &amp; Sewa Bot</span>
+<span class="hero-title-top">Open Panel&nbsp;&amp; Sewa Bot</span>
 <span class="hero-title-mark">legal, stabil, siap pakai.</span>
 </h1>
 <!-- SUBTITLE -->
@@ -159,6 +166,12 @@ Mulai Order
 </div>
 </div>
 </section>
+<script>
+/* Hero video: hormati prefers-reduced-motion (pakai poster statis, video tidak dimuat) */
+(function(){var v=document.getElementById("hero-video");if(!v)return;
+var m=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)");
+if(m&&m.matches){v.removeAttribute("autoplay");v.pause();var s=v.querySelector("source");if(s)s.remove();v.load();}})();
+</script>
 <!-- KATALOG: 3 PRODUK UTAMA (OPEN PANEL, SEWA BOT, RESELLER & ADMIN) - dirender js/catalog.js dari js/products.js -->
 <section class="mk-catalog" id="harga-panel">
 <div class="mk-wrap">
