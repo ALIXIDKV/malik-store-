@@ -1,7 +1,11 @@
-node_modules
-.next
+node_modules/
+.next/
+out/
+.vercel/
 .env
 .env.local
 .env.*.local
-.vercel
+*.log
 .DS_Store
+
+# Runtime source under app/, components/, lib/, and types/ must remain tracked.

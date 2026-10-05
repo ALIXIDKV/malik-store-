@@ -1,1 +1,19 @@
-supabase/
+# Local secrets and development artifacts
+.env
+.env.local
+.env.*.local
+*.log
+.DS_Store
+
+# Reference-only sources; never needed by the Next.js runtime
+legacy/
+/supabase/
+MIGRATION_NOTES.md
+ATTACHMENT_SETUP.md
+
+# Keep application/runtime source explicitly deployable
+!app/**
+!components/**
+!lib/**
+!lib/supabase/**
+!types/**
