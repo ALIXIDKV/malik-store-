@@ -1,0 +1,1 @@
+export default function Loading(){return <main className="page" aria-busy="true" aria-live="polite"><div className="shell"><span className="sr-only">Memuat…</span><div className="h-8 w-48 animate-pulse rounded-lg bg-zinc-900"/><div className="mt-6 h-64 animate-pulse rounded-2xl bg-zinc-900/70"/></div></main>}

@@ -1,2 +1,23 @@
-"use client"; import { useState } from "react"; import { createClient } from "@/lib/supabase/client"; import type { Profile } from "@/types/database"; import { Button } from "@/components/ui/button";
-export function UserTable({initial}:{initial:Profile[]}){const [rows,setRows]=useState(initial),[msg,setMsg]=useState("");async function del(id:string){if(!confirm("Hapus user permanen?"))return;const s=createClient();const {data:{session}}=await s.auth.getSession();const r=await fetch("/api/delete-user",{method:"POST",headers:{"content-type":"application/json",authorization:`Bearer ${session?.access_token||""}`},body:JSON.stringify({userId:id})});const j=await r.json();setMsg(j.message);if(j.ok)setRows(x=>x.filter(p=>p.id!==id))}return <>{msg&&<p className="mb-3 text-sm text-zinc-500">{msg}</p>}<div className="overflow-x-auto rounded-2xl border border-zinc-800 bg-zinc-950"><table className="w-full text-left text-sm"><thead><tr className="border-b border-zinc-800 bg-zinc-900/70 text-zinc-400"><th className="p-3">Nama</th><th>Email</th><th>Role</th><th>Aksi</th></tr></thead><tbody>{rows.map(x=><tr key={x.id} className="border-b border-zinc-900"><td className="p-3">{x.username}</td><td>{x.email}</td><td>{x.role}</td><td>{x.role!=="admin"&&<Button size="sm" variant="destructive" onClick={()=>del(x.id)}>Hapus</Button>}</td></tr>)}</tbody></table></div></>}
+"use client";
+import { useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+import type { Profile } from "@/types/database";
+import { Button } from "@/components/ui/button";
+export function UserTable({initial}:{initial:Profile[]}){
+  const [rows,setRows]=useState(initial),[msg,setMsg]=useState(""),[pending,setPending]=useState<Record<string,boolean>>({});
+  async function del(id:string){
+    if(pending[id])return;
+    if(!confirm("Hapus user permanen?"))return;
+    setPending(p=>({...p,[id]:true}));setMsg("");
+    try{
+      const s=createClient();
+      const {data:{session}}=await s.auth.getSession();
+      const r=await fetch("/api/delete-user",{method:"POST",headers:{"content-type":"application/json",authorization:`Bearer ${session?.access_token||""}`},body:JSON.stringify({userId:id})});
+      const j=await r.json();
+      setMsg(j.message||"");
+      if(j.ok)setRows(x=>x.filter(p=>p.id!==id));
+    }catch(e){console.error("[admin/users] hapus gagal",e);setMsg("User gagal dihapus. Coba lagi.")}
+    finally{setPending(p=>{const n={...p};delete n[id];return n})}
+  }
+  return <>{msg&&<p role="status" className="mb-3 text-sm text-zinc-500">{msg}</p>}<div className="overflow-x-auto rounded-2xl border border-zinc-800 bg-zinc-950"><table className="w-full text-left text-sm"><thead><tr className="border-b border-zinc-800 bg-zinc-900/70 text-zinc-400"><th className="p-3">Nama</th><th>Email</th><th>Role</th><th>Aksi</th></tr></thead><tbody>{rows.map(x=><tr key={x.id} className="border-b border-zinc-900"><td className="p-3">{x.username}</td><td>{x.email}</td><td>{x.role}</td><td>{x.role!=="admin"&&<Button size="sm" variant="destructive" disabled={!!pending[x.id]} onClick={()=>del(x.id)}>{pending[x.id]?"Menghapus…":"Hapus"}</Button>}</td></tr>)}</tbody></table></div></>
+}

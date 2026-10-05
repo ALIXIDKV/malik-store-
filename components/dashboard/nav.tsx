@@ -1,3 +1,0 @@
-import Link from "next/link";
-import { Home,History,MessageCircle,UserRound } from "lucide-react";
-export function DashboardNav(){const items=[["/dashboard",Home,"Beranda"],["/dashboard/history",History,"Riwayat"],["/dashboard/chat",MessageCircle,"Chat"],["/dashboard/profile",UserRound,"Profil"]] as const;return <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-zinc-800 bg-zinc-950/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl"><div className="mx-auto grid max-w-lg grid-cols-4">{items.map(([href,Icon,label])=><Link key={href} className="flex min-h-16 flex-col items-center justify-center gap-1 text-[11px] font-medium text-zinc-500 transition hover:text-emerald-400" href={href}><Icon className="size-5"/>{label}</Link>)}</div></nav>}
