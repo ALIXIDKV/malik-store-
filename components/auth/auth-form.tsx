@@ -4,10 +4,8 @@ import { useRouter,useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+import { cn,safeInternalPath } from "@/lib/utils";
 const NET_ERR="Koneksi bermasalah. Coba lagi.";
-// hanya path internal; cegah open-redirect (//host atau /\host)
-function safeNext(v:string|null){return v&&v.startsWith("/")&&!v.startsWith("//")&&!v.startsWith("/\\")?v:"/dashboard"}
 async function readJson(res:Response):Promise<{ok?:boolean;message?:string}>{try{return await res.json()}catch{return {ok:false,message:NET_ERR}}}
 export function AuthForm(){
   const [mode,setMode]=useState<"login"|"register">("login"),[busy,setBusy]=useState(false),[msg,setMsg]=useState("");
@@ -16,9 +14,9 @@ export function AuthForm(){
   async function login(email:string,password:string){
     const s=createClient();
     const {error}=await s.auth.signInWithPassword({email:email.trim().toLowerCase(),password});
-    if(error){setMsg(error.message);return false}
+    if(error){setMsg(/invalid login credentials/i.test(error.message)?"Email atau password salah.":/email not confirmed/i.test(error.message)?"Email belum terverifikasi.":"Gagal masuk. Coba lagi.");return false}
     const {data:{user}}=await s.auth.getUser();
-    let target=safeNext(search.get("next"));
+    let target=safeInternalPath(search.get("next"));
     if(user){const {data:p}=await s.from("profiles").select("role").eq("id",user.id).maybeSingle();if(p?.role==="admin")target="/admin"}
     router.replace(target);router.refresh();
     return true;

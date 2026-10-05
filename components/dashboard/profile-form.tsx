@@ -9,9 +9,11 @@ export function ProfileForm({id,username,avatar}:{id:string;username:string;avat
   const lock=useRef(false);
   const router=useRouter();
   function file(e:React.ChangeEvent<HTMLInputElement>){
-    const f=e.target.files?.[0];
+    const input=e.target,f=input.files?.[0];
     if(!f)return;
-    if(f.size>700_000){setMsg("Avatar terlalu besar.");return}
+    input.value=""; // izinkan memilih file yang sama lagi
+    if(!["image/jpeg","image/png","image/webp"].includes(f.type)){setMsg("Avatar harus JPG, PNG, atau WebP.");return}
+    if(f.size>40_000){setMsg("Avatar terlalu besar (maks sekitar 40 KB).");return}
     const r=new FileReader();
     r.onload=()=>setAv(String(r.result||""));
     r.onerror=()=>setMsg("Gagal membaca file avatar.");
@@ -19,10 +21,13 @@ export function ProfileForm({id,username,avatar}:{id:string;username:string;avat
   }
   async function save(){
     if(lock.current)return;
+    const clean=name.replace(/\s+/g," ").trim();
+    if(clean.length<2||clean.length>40){setMsg("Nama harus 2-40 karakter.");return}
     lock.current=true;setBusy(true);setMsg("");
     try{
       const s=createClient();
-      const {error}=await s.from("profiles").update({username:name.trim().slice(0,40),avatar_url:av||null}).eq("id",id);
+      const {data,error}=await s.from("profiles").update({username:clean,avatar_url:av||null}).eq("id",id).select("id");
+      if(!error&&!data?.length){setMsg("Profil tidak tersimpan. Coba masuk ulang.");return}
       setMsg(error?error.message:"Profil diperbarui.");
       if(!error)router.refresh();
     }catch(e){console.error("[profile] gagal",e);setMsg("Profil gagal disimpan. Coba lagi.")}

@@ -8,11 +8,15 @@ import { Send,Paperclip } from "lucide-react";
 export function UserChat({userId,initial}:{userId:string;initial:Message[]}){
   const [messages,setMessages]=useState(initial),[text,setText]=useState(""),[busy,setBusy]=useState(false),[err,setErr]=useState("");
   const sb=useRef(createClient()).current;
-  const lock=useRef(false);
+  const lock=useRef(false),endRef=useRef<HTMLDivElement>(null);
+  // selalu tampilkan pesan terbaru
+  useEffect(()=>{endRef.current?.scrollIntoView({block:"end"})},[messages.length]);
   useEffect(()=>{const ch=sb.channel(`chat-${userId}`).on("postgres_changes",{event:"*",schema:"public",table:"messages",filter:`user_id=eq.${userId}`},p=>{if(p.eventType==="INSERT")setMessages(m=>m.some(x=>x.id===(p.new as Message).id)?m:[...m,p.new as Message]);if(p.eventType==="DELETE")setMessages(m=>m.filter(x=>x.id!==p.old.id))}).subscribe();return()=>{void sb.removeChannel(ch)}},[sb,userId]);
   async function insertMessage(att?:{url:string,type:string}){
-    const {error}=await sb.from("messages").insert({user_id:userId,sender:"user",message:text.trim(),attachment_url:att?.url||null,attachment_type:att?.type||null});
+    const {data,error}=await sb.from("messages").insert({user_id:userId,sender:"user",message:text.trim(),attachment_url:att?.url||null,attachment_type:att?.type||null}).select().single();
     if(error)throw error;
+    // tampilkan langsung (tidak bergantung pada Realtime); dedupe by id bila event Realtime datang juga
+    if(data)setMessages(m=>m.some(x=>x.id===(data as Message).id)?m:[...m,data as Message]);
     setText("");
   }
   // Satu pintu untuk operasi async: kunci via ref (anti double-tap), selalu dilepas di finally.
@@ -27,16 +31,17 @@ export function UserChat({userId,initial}:{userId:string;initial:Message[]}){
     const input=e.currentTarget,f=input.files?.[0];
     input.value=""; // agar file yang sama bisa dipilih lagi
     if(!f)return;
+    if(f.size>4*1024*1024){setErr("Ukuran lampiran maksimal 4 MB.");return}
     void run(async()=>{
       const {data:{session}}=await sb.auth.getSession();
       const r=await fetch("/api/upload-chat",{method:"POST",headers:{authorization:`Bearer ${session?.access_token||""}`,"x-file-type":f.type,"content-type":"application/octet-stream"},body:f});
-      const j=await r.json();
+      const j=await r.json().catch(()=>({ok:false,message:"respons upload tidak valid"}));
       if(!j.ok)throw new Error(j.message||"upload gagal");
       await insertMessage({url:j.url,type:j.type});
     },"Lampiran gagal diunggah. Coba lagi.");
   }
   return <div className="flex min-h-[calc(100dvh-14rem)] flex-col md:min-h-[calc(100dvh-10rem)]">
-    <div className="flex-1 space-y-3 py-5">{messages.map(m=><div key={m.id} className={`max-w-[82%] rounded-2xl p-3 text-sm ${m.sender==="user"?"ml-auto bg-emerald-500 text-zinc-950":"border border-zinc-800 bg-zinc-900 text-zinc-200"}`}><p className="whitespace-pre-wrap break-words">{m.message}</p><p className={`mt-1.5 text-[10px] ${m.sender==="user"?"text-emerald-950/60":"text-zinc-600"}`}>{new Date(m.created_at).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})}</p>{m.attachment_url&&m.attachment_type==="image"&&<img src={m.attachment_url} alt="Lampiran" className="mt-2 max-h-64 max-w-full rounded-lg"/>}{m.attachment_url&&m.attachment_type==="video"&&<video controls src={m.attachment_url} className="mt-2 max-h-64 max-w-full rounded-lg"/>}</div>)}</div>
+    <div className="flex-1 space-y-3 py-5">{messages.map(m=><div key={m.id} className={`max-w-[82%] rounded-2xl p-3 text-sm ${m.sender==="user"?"ml-auto bg-emerald-500 text-zinc-950":"border border-zinc-800 bg-zinc-900 text-zinc-200"}`}><p className="whitespace-pre-wrap break-words">{m.message}</p><p className={`mt-1.5 text-[10px] ${m.sender==="user"?"text-emerald-950/60":"text-zinc-600"}`}>{new Date(m.created_at).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})}</p>{m.attachment_url&&m.attachment_type==="image"&&<img src={m.attachment_url} alt="Lampiran" className="mt-2 max-h-64 max-w-full rounded-lg"/>}{m.attachment_url&&m.attachment_type==="video"&&<video controls src={m.attachment_url} className="mt-2 max-h-64 max-w-full rounded-lg"/>}</div>)}{!messages.length&&<p className="py-10 text-center text-sm text-zinc-500">Belum ada pesan. Tulis pesan pertamamu ke admin.</p>}<div ref={endRef} aria-hidden/></div>
     {/* offset sticky = tinggi bottom nav (4rem + safe-area) di mobile, 0 di desktop; z lebih rendah dari nav sehingga tidak saling menimpa */}
     <div className="sticky bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] z-30 border-t border-zinc-900 bg-zinc-950/95 py-3 backdrop-blur-xl md:bottom-0">
       {err&&<p role="alert" className="mb-2 text-xs text-red-400">{err}</p>}

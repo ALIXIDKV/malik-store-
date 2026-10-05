@@ -16,8 +16,9 @@ export function OrderTable({initial}:{initial:Order[]}){
   function status(id:string,status:string){
     void withRow(id,async()=>{
       const s=createClient();
-      const {error}=await s.from("orders").update({status}).eq("id",id);
+      const {data,error}=await s.from("orders").update({status}).eq("id",id).select("id");
       if(error)throw error;
+      if(!data?.length)throw new Error("Tidak ada baris yang diperbarui (ditolak RLS atau order sudah tidak ada).");
       setRows(r=>r.map(x=>x.id===id?{...x,status:status as Order["status"]}:x));
     },"Status order gagal diperbarui.");
   }
@@ -25,8 +26,9 @@ export function OrderTable({initial}:{initial:Order[]}){
     if(!confirm("Hapus order ini?"))return;
     void withRow(id,async()=>{
       const s=createClient();
-      const {error}=await s.from("orders").delete().eq("id",id);
+      const {data,error}=await s.from("orders").delete().eq("id",id).select("id");
       if(error)throw error;
+      if(!data?.length)throw new Error("Tidak ada baris yang dihapus (ditolak RLS atau order sudah tidak ada).");
       setRows(r=>r.filter(x=>x.id!==id));
     },"Order gagal dihapus.");
   }

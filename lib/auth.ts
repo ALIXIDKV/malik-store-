@@ -7,7 +7,8 @@ export const getAuthContext = cache(async function getAuthContext() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { supabase, user:null, profile:null };
-  const { data } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
+  const { data, error } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
+  if (error) console.error("[auth] gagal membaca profil", { code: error.code, message: error.message });
   return { supabase, user, profile:(data as Profile | null) };
 });
 export async function requireUser() { const ctx=await getAuthContext(); if(!ctx.user) redirect("/account"); if(ctx.profile?.role==="admin") redirect("/admin"); return ctx; }
