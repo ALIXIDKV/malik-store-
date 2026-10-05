@@ -1,0 +1,2 @@
+import { Suspense } from "react"; import { AuthForm } from "@/components/auth/auth-form"; import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
+export default function Account(){return <main className="page"><div className="shell max-w-md"><Card><CardHeader><CardTitle className="text-2xl">MALIK<span className="text-emerald-600">STORE</span></CardTitle><p className="text-sm text-neutral-500">Masuk atau buat akun untuk melanjutkan.</p></CardHeader><CardContent><Suspense><AuthForm/></Suspense></CardContent></Card></div></main>}

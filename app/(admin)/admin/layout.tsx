@@ -1,0 +1,1 @@
+import { requireAdmin } from "@/lib/auth"; import { AdminNav } from "@/components/admin/nav"; export default async function Layout({children}:{children:React.ReactNode}){await requireAdmin();return <div className="min-h-screen md:flex"><AdminNav/><div className="min-w-0 flex-1">{children}</div></div>}

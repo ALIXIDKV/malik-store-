@@ -1,0 +1,2 @@
+import { requireUser } from "@/lib/auth"; import { UserChat } from "@/components/dashboard/chat"; import type { Message } from "@/types/database";
+export default async function Chat(){const {supabase,user}=await requireUser();const {data}=await supabase.from("messages").select("*").eq("user_id",user.id).order("created_at").limit(300);return <main><div className="shell max-w-2xl"><h1 className="pt-7 text-xl font-bold">Chat Admin</h1><UserChat userId={user.id} initial={(data||[]) as Message[]}/></div></main>}

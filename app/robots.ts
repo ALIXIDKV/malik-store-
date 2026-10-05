@@ -1,0 +1,1 @@
+import type { MetadataRoute } from "next"; export default function robots():MetadataRoute.Robots{const s=process.env.NEXT_PUBLIC_SITE_URL||"https://malik-store.my.id";return {rules:{userAgent:"*",allow:"/",disallow:["/admin/","/dashboard/","/api/"]},sitemap:`${s}/sitemap.xml`,host:s}}

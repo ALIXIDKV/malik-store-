@@ -1,0 +1,1 @@
+"use client"; import { createClient } from "@/lib/supabase/client"; import { Button } from "@/components/ui/button"; export function LogoutButton(){return <Button variant="outline" onClick={async()=>{await createClient().auth.signOut();location.href="/"}}>Keluar</Button>}
