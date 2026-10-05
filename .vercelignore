@@ -1,19 +1,58 @@
-# Local secrets and development artifacts
+# ============================================
+# Malik Store V2 - Vercel Ignore
+# ============================================
+
+# Local environment / secrets
 .env
 .env.local
 .env.*.local
-*.log
-.DS_Store
 
-# Reference-only sources; never needed by the Next.js runtime
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Legacy Malik Store source
 legacy/
-/supabase/
+
+# Supabase SQL / migration files
+# NOTE:
+# This ignores ONLY the root /supabase directory.
+# Do NOT ignore /lib/supabase because Next.js needs it.
+supabase/
+
+# Internal migration / setup documentation
 MIGRATION_NOTES.md
 ATTACHMENT_SETUP.md
 
-# Keep application/runtime source explicitly deployable
-!app/**
-!components/**
-!lib/**
-!lib/supabase/**
-!types/**
+# Local development artifacts
+*.tmp
+*.temp
+.cache/
+coverage/
+
+# Testing artifacts
+playwright-report/
+test-results/
+
+# ============================================
+# IMPORTANT
+# ============================================
+# DO NOT add:
+#
+# lib/
+# lib/supabase/
+# lib/supabase/client.ts
+# lib/supabase/server.ts
+# lib/supabase/admin.ts
+#
+# These are required by the Next.js production build.
+# ============================================
