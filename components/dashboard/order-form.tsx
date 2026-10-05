@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import type { CatalogGroup,CatalogVariant } from "@/types/database";
 import { rupiah } from "@/lib/utils";
+import { useNotifySound } from "@/components/chat/use-notify-sound";
 const selectCls="h-11 w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3.5 text-base text-zinc-100 outline-none focus:border-emerald-500/70 md:text-sm";
 type Props={groups:CatalogGroup[];variants:CatalogVariant[];userId:string;initialKey?:string;initialVariant?:string};
 export function OrderForm({groups,variants,userId,initialKey,initialVariant}:Props){
@@ -15,6 +16,7 @@ export function OrderForm({groups,variants,userId,initialKey,initialVariant}:Pro
   const startVariant=variants.find(v=>v.product_key===startKey&&v.variant_id===initialVariant)?.variant_id||"";
   const [key,setKey]=useState(startKey),[vid,setVid]=useState(startVariant),[qty,setQty]=useState(1),[note,setNote]=useState(""),[msg,setMsg]=useState(""),[busy,setBusy]=useState(false),[done,setDone]=useState(false);
   const lock=useRef(false);
+  const playOrder=useNotifySound("/assets/notif/notif.mp3");
   const choices=variants.filter(v=>v.product_key===key);
   const picked=choices.find(v=>v.variant_id===vid)||choices[0];
   async function submit(){
@@ -31,7 +33,7 @@ export function OrderForm({groups,variants,userId,initialKey,initialVariant}:Pro
       if(m.error)console.error("[order] pesan order gagal tersimpan",m.error.message);
       const r=await s.rpc("malik_send_payment_message",{p_order_id:data.id});
       if(r.error)console.error("[order] pesan instruksi pembayaran gagal",r.error.message);
-      setMsg("Order berhasil dibuat.");setNote("");setDone(true);
+      setMsg("Order berhasil dibuat.");setNote("");setDone(true);playOrder();
     }catch(e){console.error("[order] gagal",e);setMsg("Order gagal dibuat. Periksa koneksi lalu coba lagi.")}
     finally{lock.current=false;setBusy(false)}
   }

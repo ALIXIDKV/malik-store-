@@ -6,14 +6,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Send,Paperclip } from "lucide-react";
 import { ChatAttachment } from "@/components/chat/attachment";
+import { isPaymentMessage,PaymentCard } from "@/components/chat/payment-card";
+import { useNotifySound } from "@/components/chat/use-notify-sound";
 export function UserChat({userId,initial}:{userId:string;initial:Message[]}){
   const [messages,setMessages]=useState(initial),[text,setText]=useState(""),[busy,setBusy]=useState(false),[err,setErr]=useState("");
   const sb=useRef(createClient()).current;
   const lock=useRef(false);
+  const playChat=useNotifySound("/assets/notif/chet.mp3");
   // Selalu tampilkan pesan terbaru (saat dibuka dan tiap ada pesan baru): gulir ke dasar halaman,
   // tempat composer berada tepat di atas bottom nav.
   useEffect(()=>{window.scrollTo({top:document.documentElement.scrollHeight})},[messages.length]);
-  useEffect(()=>{const ch=sb.channel(`chat-${userId}`).on("postgres_changes",{event:"*",schema:"public",table:"messages",filter:`user_id=eq.${userId}`},p=>{if(p.eventType==="INSERT")setMessages(m=>m.some(x=>x.id===(p.new as Message).id)?m:[...m,p.new as Message]);if(p.eventType==="DELETE")setMessages(m=>m.filter(x=>x.id!==p.old.id))}).subscribe();return()=>{void sb.removeChannel(ch)}},[sb,userId]);
+  useEffect(()=>{const ch=sb.channel(`chat-${userId}`).on("postgres_changes",{event:"*",schema:"public",table:"messages",filter:`user_id=eq.${userId}`},p=>{if(p.eventType==="INSERT"){if((p.new as Message).sender==="admin")playChat();setMessages(m=>m.some(x=>x.id===(p.new as Message).id)?m:[...m,p.new as Message])}if(p.eventType==="DELETE")setMessages(m=>m.filter(x=>x.id!==p.old.id))}).subscribe();return()=>{void sb.removeChannel(ch)}},[sb,userId,playChat]);
   async function insertMessage(att?:{url:string,type:string}){
     const {data,error}=await sb.from("messages").insert({user_id:userId,sender:"user",message:text.trim(),attachment_url:att?.url||null,attachment_type:att?.type||null}).select().single();
     if(error)throw error;
@@ -41,7 +44,7 @@ export function UserChat({userId,initial}:{userId:string;initial:Message[]}){
     },"Lampiran gagal diunggah. Coba lagi.");
   }
   return <div className="flex min-h-[calc(100dvh_-_10rem_-_var(--nav-h)_-_env(safe-area-inset-top,0px))] flex-col">
-    <div className="flex-1 space-y-3 py-5">{messages.map(m=><div key={m.id} className={`max-w-[82%] rounded-2xl p-3 text-sm ${m.sender==="user"?"ml-auto bg-emerald-500 text-zinc-950":"border border-zinc-800 bg-zinc-900 text-zinc-200"}`}>{m.message&&<p className="whitespace-pre-wrap break-words">{m.message}</p>}<p className={`mt-1.5 text-[10px] ${m.sender==="user"?"text-emerald-950/60":"text-zinc-600"}`}>{new Date(m.created_at).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit",timeZone:"Asia/Jakarta"})}</p><ChatAttachment url={m.attachment_url} type={m.attachment_type}/></div>)}</div>
+    <div className="flex-1 space-y-3 py-5">{messages.map(m=><div key={m.id} className={`max-w-[82%] rounded-2xl p-3 text-sm ${m.sender==="user"?"ml-auto bg-emerald-500 text-zinc-950":"border border-zinc-800 bg-zinc-900 text-zinc-200"}`}>{m.message&&(isPaymentMessage(m.message,m.sender)?<PaymentCard text={m.message}/>:<p className="whitespace-pre-wrap break-words">{m.message}</p>)}<p className={`mt-1.5 text-[10px] ${m.sender==="user"?"text-emerald-950/60":"text-zinc-600"}`}>{new Date(m.created_at).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit",timeZone:"Asia/Jakarta"})}</p><ChatAttachment url={m.attachment_url} type={m.attachment_type}/></div>)}</div>
     {/* offset sticky = --nav-h (tinggi bottom nav + safe-area; 0 di desktop & saat keyboard terbuka); z lebih rendah dari nav */}
     <div className="sticky bottom-[var(--nav-h)] z-30 border-t border-zinc-900 bg-zinc-950/95 py-3 backdrop-blur-xl">
       {err&&<p role="alert" className="mb-2 text-xs text-red-400">{err}</p>}
