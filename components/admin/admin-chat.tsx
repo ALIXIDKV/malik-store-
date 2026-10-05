@@ -1,7 +1,7 @@
 "use client";
 import { useEffect,useMemo,useRef,useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import type { Message,Profile } from "@/types/database";
+import type { Message,ProfileLite as Profile } from "@/types/database";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ChatAttachment } from "@/components/chat/attachment";
@@ -11,8 +11,8 @@ export function AdminChat({profiles,initial}:{profiles:Profile[];initial:Message
   const lock=useRef(false);
   const listRef=useRef<HTMLDivElement>(null);
   useEffect(()=>{const ch=sb.channel("admin-chat-v2").on("postgres_changes",{event:"*",schema:"public",table:"messages"},p=>{if(p.eventType==="INSERT")setMessages(m=>m.some(x=>x.id===(p.new as Message).id)?m:[...m,p.new as Message]);if(p.eventType==="UPDATE")setMessages(m=>m.map(x=>x.id===(p.new as Message).id?p.new as Message:x));if(p.eventType==="DELETE")setMessages(m=>m.filter(x=>x.id!==p.old.id))}).subscribe();return()=>{void sb.removeChannel(ch)}},[sb]);
-  const threads=useMemo(()=>profiles.filter(p=>p.role!=="admin"&&messages.some(m=>m.user_id===p.id)),[profiles,messages]);
-  const list=messages.filter(m=>m.user_id===uid&&!m.hidden_for_admin);
+  const threads=useMemo(()=>{const ids=new Set(messages.map(m=>m.user_id));return profiles.filter(p=>p.role!=="admin"&&ids.has(p.id))},[profiles,messages]);
+  const list=useMemo(()=>messages.filter(m=>m.user_id===uid&&!m.hidden_for_admin),[messages,uid]);
   // Daftar pesan scroll di dalam panelnya sendiri: selalu ke pesan terbaru saat ganti thread / ada pesan baru.
   useEffect(()=>{const el=listRef.current;if(el)el.scrollTop=el.scrollHeight},[uid,list.length]);
   async function run(fn:()=>Promise<void>,fail:string){
@@ -24,8 +24,10 @@ export function AdminChat({profiles,initial}:{profiles:Profile[];initial:Message
   function send(){
     if(!uid||!text.trim())return;
     void run(async()=>{
-      const {error}=await sb.from("messages").insert({user_id:uid,sender:"admin",message:text.trim()});
+      const {data,error}=await sb.from("messages").insert({user_id:uid,sender:"admin",message:text.trim()}).select().single();
       if(error)throw error;
+      // tampil langsung tanpa menunggu realtime (dedupe by id sudah ada di handler realtime)
+      if(data)setMessages(m=>m.some(x=>x.id===(data as Message).id)?m:[...m,data as Message]);
       setText("");
     },"Pesan gagal terkirim. Coba lagi.");
   }

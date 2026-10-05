@@ -24,7 +24,7 @@ export function OrderForm({groups,variants,userId,initialKey,initialVariant}:Pro
       const s=createClient();setMsg("Menyimpan order…");
       const product=picked.order_name+(qty>1?` x${qty}`:"");
       const {data,error}=await s.from("orders").insert({user_id:userId,product,price:picked.price*qty,note:note.slice(0,500)}).select().single();
-      if(error){setMsg(error.message);return}
+      if(error){console.error("[order] insert gagal",error.code);setMsg("Order gagal dibuat. Coba lagi.");return}
       const code="ORD-"+String(data.id).replaceAll("-","").slice(0,8).toUpperCase();
       const text=`🛒 Pesanan Baru\n\nProduk:\n${product}\n\nHarga:\n${rupiah(data.price)}\n\nStatus:\nMenunggu proses\n\nOrder ID: ${code}${note?`\nCatatan: ${note.slice(0,200)}`:""}`;
       const m=await s.from("messages").insert({user_id:userId,sender:"user",message:text});

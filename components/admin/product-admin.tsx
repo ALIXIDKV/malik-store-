@@ -14,7 +14,8 @@ export function ProductAdmin({groups,variants}:{groups:CatalogGroup[];variants:C
     try{
       const s=createClient();
       const {error}=await s.from("product_catalog").update({label:v.label,price:v.price,active:v.active}).eq("product_key",v.product_key).eq("variant_id",v.variant_id).select();
-      setMsg(error?error.message:"Produk diperbarui.");
+      if(error)console.error("[admin/products] update gagal",error.code);
+      setMsg(error?"Produk gagal disimpan. Coba lagi.":"Produk diperbarui.");
     }catch(e){console.error("[admin/products] simpan gagal",e);setMsg("Produk gagal disimpan. Coba lagi.")}
     finally{setPending(p=>{const n={...p};delete n[id];return n})}
   }

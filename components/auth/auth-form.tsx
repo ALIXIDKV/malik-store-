@@ -1,5 +1,5 @@
 "use client";
-import { useRef,useState } from "react";
+import { useEffect,useRef,useState } from "react";
 import { useRouter,useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -12,13 +12,14 @@ async function readJson(res:Response):Promise<{ok?:boolean;message?:string}>{try
 export function AuthForm(){
   const [mode,setMode]=useState<"login"|"register">("login"),[busy,setBusy]=useState(false),[msg,setMsg]=useState("");
   const router=useRouter(),search=useSearchParams();
-  const lock=useRef(false); // anti double-submit: ref berubah seketika, state baru terbaca setelah re-render
+  const lock=useRef(false),timer=useRef(0);
+  useEffect(()=>()=>window.clearTimeout(timer.current),[]); // anti double-submit: ref berubah seketika, state baru terbaca setelah re-render
   function switchMode(m:"login"|"register"){if(lock.current)return;setMode(m);setMsg("")}
   async function login(email:string,password:string){
     const s=createClient();
-    const {error}=await s.auth.signInWithPassword({email:email.trim().toLowerCase(),password});
-    if(error){setMsg(error.message);return false}
-    const {data:{user}}=await s.auth.getUser();
+    const {data:signed,error}=await s.auth.signInWithPassword({email:email.trim().toLowerCase(),password});
+    if(error){setMsg(/invalid login|invalid credentials/i.test(error.message)?"Email atau password salah.":"Gagal masuk. Coba lagi.");return false}
+    const user=signed.user; // sudah ada dari respons login; tidak perlu getUser() kedua
     let target=safeNext(search.get("next"));
     if(user){const {data:p}=await s.from("profiles").select("role").eq("id",user.id).maybeSingle();if(p?.role==="admin")target="/admin"}
     router.replace(target);router.refresh();
@@ -42,7 +43,7 @@ export function AuthForm(){
     finally{
       if(!done){lock.current=false;setBusy(false)}
       // jika berhasil, tombol tetap "Memproses…" sampai halaman berpindah; pengaman bila navigasi tidak terjadi
-      else window.setTimeout(()=>{lock.current=false;setBusy(false)},10000);
+      else timer.current=window.setTimeout(()=>{lock.current=false;setBusy(false)},10000);
     }
   }
   async function sendCode(){

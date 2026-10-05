@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import type { Profile } from "@/types/database";
+import type { ProfileLite as Profile } from "@/types/database";
 import { Button } from "@/components/ui/button";
 export function UserTable({initial}:{initial:Profile[]}){
   const [rows,setRows]=useState(initial),[msg,setMsg]=useState(""),[pending,setPending]=useState<Record<string,boolean>>({});

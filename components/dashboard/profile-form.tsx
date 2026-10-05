@@ -24,7 +24,8 @@ export function ProfileForm({id,username,avatar}:{id:string;username:string;avat
     try{
       const s=createClient();
       const {error}=await s.from("profiles").update({username:name.trim().slice(0,40),avatar_url:av||null}).eq("id",id);
-      setMsg(error?error.message:"Profil diperbarui.");
+      if(error)console.error("[profile] update gagal",error.code);
+      setMsg(error?"Profil gagal disimpan. Coba lagi.":"Profil diperbarui.");
       if(!error)router.refresh();
     }catch(e){console.error("[profile] gagal",e);setMsg("Profil gagal disimpan. Coba lagi.")}
     finally{lock.current=false;setBusy(false)}

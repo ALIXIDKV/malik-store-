@@ -14,7 +14,7 @@ export function ReviewForm({orderId}:{orderId:string}){
     try{
       const s=createClient();
       const {error}=await s.from("reviews").insert({order_id:orderId,rating,comment:comment.trim()||null}).select("id");
-      if(error){setMsg(error.message);return}
+      if(error){console.error("[review] insert gagal",error.code);setMsg("Ulasan gagal disimpan. Pastikan order sudah selesai dan belum diulas.");return}
       setDone(true);setOpen(false);router.refresh();
     }catch(e){console.error("[review] gagal",e);setMsg("Ulasan gagal disimpan. Coba lagi.")}
     finally{lock.current=false;setBusy(false)}
