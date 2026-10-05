@@ -1,6 +1,7 @@
 "use client";
 import Link, { useLinkStatus } from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 import { Home,LayoutGrid,ClipboardList,MessageCircle,UserRound,LayoutDashboard,type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -26,12 +27,25 @@ function itemsFor(role:NavRole):Item[]{
 // Penanda "sedang membuka" agar tap terasa langsung direspons walau server masih merender.
 function Pending(){const {pending}=useLinkStatus();return <span aria-hidden className={cn("absolute top-1.5 size-1.5 rounded-full bg-emerald-400 transition-opacity",pending?"animate-pulse opacity-100":"opacity-0")}/>}
 
+// Input yang memunculkan keyboard virtual (checkbox, file, dsb. tidak termasuk).
+const NON_TEXT=new Set(["checkbox","radio","button","submit","reset","file","range","color","image"]);
+function opensKeyboard(el:EventTarget|null){return el instanceof HTMLTextAreaElement||(el instanceof HTMLInputElement&&!NON_TEXT.has(el.type))}
+
 export function MobileBottomNav({role}:{role:NavRole}){
   const pathname=usePathname();
+  // Saat keyboard terbuka, bottom nav disembunyikan (html[data-kbd]) supaya tidak memakan layar / menimpa form.
+  // Pelepasan ditunda 200ms agar perpindahan fokus antar input (atau tap tombol kirim) tidak membuat layout berkedip.
+  useEffect(()=>{
+    const root=document.documentElement;let t=0;
+    const onIn=(e:FocusEvent)=>{if(!opensKeyboard(e.target))return;window.clearTimeout(t);root.dataset.kbd="1"};
+    const onOut=()=>{window.clearTimeout(t);t=window.setTimeout(()=>{delete root.dataset.kbd},200)};
+    document.addEventListener("focusin",onIn);document.addEventListener("focusout",onOut);
+    return()=>{document.removeEventListener("focusin",onIn);document.removeEventListener("focusout",onOut);window.clearTimeout(t);delete root.dataset.kbd};
+  },[]);
   // Admin & halaman login punya navigasi sendiri.
   if(pathname.startsWith("/admin")||pathname.startsWith("/account"))return null;
   const items=itemsFor(role);
-  return <nav aria-label="Navigasi utama" className="fixed inset-x-0 bottom-0 z-40 border-t border-zinc-800 bg-zinc-950/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl md:hidden">
+  return <nav aria-label="Navigasi utama" className="bottom-nav fixed inset-x-0 bottom-0 z-40 border-t border-zinc-800 bg-zinc-950/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl md:hidden">
     <ul className="mx-auto grid max-w-lg" style={{gridTemplateColumns:`repeat(${items.length},minmax(0,1fr))`}}>
       {items.map(({href,label,icon:Icon,active})=>{const on=active(pathname);return <li key={label}>
         <Link href={href} aria-current={on?"page":undefined} className={cn("relative flex h-16 touch-manipulation select-none flex-col items-center justify-center gap-1 text-[11px] font-medium transition active:scale-95 active:bg-zinc-900 focus-visible:bg-zinc-900",on?"text-emerald-400":"text-zinc-400")}>

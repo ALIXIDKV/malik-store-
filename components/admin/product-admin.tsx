@@ -10,14 +10,11 @@ export function ProductAdmin({groups,variants}:{groups:CatalogGroup[];variants:C
   async function save(v:CatalogVariant){
     const id=`${v.product_key}:${v.variant_id}`;
     if(pending[id])return;
-    const label=v.label.trim();
-    if(label.length<1||label.length>40){setMsg("Nama paket harus 1-40 karakter.");return}
-    if(!Number.isInteger(v.price)||v.price<1||v.price>100_000_000){setMsg("Harga harus bilangan bulat antara Rp1 dan Rp100.000.000.");return}
     setPending(p=>({...p,[id]:true}));setMsg("");
     try{
       const s=createClient();
-      const {data,error}=await s.from("product_catalog").update({label,price:v.price,active:v.active}).eq("product_key",v.product_key).eq("variant_id",v.variant_id).select();
-      setMsg(error?error.message:!data?.length?"Perubahan tidak tersimpan (ditolak RLS atau paket tidak ditemukan).":"Produk diperbarui.");
+      const {error}=await s.from("product_catalog").update({label:v.label,price:v.price,active:v.active}).eq("product_key",v.product_key).eq("variant_id",v.variant_id).select();
+      setMsg(error?error.message:"Produk diperbarui.");
     }catch(e){console.error("[admin/products] simpan gagal",e);setMsg("Produk gagal disimpan. Coba lagi.")}
     finally{setPending(p=>{const n={...p};delete n[id];return n})}
   }

@@ -16,9 +16,8 @@ export function OrderTable({initial}:{initial:Order[]}){
   function status(id:string,status:string){
     void withRow(id,async()=>{
       const s=createClient();
-      const {data,error}=await s.from("orders").update({status}).eq("id",id).select("id");
+      const {error}=await s.from("orders").update({status}).eq("id",id);
       if(error)throw error;
-      if(!data?.length)throw new Error("Tidak ada baris yang diperbarui (ditolak RLS atau order sudah tidak ada).");
       setRows(r=>r.map(x=>x.id===id?{...x,status:status as Order["status"]}:x));
     },"Status order gagal diperbarui.");
   }
@@ -26,11 +25,10 @@ export function OrderTable({initial}:{initial:Order[]}){
     if(!confirm("Hapus order ini?"))return;
     void withRow(id,async()=>{
       const s=createClient();
-      const {data,error}=await s.from("orders").delete().eq("id",id).select("id");
+      const {error}=await s.from("orders").delete().eq("id",id);
       if(error)throw error;
-      if(!data?.length)throw new Error("Tidak ada baris yang dihapus (ditolak RLS atau order sudah tidak ada).");
       setRows(r=>r.filter(x=>x.id!==id));
     },"Order gagal dihapus.");
   }
-  return <>{msg&&<p role="alert" className="mb-3 text-sm text-red-400">{msg}</p>}<div className="overflow-x-auto rounded-2xl border border-zinc-800 bg-zinc-950"><table className="w-full text-left text-sm"><thead><tr className="border-b border-zinc-800 bg-zinc-900/70 text-zinc-400"><th className="p-3">Produk</th><th>Harga</th><th>Status</th><th>Aksi</th></tr></thead><tbody>{rows.map(x=><tr key={x.id} className="border-b border-zinc-900"><td className="p-3">{x.product}</td><td>{rupiah(x.price)}</td><td><select aria-label={`Status order ${x.product}`} disabled={!!pending[x.id]} className="h-11 rounded-lg border border-zinc-700 bg-zinc-900 px-2 text-base text-zinc-200 md:h-10 md:text-sm" value={x.status} onChange={e=>status(x.id,e.target.value)}>{["Pending","Diproses","Selesai"].map(s=><option key={s}>{s}</option>)}</select></td><td><Button size="sm" variant="destructive" disabled={!!pending[x.id]} onClick={()=>del(x.id)}>Hapus</Button></td></tr>)}</tbody></table></div></>
+  return <>{msg&&<p role="alert" className="mb-3 text-sm text-red-400">{msg}</p>}<div className="overflow-x-auto rounded-2xl border border-zinc-800 bg-zinc-950"><table className="w-full min-w-[34rem] text-left text-sm [&_td]:p-3 [&_th]:p-3"><thead><tr className="border-b border-zinc-800 bg-zinc-900/70 text-zinc-400"><th className="p-3">Produk</th><th>Harga</th><th>Status</th><th>Aksi</th></tr></thead><tbody>{rows.map(x=><tr key={x.id} className="border-b border-zinc-900"><td className="p-3">{x.product}</td><td>{rupiah(x.price)}</td><td><select aria-label={`Status order ${x.product}`} disabled={!!pending[x.id]} className="h-11 rounded-lg border border-zinc-700 bg-zinc-900 px-2 text-base text-zinc-200 md:h-10 md:text-sm" value={x.status} onChange={e=>status(x.id,e.target.value)}>{["Pending","Diproses","Selesai"].map(s=><option key={s}>{s}</option>)}</select></td><td><Button size="sm" variant="destructive" disabled={!!pending[x.id]} onClick={()=>del(x.id)}>Hapus</Button></td></tr>)}</tbody></table></div></>
 }

@@ -16,13 +16,19 @@ html { background: var(--background); scroll-behavior: smooth; }
 body {
   margin: 0;
   min-height: 100vh;
+  min-height: 100dvh;
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 ::selection { background: rgba(16,185,129,.3); }
-.shell { width: min(1120px, calc(100% - 32px)); margin-inline: auto; }
+.shell {
+  /* gutter 16px, otomatis lebih lebar di landscape berponi (safe-area kiri/kanan) */
+  --gutter: max(16px, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
+  width: min(1120px, calc(100% - 2 * var(--gutter)));
+  margin-inline: auto;
+}
 .page { padding: 36px 0 48px; }
 .muted { color: var(--muted); }
 .label { display:block; margin-bottom:7px; color:#d4d4d8; font-size:14px; font-weight:600; }
@@ -30,14 +36,18 @@ body {
 .surface { border:1px solid var(--border); background:var(--surface); }
 .text-balance { text-wrap: balance; }
 
-/* Ruang untuk bottom navigation mobile (tinggi 4rem + safe-area); hilang di >= md */
-.pb-nav { padding-bottom: calc(4rem + env(safe-area-inset-bottom, 0px)); }
-@media (min-width: 768px) { .pb-nav { padding-bottom: 0; } }
+/* Tinggi bottom navigation mobile (4rem + safe-area). 0 di >= md dan saat keyboard terbuka
+   (komponen MobileBottomNav menyetel html[data-kbd] ketika input teks fokus). */
+:root { --nav-h: calc(4rem + env(safe-area-inset-bottom, 0px)); }
+@media (min-width: 768px) { :root { --nav-h: 0px; } }
+html[data-kbd] { --nav-h: 0px; }
+html[data-kbd] .bottom-nav { display: none; }
+.pb-nav { padding-bottom: var(--nav-h); }
 .no-scrollbar { scrollbar-width: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 
 @layer base {
-  html { -webkit-text-size-adjust: 100%; scroll-padding-top: 5rem; }
+  html { -webkit-text-size-adjust: 100%; scroll-padding-top: calc(5rem + env(safe-area-inset-top, 0px)); }
   body { overflow-x: clip; }
   a, button, label, select, summary, [role="button"], input[type="checkbox"], input[type="file"] { touch-action: manipulation; }
   a, button { -webkit-tap-highlight-color: rgba(16,185,129,.18); }

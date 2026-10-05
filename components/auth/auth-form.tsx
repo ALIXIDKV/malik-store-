@@ -1,32 +1,35 @@
 "use client";
-import { useState } from "react";
+import { useRef,useState } from "react";
 import { useRouter,useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cn,safeInternalPath } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 const NET_ERR="Koneksi bermasalah. Coba lagi.";
+// hanya path internal; cegah open-redirect (//host atau /\host)
+function safeNext(v:string|null){return v&&v.startsWith("/")&&!v.startsWith("//")&&!v.startsWith("/\\")&&!v.startsWith("/account")?v:"/dashboard"}
 async function readJson(res:Response):Promise<{ok?:boolean;message?:string}>{try{return await res.json()}catch{return {ok:false,message:NET_ERR}}}
 export function AuthForm(){
   const [mode,setMode]=useState<"login"|"register">("login"),[busy,setBusy]=useState(false),[msg,setMsg]=useState("");
   const router=useRouter(),search=useSearchParams();
-  function switchMode(m:"login"|"register"){if(busy)return;setMode(m);setMsg("")}
+  const lock=useRef(false); // anti double-submit: ref berubah seketika, state baru terbaca setelah re-render
+  function switchMode(m:"login"|"register"){if(lock.current)return;setMode(m);setMsg("")}
   async function login(email:string,password:string){
     const s=createClient();
     const {error}=await s.auth.signInWithPassword({email:email.trim().toLowerCase(),password});
-    if(error){setMsg(/invalid login credentials/i.test(error.message)?"Email atau password salah.":/email not confirmed/i.test(error.message)?"Email belum terverifikasi.":"Gagal masuk. Coba lagi.");return false}
+    if(error){setMsg(error.message);return false}
     const {data:{user}}=await s.auth.getUser();
-    let target=safeInternalPath(search.get("next"));
+    let target=safeNext(search.get("next"));
     if(user){const {data:p}=await s.from("profiles").select("role").eq("id",user.id).maybeSingle();if(p?.role==="admin")target="/admin"}
     router.replace(target);router.refresh();
     return true;
   }
   async function submit(e:React.FormEvent<HTMLFormElement>){
     e.preventDefault();
-    if(busy)return;
+    if(lock.current)return;
     const fd=new FormData(e.currentTarget);
     const email=String(fd.get("email")||""),password=String(fd.get("password")||"");
-    setBusy(true);setMsg("");
+    lock.current=true;setBusy(true);setMsg("");
     let done=false;
     try{
       if(mode==="register"){
@@ -36,19 +39,23 @@ export function AuthForm(){
       }
       done=await login(email,password);
     }catch(err){console.error("[auth] gagal",err);setMsg(NET_ERR)}
-    finally{if(!done)setBusy(false)} // jika berhasil, tombol tetap "Memproses…" sampai halaman berpindah
+    finally{
+      if(!done){lock.current=false;setBusy(false)}
+      // jika berhasil, tombol tetap "Memproses…" sampai halaman berpindah; pengaman bila navigasi tidak terjadi
+      else window.setTimeout(()=>{lock.current=false;setBusy(false)},10000);
+    }
   }
   async function sendCode(){
-    if(busy)return;
+    if(lock.current)return;
     const email=document.querySelector<HTMLInputElement>("#auth-email")?.value||"";
     if(!email){setMsg("Isi email terlebih dahulu.");return}
-    setBusy(true);setMsg("");
+    lock.current=true;setBusy(true);setMsg("");
     try{
       const res=await fetch("/api/send-code",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({email})});
       const j=await readJson(res);
       setMsg(j.message||"");
     }catch(err){console.error("[auth] kirim kode gagal",err);setMsg(NET_ERR)}
-    finally{setBusy(false)}
+    finally{lock.current=false;setBusy(false)}
   }
   const tab="min-h-11 flex-1 touch-manipulation rounded-md p-2 text-sm font-medium transition active:bg-zinc-700";
   return <div>
