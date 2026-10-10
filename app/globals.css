@@ -58,3 +58,15 @@ html[data-kbd] .bottom-nav { display: none; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior:auto !important; transition-duration:.01ms !important; animation-duration:.01ms !important; animation-iteration-count:1 !important; }
 }
+
+/* Tahap 2A — animasi centang sukses order (hanya dipakai komponen OrderSuccess).
+   fill-mode "both"/"forwards": dengan prefers-reduced-motion (durasi ~0) hasil akhirnya tetap tampil utuh. */
+@keyframes ms-pop { 0% { transform: scale(.6); opacity: 0; } 60% { transform: scale(1.06); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes ms-draw { to { stroke-dashoffset: 0; } }
+@keyframes ms-glow { 0% { box-shadow: 0 0 0 0 rgba(16,185,129,.40); } 100% { box-shadow: 0 0 0 26px rgba(16,185,129,0); } }
+@keyframes ms-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.ms-pop { animation: ms-pop .55s cubic-bezier(.2,.8,.2,1) both; }
+.ms-glow { animation: ms-glow 1.3s ease-out .45s 1 both; }
+.ms-ring { stroke-dasharray: 158; stroke-dashoffset: 158; animation: ms-draw .65s ease-out .1s forwards; }
+.ms-tick { stroke-dasharray: 36; stroke-dashoffset: 36; animation: ms-draw .4s ease-out .6s forwards; }
+.ms-rise { animation: ms-rise .45s ease-out both; }
