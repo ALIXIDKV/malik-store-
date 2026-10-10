@@ -20,7 +20,7 @@ function Switch({ checked, onChange, label, disabled }: { checked: boolean; onCh
     <button type="button" role="switch" aria-checked={checked} aria-label={label} disabled={disabled} onClick={() => onChange(!checked)}
       className="grid h-11 min-w-11 shrink-0 place-items-center disabled:opacity-50">
       <span className={cn("relative h-6 w-10 rounded-full transition-colors", checked ? "bg-emerald-500" : "bg-zinc-700")}>
-        <span className={cn("absolute top-0.5 size-5 rounded-full bg-white transition-all", checked ? "left-[1.125rem]" : "left-0.5")} />
+        <span className={cn("absolute top-0.5 size-5 rounded-full bg-[#fff] transition-all", checked ? "left-[1.125rem]" : "left-0.5")} />
       </span>
     </button>
   );

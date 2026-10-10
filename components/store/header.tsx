@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { MessageCircle, UserRound } from "lucide-react";
 import { getAuthContext } from "@/lib/auth";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 const iconLink="grid size-11 touch-manipulation place-items-center rounded-xl text-zinc-400 transition hover:bg-zinc-900 hover:text-white active:bg-zinc-800";
 const textLink="inline-flex h-11 touch-manipulation items-center rounded-xl px-3 text-sm font-medium text-zinc-400 transition hover:bg-zinc-900 hover:text-white active:bg-zinc-800";
 export async function Header(){
@@ -20,6 +21,7 @@ export async function Header(){
           {role==="admin"?<Link className={textLink} href="/admin">Admin</Link>:profile&&<><Link className={textLink} href="/dashboard">Pesanan</Link><Link className={textLink} href="/dashboard/history">Riwayat</Link></>}
           <Link className={textLink} href="/tentang">Tentang</Link>
         </div>
+        <ThemeToggle/>
         <Link className={iconLink} href={chatHref} aria-label="Chat"><MessageCircle className="size-5" aria-hidden/></Link>
         <Link className={`${iconLink} sm:w-auto sm:gap-2 sm:px-3 sm:text-sm sm:font-medium sm:text-zinc-300`} href={accountHref} aria-label={profile?`Akun ${accountLabel}`:"Masuk atau daftar"}><UserRound className="size-5" aria-hidden/><span className="hidden max-w-32 truncate sm:inline">{profile?accountLabel:"Masuk"}</span></Link>
       </nav>

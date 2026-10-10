@@ -32,7 +32,7 @@ export function PaymentCard({ text }: { text: string }) {
       <p className="text-zinc-400">Terima kasih sudah order di Malik Store. Silakan lakukan pembayaran:</p>
       <div>
         <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-emerald-400">QRIS</p>
-        <Image src="/assets/payment/qris.jpg" alt="QRIS Malik Store" width={1136} height={1600} sizes="220px" className="h-auto w-full max-w-[220px] rounded-lg bg-white" />
+        <Image src="/assets/payment/qris.jpg" alt="QRIS Malik Store" width={1136} height={1600} sizes="220px" className="h-auto w-full max-w-[220px] rounded-lg bg-[#fff]" />
       </div>
       <div className="grid gap-2"><p className="text-[11px] font-semibold uppercase tracking-wider text-emerald-400">E-Wallet</p><Wallet name="DANA" number={dana} /><Wallet name="GoPay" number={gopay} /></div>
       <p className="text-xs text-zinc-500">Setelah transfer, kirim bukti pembayaran melalui chat ini.</p>

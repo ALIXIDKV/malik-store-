@@ -9,6 +9,79 @@
   --border: #27272a;
   --muted: #a1a1aa;
   --accent: #10b981;
+  --label: #d4d4d8;
+  --card-shadow: rgba(0,0,0,.18);
+}
+
+/* ===== Tahap 2C.1 — Tema terang/gelap =====
+   Seluruh UI memakai utility zinc/emerald/white bawaan Tailwind. Di Light Mode (html[data-theme="light"])
+   skala warna itu DIBALIK lewat CSS variables, jadi semua halaman customer + admin ikut berganti tanpa
+   menulis ulang className. Dark Mode (default) tidak diubah sama sekali. */
+html[data-theme="light"] {
+  color-scheme: light;
+  --background: #f4f5f7;
+  --foreground: #18181b;
+  --surface: #ffffff;
+  --surface-raised: #f0f1f4;
+  --border: #dcdee3;
+  --muted: #52525b;
+  --accent: #047857;
+  --label: #3f3f46;
+  --card-shadow: rgba(15,23,42,.07);
+
+  --color-white: #18181b;
+  --color-zinc-50: #09090b;
+  --color-zinc-100: #18181b;
+  --color-zinc-200: #27272a;
+  --color-zinc-300: #3f3f46;
+  --color-zinc-400: #52525b;
+  --color-zinc-500: #5f5f68;
+  --color-zinc-600: #7d7d87;
+  --color-zinc-700: #d4d4d8;
+  --color-zinc-800: #e4e4e7;
+  --color-zinc-900: #eeeff2;
+  --color-zinc-950: #ffffff;
+
+  --color-emerald-300: #065f46;
+  --color-emerald-400: #047857;
+  --color-emerald-500: #047857;
+  --color-emerald-600: #065f46;
+  --color-emerald-950: #d1fae5;
+
+  --color-red-200: #991b1b;
+  --color-red-300: #b91c1c;
+  --color-red-400: #dc2626;
+
+  --color-amber-300: #92400e;
+  --color-amber-400: #b45309;
+  --color-amber-500: #b45309;
+}
+/* Hover tombol utama tetap terlihat (emerald-400 = emerald-500 di light) + garis pemisah halus + bintang rating */
+html[data-theme="light"] .hover\:bg-emerald-400:hover { background-color: #065f46; }
+html[data-theme="light"] .theme-dark-scope .hover\:bg-emerald-400:hover { background-color: #34d399; }
+html[data-theme="light"] .border-zinc-900 { border-color: var(--border); }
+html[data-theme="light"] .fill-amber-400 { fill: #f59e0b; }
+
+/* Area yang SELALU tampil gelap (hero video): mengembalikan skala warna ke nilai Dark Mode. */
+.theme-dark-scope {
+  color-scheme: dark;
+  --color-white: #ffffff;
+  --color-zinc-50: #fafafa;
+  --color-zinc-100: #f4f4f5;
+  --color-zinc-200: #e4e4e7;
+  --color-zinc-300: #d4d4d8;
+  --color-zinc-400: #a1a1aa;
+  --color-zinc-500: #71717a;
+  --color-zinc-600: #52525b;
+  --color-zinc-700: #3f3f46;
+  --color-zinc-800: #27272a;
+  --color-zinc-900: #18181b;
+  --color-zinc-950: #09090b;
+  --color-emerald-300: #6ee7b7;
+  --color-emerald-400: #34d399;
+  --color-emerald-500: #10b981;
+  --color-emerald-600: #059669;
+  --color-emerald-950: #022c22;
 }
 
 * { box-sizing: border-box; }
@@ -31,7 +104,7 @@ body {
 }
 .page { padding: 36px 0 48px; }
 .muted { color: var(--muted); }
-.label { display:block; margin-bottom:7px; color:#d4d4d8; font-size:14px; font-weight:600; }
+.label { display:block; margin-bottom:7px; color:var(--label); font-size:14px; font-weight:600; }
 .stack { display:grid; gap:16px; }
 .surface { border:1px solid var(--border); background:var(--surface); }
 .text-balance { text-wrap: balance; }
@@ -70,3 +143,48 @@ html[data-kbd] .bottom-nav { display: none; }
 .ms-ring { stroke-dasharray: 158; stroke-dashoffset: 158; animation: ms-draw .65s ease-out .1s forwards; }
 .ms-tick { stroke-dasharray: 36; stroke-dashoffset: 36; animation: ms-draw .4s ease-out .6s forwards; }
 .ms-rise { animation: ms-rise .45s ease-out both; }
+
+
+/* ===== Tahap 2C.1 — Tombol tema: ikon + animasi karakter mini =====
+   Murni dekorasi (transform/opacity saja, tanpa layout shift). Stage absolute + pointer-events:none. */
+.theme-icon-moon { display: none; }
+html[data-theme="light"] .theme-icon-sun { display: none; }
+html[data-theme="light"] .theme-icon-moon { display: block; }
+
+.mt-stage { top: calc(100% - 6px); width: 120px; height: 34px; animation: mt-stage 1.9s linear both; contain: layout paint; }
+.mt-stage svg * { transform-box: fill-box; }
+@keyframes mt-stage { 0% { opacity: 0; } 5% { opacity: 1; } 96% { opacity: 1; } 100% { opacity: 0; } }
+
+.mt-door { transform-origin: 50% 100%; animation: mt-door 1.9s ease-out both; }
+@keyframes mt-door { 0% { transform: scale(.4); opacity: 0; } 8% { transform: scale(1); opacity: 1; } 94% { transform: scale(1); opacity: 1; } 100% { transform: scale(.6); opacity: 0; } }
+
+.mt-leaf { transform-origin: 0 50%; animation: mt-leaf 1.9s ease-in-out both; }
+@keyframes mt-leaf { 0%, 8% { transform: scaleX(1); } 17%, 86% { transform: scaleX(.16); } 94%, 100% { transform: scaleX(1); } }
+
+.mt-walker { animation: mt-walk 1.9s linear both; }
+@keyframes mt-walk {
+  0%, 13% { transform: translateX(0); opacity: 0; }
+  17% { transform: translateX(0); opacity: 1; }
+  50% { transform: translateX(86px); opacity: 1; }
+  64% { transform: translateX(86px); opacity: 1; }
+  86% { transform: translateX(2px); opacity: 1; }
+  90%, 100% { transform: translateX(0); opacity: 0; }
+}
+.mt-man { transform-origin: 50% 50%; animation: mt-man 1.9s linear both; }
+@keyframes mt-man {
+  0% { transform: translateY(0) scaleX(1); }
+  52% { transform: translateY(0) scaleX(1); }
+  56% { transform: translateY(-6px) scaleX(1); }
+  61% { transform: translateY(0) scaleX(1); }
+  62%, 100% { transform: translateY(0) scaleX(-1); }
+}
+.mt-arm { transform-origin: 0 0; transform-box: fill-box; animation: mt-arm 1.9s ease-in-out both; }
+@keyframes mt-arm { 0%, 49% { transform: rotate(0); } 54%, 59% { transform: rotate(-140deg); } 64%, 100% { transform: rotate(0); } }
+.mt-leg-a, .mt-leg-b { transform-origin: 50% 0; animation: mt-leg .24s ease-in-out infinite alternate; }
+.mt-leg-b { animation-direction: alternate-reverse; }
+@keyframes mt-leg { from { transform: rotate(-26deg); } to { transform: rotate(26deg); } }
+
+.mt-btn-press { animation: mt-btn .25s ease-out both; }
+@keyframes mt-btn { 0% { transform: scale(1); } 40% { transform: scale(.86); } 100% { transform: scale(1); } }
+
+@media (prefers-reduced-motion: reduce) { .mt-stage { display: none; } }
