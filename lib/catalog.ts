@@ -12,7 +12,8 @@ import type { CatalogGroup, CatalogVariant } from "@/types/database";
  */
 export type CatalogStatus = "ok" | "empty" | "env_missing" | "query_error";
 export type CatalogResult = { status: CatalogStatus; groups: CatalogGroup[]; variants: CatalogVariant[] };
-export type CatalogOptions = { productKey?: string; onlyActive?: boolean };
+// includeArchived: khusus admin (Kelola Produk) agar produk/paket yang dinonaktifkan lewat arsip tetap terlihat dan bisa diaktifkan lagi.
+export type CatalogOptions = { productKey?: string; onlyActive?: boolean; includeArchived?: boolean };
 
 type DbError = { code?: string; message?: string; details?: string; hint?: string } | null;
 
@@ -46,7 +47,7 @@ async function fetchRows(sb: SupabaseClient, withArchivedFilter: boolean, o: Cat
 /** Membaca katalog memakai Supabase client yang sudah ada (server, mengikuti RLS user/anon). */
 export async function loadCatalog(sb: SupabaseClient, o: CatalogOptions = {}): Promise<CatalogResult> {
   try {
-    let { gr, vr } = await fetchRows(sb, true, o);
+    let { gr, vr } = await fetchRows(sb, !o.includeArchived, o);
     if (isMissingArchivedColumn(gr.error) || isMissingArchivedColumn(vr.error)) {
       console.warn("[catalog] kolom `archived` belum ada di database; membaca tanpa filter arsip (jalankan migration arsip jika ingin fitur arsip).");
       ({ gr, vr } = await fetchRows(sb, false, o));
@@ -57,8 +58,14 @@ export async function loadCatalog(sb: SupabaseClient, o: CatalogOptions = {}): P
       return { status: "query_error", groups: [], variants: [] };
     }
     const norm = <T extends { archived?: boolean; archived_at?: string | null }>(r: T) => ({ ...r, archived: r.archived === true, archived_at: r.archived_at ?? null });
-    const groups = ((gr.data ?? []) as CatalogGroup[]).map(norm).filter((x) => !x.archived);
-    const variants = ((vr.data ?? []) as CatalogVariant[]).map(norm).filter((x) => !x.archived);
+    const keep = <T extends { archived: boolean }>(x: T) => o.includeArchived || !x.archived;
+    const variants = ((vr.data ?? []) as CatalogVariant[]).map(norm).filter(keep);
+    let groups = ((gr.data ?? []) as CatalogGroup[]).map(norm).filter(keep);
+    // Urutan tampil produk mengikuti urutan varian pertamanya (kolom sort), jadi produk baru otomatis di akhir tanpa kolom tambahan di database.
+    const first = (k: string) => Math.min(...variants.filter((v) => v.product_key === k).map((v) => v.sort), Infinity);
+    groups = groups.map((g) => ({ g, k: first(g.product_key) })).sort((a, b) => a.k - b.k || a.g.name.localeCompare(b.g.name)).map((x) => x.g);
+    // Katalog customer: produk tanpa varian aktif tidak ditampilkan (kecuali halaman satu produk, yang menampilkan pesan sendiri).
+    if (o.onlyActive && !o.productKey) groups = groups.filter((g) => variants.some((v) => v.product_key === g.product_key));
     return { status: groups.length ? "ok" : "empty", groups, variants };
   } catch (err) {
     // Hanya kegagalan jaringan/runtime tak terduga. Error khusus Next.js (dynamic bailout/redirect/notFound) harus dilempar ulang.

@@ -53,3 +53,17 @@ Index tambahan atau kolom lain yang pernah dibuat manual di dashboard tidak terb
 | `migrations/20261010_order_message_idempotency.sql` | Fungsi `malik_send_order_message` (baru) + `malik_send_payment_message` diberi advisory lock per order, agar pesan order/pembayaran tidak bisa dobel walau request sebelumnya ternyata berhasil, klik ganda, atau dua tab | Disarankan. Aplikasi tetap jalan tanpanya (jalur cadangan di client, tidak atomik) dan otomatis memakai fungsi baru setelah migrasi dijalankan |
 
 Tidak mengubah tabel, kolom, policy RLS, maupun data. Aman dijalankan ulang. Jalankan di staging dulu bila ada.
+| `migrations/20261010_product_management.sql` | Tahap 2B: admin bisa INSERT produk/varian (RLS khusus admin, `order_name` & `sort` dibuat trigger), `malik_product_meta()` mengenali produk baru lewat katalog, whitelist `product_key` di `reviews` dibuang, seed **SC OURIN DELUXE** (`sc_ourin_deluxe`, 4 varian) | **Wajib** untuk fitur Tambah Produk dan agar SC OURIN DELUXE muncul. Tanpa migrasi ini halaman admin tetap bisa edit produk lama, tetapi Tambah Produk/Varian ditolak database |
+
+`20261010_product_management.sql` tidak menghapus data, tidak ada DELETE/DROP TABLE, RLS tetap aktif, aman dijalankan ulang. Urutan: jalankan sesudah `20261010_order_message_idempotency.sql` (tidak saling bergantung, urutan bebas).
+
+| File (Tahap 2B revisi) | Isi | Wajib? |
+|---|---|---|
+| `migrations/20261010_product_management.sql` (direvisi) | Mulai dengan cek skema (berhenti dengan error jelas bila tidak sesuai). Di `reviews` hanya CHECK whitelist `panel/sewa_bot/reseller_admin` pada `product_key` yang diganti cek bentuk kode; constraint lain (rating, comment, dll) tidak disentuh | Wajib |
+| `migrations/20261011_order_price_validation.sql` | `malik_apply_catalog_price()`: order baru hanya untuk produk/varian resmi yang aktif; harga SELALU dari database; produk tak dikenal ditolak. Order lama tidak disentuh | Wajib (tanpa ini harga produk tak dikenal masih bisa dipalsukan) |
+| `migrations/20261012_create_product_atomic.sql` | RPC `malik_admin_create_product`: produk + semua varian disimpan dalam satu transaksi, retry aman | Wajib untuk Tambah Produk |
+
+Urutan: `20261010_product_management.sql` -> `20261011_order_price_validation.sql` -> `20261012_create_product_atomic.sql`. Semua dijalankan MANUAL, idempotent. Untuk database baru: `master_setup.sql` lalu ketiga file ini.
+
+> **Catatan master_setup.sql:** file master sengaja TIDAK diubah di Tahap 2B. Untuk instalasi project baru: jalankan `master_setup.sql`, lalu semua file di `migrations/`. Saat ada kesempatan, gabungkan perubahan 2B ke master agar instalasi baru satu langkah.
+
