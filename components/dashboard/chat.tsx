@@ -1,5 +1,5 @@
 "use client";
-import { useEffect,useRef,useState } from "react";
+import { useCallback,useEffect,useRef,useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Message } from "@/types/database";
 import { Button } from "@/components/ui/button";
@@ -8,20 +8,51 @@ import { Send,Paperclip } from "lucide-react";
 import { ChatAttachment } from "@/components/chat/attachment";
 import { isPaymentMessage,PaymentCard } from "@/components/chat/payment-card";
 import { useNotifySound } from "@/components/chat/use-notify-sound";
+import { mergeMessages,upsertMessage } from "@/components/chat/merge-messages";
+import { withTimeout } from "@/lib/with-timeout";
+import { insertMessageOnce } from "@/lib/chat-send";
+import { newId } from "@/lib/order-flow";
+const LIMIT=300;
+let chatSeq=0; // nama channel unik per mount: channel lama yang masih dilepas tidak bentrok dengan yang baru
 export function UserChat({userId,initial}:{userId:string;initial:Message[]}){
   const [messages,setMessages]=useState(initial),[text,setText]=useState(""),[busy,setBusy]=useState(false),[err,setErr]=useState("");
   const sb=useRef(createClient()).current;
   const lock=useRef(false);
+  // msgsRef = salinan state yang selalu terbaru secara sinkron (dasar snapshot sebelum fetch); gone = id yang sudah terhapus; pend/uploaded = kunci idempotensi kirim.
+  const msgsRef=useRef(initial),gone=useRef(new Set<string>()),syncSeq=useRef(0),syncApplied=useRef(0);
+  const pend=useRef<{key:string;id:string}|null>(null),uploaded=useRef<{sig:string;url:string;type:string}|null>(null);
+  const commit=useCallback((fn:(m:Message[])=>Message[])=>{const next=fn(msgsRef.current);if(next!==msgsRef.current){msgsRef.current=next;setMessages(next)}},[]);
   const playChat=useNotifySound("/assets/notif/chet.mp3");
   // Selalu tampilkan pesan terbaru (saat dibuka dan tiap ada pesan baru): gulir ke dasar halaman,
   // tempat composer berada tepat di atas bottom nav.
   useEffect(()=>{window.scrollTo({top:document.documentElement.scrollHeight})},[messages.length]);
-  useEffect(()=>{const ch=sb.channel(`chat-${userId}`).on("postgres_changes",{event:"*",schema:"public",table:"messages",filter:`user_id=eq.${userId}`},p=>{if(p.eventType==="INSERT"){if((p.new as Message).sender==="admin")playChat();setMessages(m=>m.some(x=>x.id===(p.new as Message).id)?m:[...m,p.new as Message])}if(p.eventType==="DELETE")setMessages(m=>m.filter(x=>x.id!==p.old.id))}).subscribe();return()=>{void sb.removeChannel(ch)}},[sb,userId,playChat]);
+  // Sinkron dari server: menutup celah antara render server & subscribe, pulih setelah reconnect / HP tidur / koneksi putus,
+  // dan membuang pesan yang dihapus admin (Realtime tidak mengirim DELETE untuk channel ber-filter).
+  const sync=useCallback(async()=>{
+    const seq=++syncSeq.current;
+    const before=new Set(msgsRef.current.map(m=>m.id)); // pesan yang sudah ada sebelum fetch dimulai; yang datang SETELAH ini tidak boleh hilang walau fetch belum memuatnya
+    try{
+      const {data,error}=await withTimeout(sb.from("messages").select("*").eq("user_id",userId).order("created_at",{ascending:false}).limit(LIMIT),20000);
+      if(error)throw error;
+      if(seq<syncApplied.current)return; // hasil fetch yang lebih baru sudah dipakai; jangan timpa dengan data lama
+      syncApplied.current=seq;
+      const rows=((data||[]) as Message[]).slice().reverse();
+      commit(cur=>mergeMessages(rows,cur,{before,gone:gone.current,limit:LIMIT}));
+    }catch(e){console.error("[chat] sinkron gagal",e)}
+  },[sb,userId,commit]);
+  useEffect(()=>{
+    const ch=sb.channel(`chat-${userId}-${++chatSeq}`).on("postgres_changes",{event:"*",schema:"public",table:"messages",filter:`user_id=eq.${userId}`},p=>{if(p.eventType==="INSERT"){const n=p.new as Message;if(gone.current.has(n.id))return;if(n.sender==="admin"&&!msgsRef.current.some(x=>x.id===n.id))playChat();commit(m=>upsertMessage(m,n))}if(p.eventType==="DELETE"){const id=String(p.old.id||"");if(id){gone.current.add(id);commit(m=>m.filter(x=>x.id!==id))}}}).subscribe(st=>{if(st==="SUBSCRIBED")void sync()}); // SUBSCRIBED juga muncul lagi setelah reconnect
+    const wake=()=>{if(document.visibilityState==="visible")void sync()};
+    document.addEventListener("visibilitychange",wake);window.addEventListener("online",wake);
+    return()=>{document.removeEventListener("visibilitychange",wake);window.removeEventListener("online",wake);void sb.removeChannel(ch)};
+  },[sb,userId,playChat,sync,commit]);
   async function insertMessage(att?:{url:string,type:string}){
-    const {data,error}=await sb.from("messages").insert({user_id:userId,sender:"user",message:text.trim(),attachment_url:att?.url||null,attachment_type:att?.type||null}).select().single();
-    if(error)throw error;
-    if(data)setMessages(m=>m.some(x=>x.id===(data as Message).id)?m:[...m,data as Message]);
-    setText("");
+    const sent=text.trim(),key=`${sent}|${att?.url||""}`;
+    const ticket=pend.current&&pend.current.key===key?pend.current:(pend.current={key,id:newId()}); // retry pesan yang sama memakai id yang sama (idempotensi di database)
+    const saved=await insertMessageOnce(sb,{id:ticket.id,user_id:userId,sender:"user",message:sent,attachment_url:att?.url||null,attachment_type:att?.type||null});
+    pend.current=null;uploaded.current=null;
+    commit(m=>upsertMessage(m,saved));
+    setText(t=>t.trim()===sent?"":t); // jangan hapus ketikan baru yang dimulai saat pesan masih dikirim
   }
   // Satu pintu untuk operasi async: kunci via ref (anti double-tap), selalu dilepas di finally.
   async function run(fn:()=>Promise<void>,fail:string){
@@ -35,11 +66,19 @@ export function UserChat({userId,initial}:{userId:string;initial:Message[]}){
     const input=e.currentTarget,f=input.files?.[0];
     input.value=""; // agar file yang sama bisa dipilih lagi
     if(!f)return;
+    if(f.size>4*1024*1024){setErr("Ukuran lampiran maksimal 4 MB.");return} // sama dengan batas server (/api/upload-chat)
     void run(async()=>{
-      const {data:{session}}=await sb.auth.getSession();
-      const r=await fetch("/api/upload-chat",{method:"POST",headers:{authorization:`Bearer ${session?.access_token||""}`,"x-file-type":f.type,"content-type":"application/octet-stream"},body:f});
-      const j=await r.json();
+      const sig=`${f.name}|${f.size}|${f.lastModified}|${f.type}`;
+      if(uploaded.current&&uploaded.current.sig===sig){await insertMessage({url:uploaded.current.url,type:uploaded.current.type});return} // file sama sudah terunggah: jangan unggah & kirim ulang jadi pesan kedua
+      const {data:{session}}=await withTimeout(sb.auth.getSession(),10000);
+      const ctl=new AbortController(),timer=window.setTimeout(()=>ctl.abort(),60000);
+      let j:{ok?:boolean;url:string;type:string;message?:string};
+      try{
+        const r=await fetch("/api/upload-chat",{method:"POST",signal:ctl.signal,headers:{authorization:`Bearer ${session?.access_token||""}`,"x-file-type":f.type,"content-type":"application/octet-stream"},body:f});
+        j=await r.json();
+      }finally{window.clearTimeout(timer)}
       if(!j.ok)throw new Error(j.message||"upload gagal");
+      uploaded.current={sig,url:j.url,type:j.type};
       await insertMessage({url:j.url,type:j.type});
     },"Lampiran gagal diunggah. Coba lagi.");
   }

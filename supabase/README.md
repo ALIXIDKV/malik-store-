@@ -5,6 +5,7 @@
 | Path | Fungsi |
 |---|---|
 | `master_setup.sql` | Schema FINAL untuk instalasi **baru**: tabel, fungsi, trigger, view, RLS, grant, policy, seed katalog |
+| `migrations/` | Migrasi BARU (setelah master). Dijalankan MANUAL, tidak pernah otomatis |
 | `migrations-archive/` | 11 migration lama (`01`–`11`, urut sesuai waktu pembuatan). Hanya riwayat/referensi |
 
 ## Aturan
@@ -44,3 +45,11 @@ Index tambahan atau kolom lain yang pernah dibuat manual di dashboard tidak terb
 - `malik_ops.policy_backup` — artefak sekali-jalan dari `08_security_cleanup.sql`.
 - `malik_catalog_sync_legacy` dan tabel lama `public.products` — digantikan `product_catalog`.
 - Harga seed katalog adalah harga awal; harga yang sudah diubah admin di production tidak ikut.
+
+## Migrasi tertunda (belum dijalankan)
+
+| File | Isi | Wajib? |
+|---|---|---|
+| `migrations/20261010_order_message_idempotency.sql` | Fungsi `malik_send_order_message` (baru) + `malik_send_payment_message` diberi advisory lock per order, agar pesan order/pembayaran tidak bisa dobel walau request sebelumnya ternyata berhasil, klik ganda, atau dua tab | Disarankan. Aplikasi tetap jalan tanpanya (jalur cadangan di client, tidak atomik) dan otomatis memakai fungsi baru setelah migrasi dijalankan |
+
+Tidak mengubah tabel, kolom, policy RLS, maupun data. Aman dijalankan ulang. Jalankan di staging dulu bila ada.

@@ -5,10 +5,24 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { withTimeout } from "@/lib/with-timeout";
 const NET_ERR="Koneksi bermasalah. Coba lagi.";
 // hanya path internal; cegah open-redirect (//host atau /\host)
 function safeNext(v:string|null){return v&&v.startsWith("/")&&!v.startsWith("//")&&!v.startsWith("/\\")&&!v.startsWith("/account")?v:"/dashboard"}
-async function readJson(res:Response):Promise<{ok?:boolean;message?:string}>{try{return await res.json()}catch{return {ok:false,message:NET_ERR}}}
+type Reply={ok?:boolean;message?:string};
+async function readJson(res:Response):Promise<Reply>{try{return await res.json()}catch{return {ok:false,message:NET_ERR}}}
+// POST JSON dengan batas waktu (AbortController membatalkan request & pembacaan body). TIDAK PERNAH melempar: timeout / jaringan putus
+// dikembalikan sebagai {ok:false,message}, sehingga pemanggil selalu sampai ke finally dan loading selalu selesai.
+async function postJson(url:string,body:unknown,ms:number,timeoutMsg:string):Promise<Reply>{
+  const ctl=new AbortController(),t=window.setTimeout(()=>ctl.abort(),ms);
+  try{
+    const res=await fetch(url,{method:"POST",signal:ctl.signal,headers:{"content-type":"application/json"},body:JSON.stringify(body)});
+    return await readJson(res);
+  }catch(err){
+    console.error("[auth] request gagal",url,ctl.signal.aborted?"timeout":err);
+    return {ok:false,message:ctl.signal.aborted?timeoutMsg:NET_ERR};
+  }finally{window.clearTimeout(t)}
+}
 export function AuthForm(){
   const [mode,setMode]=useState<"login"|"register">("login"),[busy,setBusy]=useState(false),[msg,setMsg]=useState("");
   const router=useRouter(),search=useSearchParams();
@@ -17,11 +31,11 @@ export function AuthForm(){
   function switchMode(m:"login"|"register"){if(lock.current)return;setMode(m);setMsg("")}
   async function login(email:string,password:string){
     const s=createClient();
-    const {data:signed,error}=await s.auth.signInWithPassword({email:email.trim().toLowerCase(),password});
+    const {data:signed,error}=await withTimeout(s.auth.signInWithPassword({email:email.trim().toLowerCase(),password}),20000); // timeout: tombol tidak macet di "Memproses…" saat sinyal buruk
     if(error){setMsg(/invalid login|invalid credentials/i.test(error.message)?"Email atau password salah.":"Gagal masuk. Coba lagi.");return false}
     const user=signed.user; // sudah ada dari respons login; tidak perlu getUser() kedua
     let target=safeNext(search.get("next"));
-    if(user){const {data:p}=await s.from("profiles").select("role").eq("id",user.id).maybeSingle();if(p?.role==="admin")target="/admin"}
+    if(user){try{const {data:p}=await withTimeout(s.from("profiles").select("role").eq("id",user.id).maybeSingle(),15000);if(p?.role==="admin")target="/admin"}catch(e){console.warn("[auth] role gagal dibaca; /dashboard akan mengalihkan admin",e)}}
     router.replace(target);router.refresh();
     return true;
   }
@@ -34,8 +48,8 @@ export function AuthForm(){
     let done=false;
     try{
       if(mode==="register"){
-        const res=await fetch("/api/register",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({email,password,username:String(fd.get("username")||""),code:String(fd.get("code")||"")})});
-        const j=await readJson(res);
+        // timeout registrasi: server mungkin sudah membuat akun, jadi arahkan user mencoba Masuk (bukan mendaftar ulang)
+        const j=await postJson("/api/register",{email,password,username:String(fd.get("username")||""),code:String(fd.get("code")||"")},30000,"Pendaftaran terlalu lama. Jika akun sudah terbuat, coba Masuk; jika belum, kirim kode baru lalu coba lagi.");
         if(!j.ok){setMsg(j.message||"Pendaftaran gagal.");return}
       }
       done=await login(email,password);
@@ -52,8 +66,7 @@ export function AuthForm(){
     if(!email){setMsg("Isi email terlebih dahulu.");return}
     lock.current=true;setBusy(true);setMsg("");
     try{
-      const res=await fetch("/api/send-code",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({email})});
-      const j=await readJson(res);
+      const j=await postJson("/api/send-code",{email},30000,"Pengiriman kode terlalu lama. Cek email kamu; jika belum masuk, coba kirim lagi sebentar lagi.");
       setMsg(j.message||"");
     }catch(err){console.error("[auth] kirim kode gagal",err);setMsg(NET_ERR)}
     finally{lock.current=false;setBusy(false)}

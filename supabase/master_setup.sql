@@ -397,6 +397,46 @@ begin
   return new;
 end $$;
 
+-- Pesan order milik user, tepat satu per order (atomik via advisory lock; migrasi 20261010).
+create or replace function public.malik_send_order_message(p_order_id uuid, p_text text)
+returns boolean
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  o    record;
+  code text;
+begin
+  if auth.uid() is null then raise exception 'Belum login'; end if;
+  if public.malik_is_admin() then raise exception 'Akun admin tidak dapat memakai fungsi ini'; end if;
+
+  select id, user_id into o from public.orders where id = p_order_id;
+  if not found or o.user_id <> auth.uid() then raise exception 'Order tidak ditemukan'; end if;
+
+  code := 'ORD-' || upper(substr(replace(o.id::text, '-', ''), 1, 8));
+
+  if p_text is null or char_length(btrim(p_text)) = 0 or char_length(p_text) > 2000
+     or position('Order ID: ' || code in p_text) = 0 then
+    raise exception 'Pesan order tidak valid';
+  end if;
+
+  -- Serialkan semua pemanggilan untuk order yang sama sampai transaksi selesai.
+  perform pg_advisory_xact_lock(hashtextextended('malik_order_msg:' || o.id::text, 0));
+
+  if exists (
+    select 1 from public.messages
+    where user_id = o.user_id and sender = 'user'
+      and position('Order ID: ' || code in message) > 0
+  ) then
+    return false;   -- sudah pernah dikirim
+  end if;
+
+  insert into public.messages (user_id, sender, message) values (o.user_id, 'user', p_text);
+  return true;
+end;
+$$;
+
 -- Pesan instruksi pembayaran otomatis (template tetap).
 create or replace function public.malik_send_payment_message(p_order_id uuid)
 returns boolean
@@ -415,7 +455,9 @@ begin
   select id, user_id into o from public.orders where id = p_order_id;
   if not found or o.user_id <> auth.uid() then raise exception 'Order tidak ditemukan'; end if;
 
-  code := 'ORD-' || upper(substr(replace(o.id::text, '-', ''), 1, 8));   -- sama dengan MalikAuth.orderCode()
+  code := 'ORD-' || upper(substr(replace(o.id::text, '-', ''), 1, 8));   -- sama dengan orderCode() di lib/order-flow.ts
+
+  perform pg_advisory_xact_lock(hashtextextended('malik_order_pay:' || o.id::text, 0));
 
   if exists (
     select 1 from public.messages
@@ -535,6 +577,9 @@ grant execute on function public.malik_is_admin() to authenticated;
 
 revoke all on function public.malik_send_payment_message(uuid) from public, anon;
 grant execute on function public.malik_send_payment_message(uuid) to authenticated;
+
+revoke all on function public.malik_send_order_message(uuid, text) from public, anon;
+grant execute on function public.malik_send_order_message(uuid, text) to authenticated;
 
 revoke all on function public.malik_email_registered(text) from public, anon, authenticated;
 revoke all on function public.malik_issue_otp(text, text, int, int, int) from public, anon, authenticated;
