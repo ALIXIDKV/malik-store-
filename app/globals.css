@@ -111,7 +111,7 @@ body {
 
 /* Tinggi bottom navigation mobile (4rem + safe-area). 0 di >= md dan saat keyboard terbuka
    (komponen MobileBottomNav menyetel html[data-kbd] ketika input teks fokus). */
-:root { --nav-h: calc(4rem + env(safe-area-inset-bottom, 0px)); }
+:root { --nav-h: calc(5.5rem + env(safe-area-inset-bottom, 0px)); } /* 4rem bar + 1.5rem ruang bubble yang menonjol di atas bar */
 @media (min-width: 768px) { :root { --nav-h: 0px; } }
 html[data-kbd] { --nav-h: 0px; }
 html[data-kbd] .bottom-nav { display: none; }
@@ -151,7 +151,8 @@ html[data-kbd] .bottom-nav { display: none; }
 html[data-theme="light"] .theme-icon-sun { display: none; }
 html[data-theme="light"] .theme-icon-moon { display: block; }
 
-.mt-stage { top: calc(100% - 6px); width: 120px; height: 34px; animation: mt-stage 1.9s linear both; contain: layout paint; }
+/* Stage: absolute di container tombol (relative), menempel di tepi kiri tombol, sejajar vertikal (tengah). 44x28px. */
+.mt-stage { top: 50%; margin-top: -14px; width: 44px; height: 28px; animation: mt-stage 1.9s linear both; contain: layout paint; }
 .mt-stage svg * { transform-box: fill-box; }
 @keyframes mt-stage { 0% { opacity: 0; } 5% { opacity: 1; } 96% { opacity: 1; } 100% { opacity: 0; } }
 
@@ -161,26 +162,27 @@ html[data-theme="light"] .theme-icon-moon { display: block; }
 .mt-leaf { transform-origin: 0 50%; animation: mt-leaf 1.9s ease-in-out both; }
 @keyframes mt-leaf { 0%, 8% { transform: scaleX(1); } 17%, 86% { transform: scaleX(.16); } 94%, 100% { transform: scaleX(1); } }
 
+/* Karakter keluar dari pintu -> jalan ke kanan 11px (sampai tombol) -> menekan -> kembali ke pintu */
 .mt-walker { animation: mt-walk 1.9s linear both; }
 @keyframes mt-walk {
   0%, 13% { transform: translateX(0); opacity: 0; }
   17% { transform: translateX(0); opacity: 1; }
-  50% { transform: translateX(86px); opacity: 1; }
-  64% { transform: translateX(86px); opacity: 1; }
-  86% { transform: translateX(2px); opacity: 1; }
+  48% { transform: translateX(11px); opacity: 1; }
+  64% { transform: translateX(11px); opacity: 1; }
+  86% { transform: translateX(0); opacity: 1; }
   90%, 100% { transform: translateX(0); opacity: 0; }
 }
 .mt-man { transform-origin: 50% 50%; animation: mt-man 1.9s linear both; }
 @keyframes mt-man {
   0% { transform: translateY(0) scaleX(1); }
-  52% { transform: translateY(0) scaleX(1); }
-  56% { transform: translateY(-6px) scaleX(1); }
-  61% { transform: translateY(0) scaleX(1); }
+  50% { transform: translateY(0) scaleX(1); }
+  55% { transform: translateY(-2px) scaleX(1); }
+  60% { transform: translateY(0) scaleX(1); }
   62%, 100% { transform: translateY(0) scaleX(-1); }
 }
 .mt-arm { transform-origin: 0 0; transform-box: fill-box; animation: mt-arm 1.9s ease-in-out both; }
-@keyframes mt-arm { 0%, 49% { transform: rotate(0); } 54%, 59% { transform: rotate(-140deg); } 64%, 100% { transform: rotate(0); } }
-.mt-leg-a, .mt-leg-b { transform-origin: 50% 0; animation: mt-leg .24s ease-in-out infinite alternate; }
+@keyframes mt-arm { 0%, 49% { transform: rotate(0); } 54%, 59% { transform: rotate(-48deg); } 64%, 100% { transform: rotate(0); } }
+.mt-leg-a, .mt-leg-b { transform-origin: 50% 0; animation: mt-leg .26s ease-in-out infinite alternate; }
 .mt-leg-b { animation-direction: alternate-reverse; }
 @keyframes mt-leg { from { transform: rotate(-26deg); } to { transform: rotate(26deg); } }
 
@@ -188,3 +190,13 @@ html[data-theme="light"] .theme-icon-moon { display: block; }
 @keyframes mt-btn { 0% { transform: scale(1); } 40% { transform: scale(.86); } 100% { transform: scale(1); } }
 
 @media (prefers-reduced-motion: reduce) { .mt-stage { display: none; } }
+
+
+/* ===== Tahap 2C.2 — Floating bubble navigation (mobile) =====
+   Bubble = satu elemen yang bergeser lewat transform (GPU, tanpa layout shift). Spring ringan 300ms (overshoot kecil).
+   Warna memakai token emerald/zinc yang sudah dibalik oleh Light Mode, jadi otomatis menyesuaikan tema. */
+.bn-bubble { transition: transform .3s cubic-bezier(.34, 1.56, .64, 1), opacity .2s ease-out; will-change: transform; }
+/* Tailwind v4 memakai properti `translate` & `scale` (bukan `transform`): transisinya harus menyebut properti itu. */
+.bn-icon { transition: translate .3s cubic-bezier(.34, 1.56, .64, 1), scale .15s ease-out, color .15s ease-out; }
+@media (prefers-reduced-motion: reduce) { .bn-bubble, .bn-icon { transition: none !important; } }
+

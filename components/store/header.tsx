@@ -1,9 +1,10 @@
 import Link from "next/link";
-import Image from "next/image";
 import { MessageCircle, UserRound } from "lucide-react";
 import { getAuthContext } from "@/lib/auth";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
-const iconLink="grid size-11 touch-manipulation place-items-center rounded-xl text-zinc-400 transition hover:bg-zinc-900 hover:text-white active:bg-zinc-800";
+import { SafeImage } from "@/components/ui/safe-image";
+import { ASSETS, ASSET_FALLBACK } from "@/lib/assets";
+const iconLink="grid size-11 touch-manipulation place-items-center rounded-xl text-zinc-400 transition duration-200 hover:bg-zinc-900 hover:text-white active:scale-95 active:bg-zinc-800";
 const textLink="inline-flex h-11 touch-manipulation items-center rounded-xl px-3 text-sm font-medium text-zinc-400 transition hover:bg-zinc-900 hover:text-white active:bg-zinc-800";
 export async function Header(){
   let profile=null;
@@ -14,9 +15,9 @@ export async function Header(){
   const accountLabel=profile?.username||"Akun";
   return <header className="sticky top-0 z-40 border-b border-zinc-900 bg-zinc-950/90 pt-[env(safe-area-inset-top)] backdrop-blur-xl">
     <div className="shell flex h-16 items-center justify-between gap-2">
-      <Link href="/" aria-label="Malik Store - beranda" className="flex min-h-11 touch-manipulation items-center gap-2.5 font-black tracking-tight"><Image src="/assets/image/profile.jpg" alt="" width={32} height={32} sizes="32px" className="size-8 rounded-xl object-cover"/><span>MALIK<span className="text-emerald-400">STORE</span></span></Link>
+      <Link href="/" aria-label="Malik Store - beranda" className="flex min-h-11 touch-manipulation items-center gap-2.5 font-black tracking-tight"><SafeImage src={ASSETS.logo} alt="" width={32} height={32} sizes="32px" className="size-8 rounded-xl object-cover" fallback={<span aria-hidden className="grid size-8 place-items-center rounded-xl bg-emerald-500 text-sm font-black text-zinc-950">{ASSET_FALLBACK.logoInitial}</span>}/><span>MALIK<span className="text-emerald-400">STORE</span></span></Link>
       <nav aria-label="Navigasi header" className="flex items-center gap-1">
-        <div className="mr-2 hidden items-center gap-1 md:flex">
+        <div className="mr-12 hidden items-center gap-1 md:flex">
           <Link className={textLink} href="/#catalog">Katalog</Link>
           {role==="admin"?<Link className={textLink} href="/admin">Admin</Link>:profile&&<><Link className={textLink} href="/dashboard">Pesanan</Link><Link className={textLink} href="/dashboard/history">Riwayat</Link></>}
           <Link className={textLink} href="/tentang">Tentang</Link>
