@@ -15,7 +15,7 @@ export type OutgoingMessage = {
 // jika request sebelumnya ternyata sudah masuk (respons hilang / timeout), insert ulang gagal dengan 23505,
 // lalu baris yang sudah ada dibaca dan dikembalikan sebagai hasil sukses.
 export async function insertMessageOnce(db: SupabaseClient, row: OutgoingMessage, ms = 25_000): Promise<Message> {
-  const r = await withAbortTimeout((signal) => db.from("messages").insert(row).select().single().abortSignal(signal), ms);
+  const r = await withAbortTimeout((signal) => db.from("messages").insert(row).select().abortSignal(signal).single(), ms);
   if (!r.error) return r.data as Message;
   if (r.error.code === "23505") {
     const ex = await withTimeout(db.from("messages").select("*").eq("id", row.id).eq("user_id", row.user_id).maybeSingle(), 15_000);

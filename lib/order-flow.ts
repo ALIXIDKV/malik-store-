@@ -60,7 +60,7 @@ export async function createOrder(
 ): Promise<{ order: Order } | { error: string }> {
   try {
     const r = await withAbortTimeout(
-      (signal) => db.from("orders").insert({ id: i.id, user_id: i.userId, product: i.product, price: i.price, note: i.note.slice(0, 500) }).select().single().abortSignal(signal),
+      (signal) => db.from("orders").insert({ id: i.id, user_id: i.userId, product: i.product, price: i.price, note: i.note.slice(0, 500) }).select().abortSignal(signal).single(),
       MS,
     );
     if (!r.error) return { order: r.data as Order };
