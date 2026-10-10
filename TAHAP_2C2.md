@@ -10,3 +10,6 @@
 4. Aset: `lib/assets.ts` (logo, popup, favicon, OG), `components/ui/safe-image.tsx` (tanpa gambar rusak), dipakai di `app/layout.tsx`, `app/manifest.ts`, `components/store/header.tsx`. Tidak ada popup baru; tidak ada file aset dihapus.
 
 Tidak disentuh: order, auth, Supabase, SQL/RLS, chat (logika), hero video, dependency.
+
+## Fix bug Katalog (bubble)
+`components/navigation/mobile-bottom-nav.tsx` saja. Aktif Katalog = `/product/*` ATAU (`/` + hash `#catalog`); Home = `/` tanpa `#catalog`. Hash disinkronkan dari: mount (refresh), `popstate`/`hashchange` (Back/Forward), klik link ke halaman yang sama (router Next memakai pushState, tidak memicu event), dan perubahan pathname. State awal `""` = sama dengan server (tanpa hydration mismatch); transisi dimatikan hanya untuk gambar pertama. Timeout 2,5 dtk dihapus: bubble optimistis kini mengikuti `useLinkStatus`. Listener dibersihkan di cleanup effect.
