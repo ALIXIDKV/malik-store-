@@ -16,6 +16,8 @@ import { newId } from "@/lib/order-flow";
 const LIMIT=2000;
 let chatSeq=0; // nama channel unik per mount (hindari bentrok dengan channel lama yang masih dilepas)
 const PROFILE_COLS="id,email,username,role,created_at";
+// Elemen sticky di atas panel chat admin (navigasi admin); selector dulu ada di dalam hook, sekarang dikirim dari sini.
+const adminTopEdge=()=>document.querySelector<HTMLElement>('nav[aria-label="Navigasi admin"]')?.closest("aside")??null;
 export function AdminChat({profiles:initialProfiles,initial}:{profiles:Profile[];initial:Message[]}){
   const [profiles,setProfiles]=useState(initialProfiles),[messages,setMessages]=useState(initial),[uid,setUid]=useState(()=>{const admins=new Set(initialProfiles.filter(p=>p.role==="admin").map(p=>p.id));for(let i=initial.length-1;i>=0;i--){const m=initial[i];if(!m.hidden_for_admin&&!admins.has(m.user_id))return m.user_id}return ""}),[listOpen,setListOpen]=useState(false),[text,setText]=useState(""),[busy,setBusy]=useState(false),[err,setErr]=useState("");
   const sb=useRef(createClient()).current;
@@ -25,7 +27,7 @@ export function AdminChat({profiles:initialProfiles,initial}:{profiles:Profile[]
   const commit=useCallback((fn:(m:Message[])=>Message[])=>{const next=fn(msgsRef.current);if(next!==msgsRef.current){msgsRef.current=next;setMessages(next)}},[]);
   const playChat=useNotifySound("/assets/notif/chet.mp3");
   const listRef=useRef<HTMLDivElement>(null),anchor=useRef<HTMLDivElement>(null);
-  const box=useViewportBox(anchor); // tinggi area chat di HP mengikuti keyboard (lihat use-viewport-box.ts)
+  const box=useViewportBox(anchor,{topEdge:adminTopEdge}); // tinggi area chat di HP mengikuti keyboard (lihat use-viewport-box.ts)
   // Profil user yang daftar setelah halaman dimuat belum ada di daftar; tanpa ini pesan pertamanya tidak punya thread sampai refresh.
   const seen=useRef(new Set(initialProfiles.map(p=>p.id)));
   const ensureProfile=useCallback(async(id:string)=>{

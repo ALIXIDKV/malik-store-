@@ -43,3 +43,32 @@
 - Jika migration belum dijalankan: checkout tanpa voucher tetap normal, tetapi halaman /admin/vouchers menampilkan pesan tabel belum ada,
   dan order dengan voucher ditolak oleh database.
 - Voucher yang tersimpan di order tidak ikut berubah bila voucher diedit kemudian (nilai diskon tersimpan di `discount_amount`).
+
+## Tahap 3 - Chat Mobile + Composer (12 Okt 2026)
+
+### Perubahan
+- Bug chat customer di Android Chrome: panel chat sekarang `fixed` di bawah header dengan tinggi mengikuti `visualViewport`
+  (via `useViewportBox`), hanya daftar pesan yang scroll, composer selalu di atas keyboard / bottom nav. Desktop (md+) memakai layout lama.
+- `useViewportBox` dibuat generik: parameter opsional `topEdge` (fungsi pengembali elemen sticky di atas panel). Selector navigasi admin
+  dipindah dari dalam hook ke `admin-chat.tsx`; perilaku chat admin tidak berubah.
+- Composer baru (`components/chat/composer.tsx`): textarea auto-resize (1 sampai ~5 baris), tombol "Kirim" dengan status "Mengirim..." + spinner,
+  tombol dinonaktifkan saat kosong/mengirim. Enter = baris baru (kirim lewat tombol). Tombol lampiran tidak berubah.
+- Judul "Chat Admin" disembunyikan di HP (panel fixed menutupinya; bottom nav sudah berlabel Chat).
+
+### File berubah
+- Baru: `components/chat/composer.tsx`
+- Diubah: `components/dashboard/chat.tsx` (hanya JSX/layout + scroll; logic realtime/sync/upload/kirim tidak diubah),
+  `components/admin/use-viewport-box.ts`, `components/admin/admin-chat.tsx` (1 konstanta + 1 argumen), `app/globals.css` (aturan `.chat-panel` di HP),
+  `app/(user)/dashboard/chat/page.tsx` (1 class)
+- TIDAK disentuh: voucher, order, auth, role, database, API.
+
+### Bug yang diperbaiki
+- Input chat tertinggal / tertutup keyboard saat scroll di Android Chrome (chat customer).
+
+### Dampak
+- Perilaku Enter di chat customer berubah: dulu mengirim, sekarang baris baru (sesuai permintaan).
+- Rollback: kembalikan 5 file yang diubah dan hapus `composer.tsx`.
+
+### Hasil testing
+- Belum dijalankan: lingkungan penyusun tanpa jaringan (npm install/build tidak bisa); hanya cek sintaks TypeScript pada file yang diubah.
+- WAJIB dites di perangkat: Android Chrome (keyboard buka, scroll, kirim pendek/panjang, lampiran), checkout tanpa/dengan voucher, login admin, `npm run build`.

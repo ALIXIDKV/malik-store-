@@ -2,9 +2,9 @@
 import { useCallback,useEffect,useRef,useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Message } from "@/types/database";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Send,Paperclip } from "lucide-react";
+import { Paperclip } from "lucide-react";
+import { ChatComposer } from "@/components/chat/composer";
+import { useViewportBox } from "@/components/admin/use-viewport-box";
 import { ChatAttachment } from "@/components/chat/attachment";
 import { isPaymentMessage,PaymentCard } from "@/components/chat/payment-card";
 import { useNotifySound } from "@/components/chat/use-notify-sound";
@@ -13,6 +13,8 @@ import { withTimeout } from "@/lib/with-timeout";
 import { insertMessageOnce } from "@/lib/chat-send";
 import { newId } from "@/lib/order-flow";
 const LIMIT=300;
+// Header customer (sticky) = batas atas panel chat di HP; fungsi stabil agar efek di hook tidak berulang.
+const headerEdge=()=>document.querySelector<HTMLElement>("header");
 let chatSeq=0; // nama channel unik per mount: channel lama yang masih dilepas tidak bentrok dengan yang baru
 export function UserChat({userId,initial}:{userId:string;initial:Message[]}){
   const [messages,setMessages]=useState(initial),[text,setText]=useState(""),[busy,setBusy]=useState(false),[err,setErr]=useState("");
@@ -25,7 +27,10 @@ export function UserChat({userId,initial}:{userId:string;initial:Message[]}){
   const playChat=useNotifySound("/assets/notif/chet.mp3");
   // Selalu tampilkan pesan terbaru (saat dibuka dan tiap ada pesan baru): gulir ke dasar halaman,
   // tempat composer berada tepat di atas bottom nav.
-  useEffect(()=>{window.scrollTo({top:document.documentElement.scrollHeight})},[messages.length]);
+  const listRef=useRef<HTMLDivElement>(null),anchor=useRef<HTMLDivElement>(null);
+  const box=useViewportBox(anchor,{topEdge:headerEdge}); // HP: tinggi panel chat mengikuti visual viewport (keyboard Android), lihat use-viewport-box.ts
+  // HP: daftar pesan scroll di panelnya sendiri; desktop: halaman scroll seperti sebelumnya. box.height berubah saat keyboard buka/tutup.
+  useEffect(()=>{if(window.matchMedia("(max-width: 767.98px)").matches){const el=listRef.current;if(el)el.scrollTop=el.scrollHeight}else window.scrollTo({top:document.documentElement.scrollHeight})},[messages.length,box?.height]);
   // Sinkron dari server: menutup celah antara render server & subscribe, pulih setelah reconnect / HP tidur / koneksi putus,
   // dan membuang pesan yang dihapus admin (Realtime tidak mengirim DELETE untuk channel ber-filter).
   const sync=useCallback(async()=>{
@@ -82,16 +87,14 @@ export function UserChat({userId,initial}:{userId:string;initial:Message[]}){
       await insertMessage({url:j.url,type:j.type});
     },"Lampiran gagal diunggah. Coba lagi.");
   }
-  return <div className="flex min-h-[calc(100dvh_-_10rem_-_var(--nav-h)_-_env(safe-area-inset-top,0px))] flex-col">
-    <div className="flex-1 space-y-3 py-5">{messages.map(m=><div key={m.id} className={`max-w-[82%] rounded-2xl p-3 text-sm ${m.sender==="user"?"ml-auto bg-emerald-500 text-zinc-950":"border border-zinc-800 bg-zinc-900 text-zinc-200"}`}>{m.message&&(isPaymentMessage(m.message,m.sender)?<PaymentCard text={m.message}/>:<p className="whitespace-pre-wrap break-words">{m.message}</p>)}<p className={`mt-1.5 text-[10px] ${m.sender==="user"?"text-emerald-950/60":"text-zinc-600"}`}>{new Date(m.created_at).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit",timeZone:"Asia/Jakarta"})}</p><ChatAttachment url={m.attachment_url} type={m.attachment_type}/></div>)}</div>
+  const vars=box?({"--chat-top":`${box.top}px`,"--chat-h":`${box.height}px`} as React.CSSProperties):undefined;
+  return <><div ref={anchor} aria-hidden className="h-0 md:hidden"/>
+  <div style={vars} className="chat-panel flex min-h-[calc(100dvh_-_10rem_-_var(--nav-h)_-_env(safe-area-inset-top,0px))] flex-col max-md:min-h-0 max-md:bg-zinc-950">
+    <div ref={listRef} className="chat-list flex-1 space-y-3 py-5 max-md:px-4">{messages.map(m=><div key={m.id} className={`max-w-[82%] rounded-2xl p-3 text-sm ${m.sender==="user"?"ml-auto bg-emerald-500 text-zinc-950":"border border-zinc-800 bg-zinc-900 text-zinc-200"}`}>{m.message&&(isPaymentMessage(m.message,m.sender)?<PaymentCard text={m.message}/>:<p className="whitespace-pre-wrap break-words">{m.message}</p>)}<p className={`mt-1.5 text-[10px] ${m.sender==="user"?"text-emerald-950/60":"text-zinc-600"}`}>{new Date(m.created_at).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit",timeZone:"Asia/Jakarta"})}</p><ChatAttachment url={m.attachment_url} type={m.attachment_type}/></div>)}</div>
     {/* offset sticky = --nav-h (tinggi bottom nav + safe-area; 0 di desktop & saat keyboard terbuka); z lebih rendah dari nav */}
-    <div className="sticky bottom-[var(--nav-h)] z-30 border-t border-zinc-900 bg-zinc-950/95 py-3 backdrop-blur-xl">
+    <div className="shrink-0 border-t border-zinc-900 bg-zinc-950/95 py-3 backdrop-blur-xl max-md:px-4 max-md:pb-[max(.75rem,env(safe-area-inset-bottom))] md:sticky md:bottom-[var(--nav-h)] md:z-30">
       {err&&<p role="alert" className="mb-2 text-xs text-red-400">{err}</p>}
-      <div className="flex gap-2">
-        <label className={`relative flex size-11 shrink-0 touch-manipulation items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-400 transition focus-within:ring-2 focus-within:ring-emerald-400 active:bg-zinc-800 md:size-10 ${busy?"pointer-events-none opacity-50":"cursor-pointer"}`}><Paperclip className="size-4" aria-hidden/><span className="sr-only">Lampirkan gambar atau video</span><input className="sr-only" type="file" disabled={busy} accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime" onChange={upload}/></label>
-        <Input value={text} enterKeyHint="send" autoComplete="off" onChange={e=>setText(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&!e.nativeEvent.isComposing)send()}} placeholder="Tulis pesan…" aria-label="Pesan"/>
-        <Button size="icon" disabled={busy} onMouseDown={e=>e.preventDefault()} onClick={send} aria-label="Kirim pesan" className="shrink-0"><Send className="size-4" aria-hidden/></Button>
-      </div>
+      <ChatComposer value={text} onChange={setText} onSend={send} busy={busy} leading={<label className={`relative flex size-11 shrink-0 touch-manipulation items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-400 transition focus-within:ring-2 focus-within:ring-emerald-400 active:bg-zinc-800 md:size-10 ${busy?"pointer-events-none opacity-50":"cursor-pointer"}`}><Paperclip className="size-4" aria-hidden/><span className="sr-only">Lampirkan gambar atau video</span><input className="sr-only" type="file" disabled={busy} accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime" onChange={upload}/></label>}/>
     </div>
-  </div>
+  </div></>
 }

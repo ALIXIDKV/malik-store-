@@ -2,11 +2,15 @@
 import { useEffect,useState,type RefObject } from "react";
 
 export type ViewportBox={top:number;height:number}|null;
+export type ViewportBoxOptions={topEdge?:()=>HTMLElement|null};
 
 // Ukuran area chat di HP = dari bawah navigasi admin sampai bagian bawah VISUAL viewport.
 // 100dvh saja tidak berubah saat keyboard Android (Chrome) terbuka, sehingga input tertutup keyboard;
 // visualViewport menyusut mengikuti keyboard, jadi kotak chat + input ikut naik. Dipakai hanya di bawah breakpoint md (lihat admin-chat).
-// anchor = elemen nol-tinggi tepat di bawah navigasi admin (hanya fallback bila navigasi tidak ditemukan).
+// Hook ini generik (dipakai chat admin & chat customer), tidak bergantung pada selector tertentu:
+//  - anchor  = elemen nol-tinggi tepat di tempat panel dimulai (dipakai bila tidak ada topEdge).
+//  - topEdge = (opsional) fungsi yang mengembalikan elemen sticky/fixed di ATAS panel (navigasi admin, header customer);
+//    batas atas panel = bagian bawah elemen itu. Berikan fungsi yang STABIL (didefinisikan di luar komponen).
 //
 // Panel chat memakai position:fixed, jadi SEMUA nilai di sini harus dalam koordinat viewport (bukan koordinat dokumen):
 //  - batas atas  = bawah navigasi admin yang sticky (getBoundingClientRect().bottom -> viewport; tidak bergantung scroll halaman)
@@ -14,8 +18,12 @@ export type ViewportBox={top:number;height:number}|null;
 // Sebelumnya rect.top (viewport) dicampur window.scrollY (dokumen) sehingga posisi panel bisa meleset saat halaman ter-scroll.
 const MIN_H=240; // tinggi minimum panel agar daftar pesan + input tetap layak dipakai
 const KEYBOARD_GAP=120; // visualViewport yang lebih pendek dari layar sebanyak ini dianggap keyboard terbuka
+// Bar atas yang sticky: navigasi admin; di halaman customer (tidak ada nav admin) = <header> toko.
+function topBar():HTMLElement|null{
+  return document.querySelector<HTMLElement>('nav[aria-label="Navigasi admin"]')?.closest("aside")??document.querySelector<HTMLElement>("body > header, header");
+}
 function navBottom(anchor:HTMLElement):number{
-  const nav=document.querySelector<HTMLElement>('nav[aria-label="Navigasi admin"]')?.closest("aside");
+  const nav=topBar();
   if(nav)return Math.max(0,nav.getBoundingClientRect().bottom);
   return Math.max(0,anchor.getBoundingClientRect().top); // fallback: anchor ada tepat di bawah nav (sticky), nilai viewport
 }
@@ -32,7 +40,7 @@ export function useViewportBox(anchor:RefObject<HTMLElement|null>):ViewportBox{
         const offTop=vv?.offsetTop??0,vh=vv?.height??window.innerHeight;
         const bottom=offTop+vh; // batas bawah area terlihat (di atas keyboard)
         const keyboard=!!vv&&window.innerHeight-vh>KEYBOARD_GAP;
-        let top=Math.max(navBottom(el),offTop);
+        let top=Math.max(edgeBottom(el,topEdge?.()??null),offTop);
         // Keyboard terbuka di layar pendek (mis. landscape): ruang di bawah nav < MIN_H. Panel dinaikkan menutupi nav
         // (tinggi tetap = ruang terlihat) agar input TIDAK PERNAH tertutup keyboard.
         if(keyboard&&bottom-top<MIN_H)top=offTop;
@@ -46,9 +54,9 @@ export function useViewportBox(anchor:RefObject<HTMLElement|null>):ViewportBox{
     calc();
     vv?.addEventListener("resize",calc);vv?.addEventListener("scroll",calc);
     window.addEventListener("resize",calc);window.addEventListener("scroll",calc,{passive:true});window.addEventListener("orientationchange",rotated);
-    const nav=document.querySelector('nav[aria-label="Navigasi admin"]')?.closest("aside");
+    const nav=topBar();
     const ro=typeof ResizeObserver!=="undefined"&&nav?new ResizeObserver(calc):null;if(nav)ro?.observe(nav); // tinggi nav berubah (font/safe-area) -> posisi atas ikut
     return()=>{cancelAnimationFrame(raf);timers.forEach(clearTimeout);ro?.disconnect();vv?.removeEventListener("resize",calc);vv?.removeEventListener("scroll",calc);window.removeEventListener("resize",calc);window.removeEventListener("scroll",calc);window.removeEventListener("orientationchange",rotated)};
-  },[anchor]);
+  },[anchor,topEdge]);
   return box;
 }

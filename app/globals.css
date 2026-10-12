@@ -116,6 +116,12 @@ body {
 html[data-kbd] { --nav-h: 0px; }
 html[data-kbd] .bottom-nav { display: none; }
 .pb-nav { padding-bottom: var(--nav-h); }
+/* Chat customer di HP: panel fixed dari bawah header sampai atas keyboard/bottom nav (nilai --chat-top/--chat-h dari useViewportBox).
+   Hanya daftar pesan yang scroll; composer selalu terlihat. Desktop memakai layout lama. */
+@media (max-width: 767.98px) {
+  .chat-panel { position: fixed; left: 0; right: 0; z-index: 30; overflow: hidden; top: var(--chat-top, 4rem); height: calc(var(--chat-h, calc(100dvh - 4rem)) - var(--nav-h)); }
+  .chat-panel .chat-list { min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+}
 .no-scrollbar { scrollbar-width: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 
