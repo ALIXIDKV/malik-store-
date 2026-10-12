@@ -27,7 +27,13 @@ function navBottom(anchor:HTMLElement):number{
   if(nav)return Math.max(0,nav.getBoundingClientRect().bottom);
   return Math.max(0,anchor.getBoundingClientRect().top); // fallback: anchor ada tepat di bawah nav (sticky), nilai viewport
 }
-export function useViewportBox(anchor:RefObject<HTMLElement|null>):ViewportBox{
+// Batas atas panel: bawah elemen topEdge bila ada, jika tidak pakai perilaku lama (navBottom).
+function edgeBottom(anchor:HTMLElement,edge:HTMLElement|null):number{
+  if(edge)return Math.max(0,edge.getBoundingClientRect().bottom);
+  return navBottom(anchor);
+}
+export function useViewportBox(anchor:RefObject<HTMLElement|null>,options?:ViewportBoxOptions):ViewportBox{
+  const topEdge=options?.topEdge;
   const [box,setBox]=useState<ViewportBox>(null);
   useEffect(()=>{
     const el=anchor.current;
@@ -54,7 +60,7 @@ export function useViewportBox(anchor:RefObject<HTMLElement|null>):ViewportBox{
     calc();
     vv?.addEventListener("resize",calc);vv?.addEventListener("scroll",calc);
     window.addEventListener("resize",calc);window.addEventListener("scroll",calc,{passive:true});window.addEventListener("orientationchange",rotated);
-    const nav=topBar();
+    const nav=topEdge?.()??topBar();
     const ro=typeof ResizeObserver!=="undefined"&&nav?new ResizeObserver(calc):null;if(nav)ro?.observe(nav); // tinggi nav berubah (font/safe-area) -> posisi atas ikut
     return()=>{cancelAnimationFrame(raf);timers.forEach(clearTimeout);ro?.disconnect();vv?.removeEventListener("resize",calc);vv?.removeEventListener("scroll",calc);window.removeEventListener("resize",calc);window.removeEventListener("scroll",calc);window.removeEventListener("orientationchange",rotated)};
   },[anchor,topEdge]);
