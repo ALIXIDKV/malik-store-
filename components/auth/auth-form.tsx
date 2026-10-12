@@ -4,6 +4,7 @@ import { useRouter,useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { cn } from "@/lib/utils";
 import { withTimeout } from "@/lib/with-timeout";
 const NET_ERR="Koneksi bermasalah. Coba lagi.";
@@ -80,7 +81,7 @@ export function AuthForm(){
     <form onSubmit={submit} className="stack">
       {mode==="register"&&<div><label className="label" htmlFor="auth-username">Username</label><Input id="auth-username" name="username" autoComplete="username" minLength={2} maxLength={40} required/></div>}
       <div><label className="label" htmlFor="auth-email">Email</label><Input id="auth-email" name="email" type="email" autoComplete="email" required/></div>
-      <div><label className="label" htmlFor="auth-password">Password</label><Input id="auth-password" name="password" type="password" autoComplete={mode==="login"?"current-password":"new-password"} minLength={6} required/></div>
+      <div><label className="label" htmlFor="auth-password">Password</label><PasswordInput id="auth-password" name="password" autoComplete={mode==="login"?"current-password":"new-password"} minLength={6} required/></div>
       {mode==="register"&&<div><label className="label" htmlFor="auth-code">Kode verifikasi</label><div className="flex gap-2"><Input id="auth-code" name="code" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} required/><Button type="button" variant="outline" onClick={sendCode} disabled={busy} className="shrink-0">Kirim kode</Button></div></div>}
       {msg&&<p role="status" className="text-sm text-zinc-400">{msg}</p>}
       <Button disabled={busy} type="submit">{busy?"Memproses…":mode==="login"?"Masuk":"Buat akun"}</Button>
