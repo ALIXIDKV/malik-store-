@@ -6,4 +6,6 @@ export type Message = { id:string; user_id:string; sender:"user"|"admin"; messag
 export type Review = { id:string; order_id:string; user_id:string; product_key:string; rating:number; comment:string|null; username:string; variant:string|null; created_at:string; updated_at:string };
 export type CatalogGroup = { product_key:string; name:string; description:string; archived:boolean; archived_at:string|null; updated_at:string };
 export type CatalogVariant = { product_key:string; variant_id:string; order_name:string; label:string; price:number; active:boolean; sort:number; archived:boolean; archived_at:string|null; updated_at:string };
-export type Voucher = { id:string; code:string; discount_type:"percent"|"fixed"; discount_value:number; min_purchase:number; expires_at:string|null; usage_limit:number|null; used_count:number; active:boolean; created_by:string|null; created_at:string; updated_at:string };
+export type Voucher = { id:string; code:string; discount_type:"percent"|"fixed"; discount_value:number; min_purchase:number; expires_at:string|null; usage_limit:number|null; per_user_limit?:number|null; first_order_only?:boolean; used_count:number; active:boolean; created_by:string|null; created_at:string; updated_at:string };
+
+export type VoucherRedemption = { id:string; voucher_id:string; user_id:string; order_id:string|null; discount_amount:number; status:"active"|"released"|"confirmed"; created_at:string };

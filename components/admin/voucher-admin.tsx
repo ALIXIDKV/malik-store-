@@ -1,13 +1,14 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import type { Voucher } from "@/types/database";
+import type { Voucher, VoucherRedemption } from "@/types/database";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn, rupiah } from "@/lib/utils";
 import { buildVoucherPayload, emptyVoucherForm, formFromVoucher, voucherError, voucherStatus, type VoucherForm } from "@/lib/vouchers";
 import { withTimeout } from "@/lib/with-timeout";
+import { orderCode } from "@/lib/order-flow";
 
 type Msg = { kind: "ok" | "err"; text: string } | null;
 const selectCls = "h-11 w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3.5 text-base text-zinc-100 outline-none focus:border-emerald-500/70 md:text-sm";
@@ -49,6 +50,12 @@ function Fields({ f, set, idp }: { f: VoucherForm; set: (p: Partial<VoucherForm>
         <Input id={`${idp}-exp`} type="date" value={f.expires} onChange={(e) => set({ expires: e.target.value })} /></div>
       <div><label className="label" htmlFor={`${idp}-limit`}>Batas penggunaan (kosong = tanpa batas)</label>
         <Input id={`${idp}-limit`} inputMode="numeric" value={f.limit} onChange={num("limit")} placeholder="100" /></div>
+      <div><label className="label" htmlFor={`${idp}-peruser`}>Batas per user (kosong = tanpa batas)</label>
+        <Input id={`${idp}-peruser`} inputMode="numeric" value={f.perUser} onChange={(e) => set({ perUser: e.target.value.replace(/\D/g, "").slice(0, 10) })} placeholder="1" /></div>
+      <div className="flex items-center justify-between rounded-xl border border-zinc-800 px-3.5">
+        <span className="text-sm text-zinc-300">Hanya order pertama</span>
+        <Switch checked={f.firstOrder} onChange={(v) => set({ firstOrder: v })} name="Hanya order pertama" />
+      </div>
       <div className="flex items-center justify-between rounded-xl border border-zinc-800 px-3.5 sm:col-span-2">
         <span className="text-sm text-zinc-300">Aktif</span>
         <Switch checked={f.active} onChange={(v) => set({ active: v })} name="Voucher aktif" />
@@ -57,9 +64,51 @@ function Fields({ f, set, idp }: { f: VoucherForm; set: (p: Partial<VoucherForm>
   );
 }
 
+const rdLabel: Record<string, string> = { active: "dipesan", confirmed: "selesai", released: "dibatalkan" };
+const rdBadge: Record<string, string> = { active: "text-amber-300", confirmed: "text-emerald-300", released: "text-zinc-500" };
+
+// Daftar pemakai voucher (dimuat saat dibuka). Admin boleh membaca voucher_redemptions + profiles lewat RLS.
+function Redemptions({ voucherId }: { voucherId: string }) {
+  const [rows, setRows] = useState<(VoucherRedemption & { who: string })[] | null>(null), [err, setErr] = useState(""), [busy, setBusy] = useState(true);
+  useEffect(() => {
+    let off = false;
+    void (async () => {
+      try {
+        const s = createClient();
+        const r = await withTimeout(s.from("voucher_redemptions").select("*").eq("voucher_id", voucherId).order("created_at", { ascending: false }).limit(50), 20_000);
+        if (off) return;
+        if (r.error) { setErr(voucherError(r.error)); return; }
+        const list = (r.data || []) as VoucherRedemption[];
+        const ids = Array.from(new Set(list.map((x) => x.user_id)));
+        const names: Record<string, string> = {};
+        if (ids.length) {
+          const p = await withTimeout(s.from("profiles").select("id,username,email").in("id", ids), 20_000);
+          for (const u of (p.data || []) as { id: string; username: string | null; email: string | null }[]) names[u.id] = u.username || u.email || u.id.slice(0, 8);
+        }
+        if (!off) setRows(list.map((x) => ({ ...x, who: names[x.user_id] || "(user dihapus)" })));
+      } catch (e) { console.error("[admin/vouchers] redemptions error", e); if (!off) setErr("Koneksi bermasalah. Coba lagi."); }
+      finally { if (!off) setBusy(false); }
+    })();
+    return () => { off = true; };
+  }, [voucherId]);
+  if (busy) return <p className="mt-3 text-xs text-zinc-500">Memuat…</p>;
+  if (err) return <p role="alert" className="mt-3 text-xs text-red-400">{err}</p>;
+  if (!rows?.length) return <p className="mt-3 text-xs text-zinc-500">Belum ada pemakaian.</p>;
+  return (
+    <ul className="mt-3 space-y-1.5 text-xs">
+      {rows.map((x) => (
+        <li key={x.id} className="flex items-center justify-between gap-2 rounded-lg border border-zinc-800 px-2.5 py-1.5">
+          <span className="min-w-0 truncate text-zinc-300">{x.who}{x.order_id ? ` · ${orderCode(x.order_id)}` : ""}</span>
+          <span className="shrink-0 text-zinc-500">−{rupiah(x.discount_amount)} · <b className={rdBadge[x.status]}>{rdLabel[x.status]}</b></span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 function VoucherCard({ v, onSaved, onFlash }: { v: Voucher; onSaved: (v: Voucher) => void; onFlash: (m: Msg) => void }) {
   const [edit, setEdit] = useState(false), [f, setF] = useState<VoucherForm>(() => formFromVoucher(v));
-  const [busy, setBusy] = useState(false), [err, setErr] = useState("");
+  const [busy, setBusy] = useState(false), [err, setErr] = useState(""), [showUse, setShowUse] = useState(false);
   const lock = useRef(false);
   const st = voucherStatus(v);
 
@@ -91,7 +140,10 @@ function VoucherCard({ v, onSaved, onFlash }: { v: Voucher; onSaved: (v: Voucher
         </div>
         <p className="mt-2 text-xs text-zinc-500">
           Dipakai {v.used_count}{v.usage_limit != null ? ` / ${v.usage_limit}` : " (tanpa batas)"} · Expired {v.expires_at ? new Date(v.expires_at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }) : "tidak ada"}
+          {` · ${v.per_user_limit == null ? "per user tanpa batas" : `maks ${v.per_user_limit}x per user`}`}{v.first_order_only ? " · order pertama saja" : ""}
         </p>
+        {!edit && <button type="button" className="mt-2 text-xs font-medium text-emerald-400 underline-offset-2 hover:underline" onClick={() => setShowUse((o) => !o)}>{showUse ? "Tutup pemakaian" : "Lihat pemakaian"}</button>}
+        {showUse && !edit && <Redemptions key={`${v.id}-${v.used_count}`} voucherId={v.id} />}
         {edit ? (
           <div className="mt-4 space-y-3">
             <Fields f={f} set={(p) => setF((o) => ({ ...o, ...p }))} idp={`e-${v.id}`} />
