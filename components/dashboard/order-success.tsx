@@ -32,6 +32,7 @@ export function OrderSuccess({ info, onNew }: { info: OrderSuccessInfo; onNew: (
         <Row label="Order ID"><span className="font-mono tracking-wide text-emerald-400">{orderCode(order.id)}</span></Row>
         <Row label="Produk">{info.product}</Row>
         {info.variant && <Row label="Varian">{info.variant}</Row>}
+        {!!order.discount_amount && order.discount_amount > 0 && <Row label="Voucher">{order.voucher_code} (−{rupiah(order.discount_amount)})</Row>}
         <Row label="Total"><span className="text-base font-bold text-zinc-50">{rupiah(order.price)}</span></Row>
         <Row label="Status"><span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-xs font-semibold text-amber-300"><Clock className="size-3.5" aria-hidden />Menunggu diproses</span></Row>
       </dl>

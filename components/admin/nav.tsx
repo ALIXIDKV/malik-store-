@@ -1,11 +1,11 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard,ShoppingBag,Users,MessageCircle,Package,Store } from "lucide-react";
+import { LayoutDashboard,ShoppingBag,Users,MessageCircle,Package,Store,Ticket } from "lucide-react";
 import { LogoutButton } from "@/components/auth/logout-button";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { cn } from "@/lib/utils";
-const items=[["/admin",LayoutDashboard,"Dashboard"],["/admin/orders",ShoppingBag,"Order"],["/admin/users",Users,"User"],["/admin/chat",MessageCircle,"Chat"],["/admin/products",Package,"Produk"]] as const;
+const items=[["/admin",LayoutDashboard,"Dashboard"],["/admin/orders",ShoppingBag,"Order"],["/admin/users",Users,"User"],["/admin/chat",MessageCircle,"Chat"],["/admin/products",Package,"Produk"],["/admin/vouchers",Ticket,"Voucher"]] as const;
 export function AdminNav(){
   const pathname=usePathname();
   const link="flex h-11 shrink-0 touch-manipulation items-center gap-2.5 rounded-xl px-3 text-sm transition active:bg-zinc-800";

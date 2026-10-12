@@ -21,9 +21,11 @@ export function newId(): string {
 }
 
 // Teks pesan order dibangun SELALU dari baris order di database, jadi pemulihan setelah refresh menghasilkan teks yang sama persis.
-export function buildOrderText(o: Pick<Order, "id" | "product" | "price" | "note">): string {
+export function buildOrderText(o: Pick<Order, "id" | "product" | "price" | "note"> & Partial<Pick<Order, "voucher_code" | "discount_amount">>): string {
   const note = o.note ? `\nCatatan: ${o.note.slice(0, 200)}` : "";
-  return `🛒 Pesanan Baru\n\nProduk:\n${o.product}\n\nHarga:\n${rupiah(o.price)}\n\nStatus:\nMenunggu proses\n\nOrder ID: ${orderCode(o.id)}${note}`;
+  // Baris voucher hanya muncul untuk order yang memakai voucher; order biasa menghasilkan teks yang sama persis seperti sebelumnya.
+  const disc = o.discount_amount && o.discount_amount > 0 ? `\nVoucher ${o.voucher_code || ""}: potongan ${rupiah(o.discount_amount)}` : "";
+  return `🛒 Pesanan Baru\n\nProduk:\n${o.product}\n\nHarga:\n${rupiah(o.price)}${disc}\n\nStatus:\nMenunggu proses\n\nOrder ID: ${orderCode(o.id)}${note}`;
 }
 
 export function orderError(e: { code?: string; message?: string } | null | undefined) {
@@ -56,11 +58,11 @@ export function forgetAttempt() {
 
 export async function createOrder(
   db: SupabaseClient,
-  i: { id: string; userId: string; product: string; price: number; note: string },
+  i: { id: string; userId: string; product: string; price: number; note: string; voucher?: string },
 ): Promise<{ order: Order } | { error: string }> {
   try {
     const r = await withAbortTimeout(
-      (signal) => db.from("orders").insert({ id: i.id, user_id: i.userId, product: i.product, price: i.price, note: i.note.slice(0, 500) }).select().abortSignal(signal).single(),
+      (signal) => db.from("orders").insert({ id: i.id, user_id: i.userId, product: i.product, price: i.price, note: i.note.slice(0, 500), ...(i.voucher ? { voucher_code: i.voucher } : {}) }).select().abortSignal(signal).single(),
       MS,
     );
     if (!r.error) return { order: r.data as Order };
